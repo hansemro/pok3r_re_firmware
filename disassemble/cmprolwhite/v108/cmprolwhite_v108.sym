@@ -1,0 +1,53 @@
+# Cooler Master MasterKeys Pro L White v1.08
+
+[data]
+
+3200 : vectors .word
+
+[code]
+
+*   +4 : reset
+*   +4
+*   +4
+*  +20
+*   +C
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +8
+*   +4
+*   +4
+*   +4
+*   +4
+*   +C
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*  +1C
+*   +4
+*   +4
+
+[data]
+
+# Force data on some "code" that isn't code
+
+3404!
+3408!
