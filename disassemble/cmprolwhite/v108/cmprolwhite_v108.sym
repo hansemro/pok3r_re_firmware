@@ -7,11 +7,11 @@
 [code]
 
 *   +4 : reset
-*   +4
-*   +4
-*  +20
-*   +C
-*   +4
+*   +4 : nmi
+*   +4 : hard_fault
+*  +20 : svccall_intr
+*   +C : pendsv_intr
+*   +4 : systick_intr
 *   +4
 *   +4
 *   +4
@@ -26,7 +26,8 @@
 *   +4
 *   +4
 *   +4
-*   +C
+*   +C : bftm0_intr
+*   +4 : bftm1_intr
 *   +4
 *   +4
 *   +4
@@ -37,13 +38,14 @@
 *   +4
 *   +4
 *   +4
-*   +4
-*   +4
+*   +4 : usb_intr
 *   +4
 *   +4
 *  +1C
 *   +4
 *   +4
+
+32d6 : generic_intr
 
 [data]
 
