@@ -45,7 +45,69 @@
 *   +4
 *   +4
 
-32d6 : generic_intr
+32d6: generic_intr
+
+32e4: entry
+3324
+335e
+33a6
+33e8: sram_init
+3986
+3a26
+3a4c
+3aa8
+3bf8
+529c
+52b8
+5370
+53c8
+53e4
+53f4
+5404
+54a0
+54cc
+5550
+55dc
+55f4
+5634
+5754
+5780
+579c
+57b8
+57ec
+5808
+5824
+5878
+5888
+5904
+5928
+5938
+5948
+5958
+59a0
+5a00
+5a4c
+5b04
+5b58
+5bbc
+5c08
+5c98
+5d7c: setup_intr_priority
+5db4: set_nvic_intr_priority
+5df8: nvic_set_vtor
+7fc0
+7fc6
+7fcc
+7fd2
+7fde
+89b4
+8ac8
+8bc0
+8bcc
+8fe6
+8ff4
+8ff6
+9004: main
 
 [data]
 
@@ -82,6 +144,7 @@
 5df0: NVIC.VTOR_5df0
 5df4: NVIC.IP0_5df4
 5d78: BFTM0_BASE_5d78
+5e04: vtor_offset_mask_5e04
 5e08: NVIC.VTOR_5e08
 6118: GPIOC_BASE_6118
 6138: GPIOC_BASE_6138
