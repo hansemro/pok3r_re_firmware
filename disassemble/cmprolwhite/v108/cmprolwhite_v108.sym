@@ -56,21 +56,31 @@
 33e8: sram_init
 35c0: bftm_reset_compare_match_intr_flag
 35fc: afio_pin_config
+3624: sleep
 362c
 3714: set_peripheral_clock_control
 3986
 3a26
 3a4c
 3aa8
+3b18: spi_flash_read_status
 3b3c: spi_init
+3bc0: spi_flash_erase_sector
+3bf8
 3c04: gpio_b_init
+3cc4: spi_flash_page_program
+3d04: spi_flash_write_status_register
+3d50: spi_flash_deep_power_down
+3db0: spi_xfer
+3d78: spi_flash_read_data
+3e4c: spi_flash_release_sleep
+3eec: spi_flash_write_enable
 3f32: gpio_set_pin_direction
 3f42: gpio_set_pin_drive_current
 3f72: gpio_set_pin_input_enable
 3f82: gpio_set_pin_open_drain
 3f92: gpio_set_pin_pull_up_down
 3fbc: gpio_set_reset_pin
-3bf8
 529c
 52b8
 5370
