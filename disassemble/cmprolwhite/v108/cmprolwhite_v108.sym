@@ -48,14 +48,28 @@
 32d6: generic_intr
 
 32e4: entry
+32ec: start_main
 3324
-335e
+334c: rand
+335e: srand
 33a6
 33e8: sram_init
+35c0: bftm_reset_compare_match_intr_flag
+35fc: afio_pin_config
+362c
+3714: set_peripheral_clock_control
 3986
 3a26
 3a4c
 3aa8
+3b3c: spi_init
+3c04: gpio_b_init
+3f32: gpio_set_pin_direction
+3f42: gpio_set_pin_drive_current
+3f72: gpio_set_pin_input_enable
+3f82: gpio_set_pin_open_drain
+3f92: gpio_set_pin_pull_up_down
+3fbc: gpio_set_reset_pin
 3bf8
 529c
 52b8
@@ -95,6 +109,9 @@
 5d7c: setup_intr_priority
 5db4: set_nvic_intr_priority
 5df8: nvic_set_vtor
+6a2c: spi_enable
+6a40: spi_config
+6a88: spi_slave_select_output_enable
 7fc0
 7fc6
 7fcc
@@ -126,9 +143,11 @@
 3710: CKCU.HSICR_3710
 3738: CKCU.HSICR_3738
 36d8: GPIOA_BASE_36d8
+3ba8: SRAM.GPIOB_INITIALIZED_3ba8
 3bac: SPI1_BASE_3bac
 3bb0: GPIOB_BASE_3bb0
 3bec: GPIOB_BASE_3bec
+3c3c: SRAM.GPIOB_INITIALIZED_3c3c
 3c40: GPIOB_BASE_3c40
 3c80: GPIOB_BASE_3c80
 3cc0: GPIOB_BASE_3cc0
@@ -158,7 +177,7 @@
 6214: NVIC.CPUID_6214
 6308: FMC.MDID_6308
 6360: NVIC.ICER_6360
-636c: NVIC.VECTKEY_636c
+636c: NVIC.VECTKEY_SYSRESETREQ_636c
 6370: NVIC.VTOR_6370
 63cc: RSTCU.GRSR_63cc
 67a0: BFTM1_BASE_67a0
