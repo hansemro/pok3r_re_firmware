@@ -54,8 +54,9 @@
 335e: srand
 33a6
 33e8: sram_init
+3464: afio_set_pin_mux
 35c0: bftm_reset_compare_match_intr_flag
-35fc: afio_pin_config
+35fc: afio_set_pin_config
 3624: sleep
 362c
 3714: set_peripheral_clock_control
@@ -65,9 +66,11 @@
 3aa8
 3b18: spi_flash_read_status
 3b3c: spi_init
+3bb4: spi_flash_read_wip
 3bc0: spi_flash_erase_sector
 3bf8
-3c04: gpio_b_init
+3c04: spi_gpio_init
+3c84: spi_flash_pin_config_init
 3cc4: spi_flash_page_program
 3d04: spi_flash_write_status_register
 3d50: spi_flash_deep_power_down
@@ -75,6 +78,7 @@
 3d78: spi_flash_read_data
 3e4c: spi_flash_release_sleep
 3eec: spi_flash_write_enable
+3f0c: spi_flash_set_status_register
 3f32: gpio_set_pin_direction
 3f42: gpio_set_pin_drive_current
 3f72: gpio_set_pin_input_enable
@@ -117,8 +121,9 @@
 5c08
 5c98
 5d7c: setup_intr_priority
-5db4: set_nvic_intr_priority
+5db4: nvic_set_intr_priority
 5df8: nvic_set_vtor
+5e0c: spi_flash_init
 6a2c: spi_enable
 6a40: spi_config
 6a88: spi_slave_select_output_enable
@@ -153,11 +158,11 @@
 3710: CKCU.HSICR_3710
 3738: CKCU.HSICR_3738
 36d8: GPIOA_BASE_36d8
-3ba8: SRAM.GPIOB_INITIALIZED_3ba8
+3ba8: SRAM.INIT_STAGE_3ba8
 3bac: SPI1_BASE_3bac
 3bb0: GPIOB_BASE_3bb0
 3bec: GPIOB_BASE_3bec
-3c3c: SRAM.GPIOB_INITIALIZED_3c3c
+3c3c: SRAM.INIT_STAGE_3c3c
 3c40: GPIOB_BASE_3c40
 3c80: GPIOB_BASE_3c80
 3cc0: GPIOB_BASE_3cc0
