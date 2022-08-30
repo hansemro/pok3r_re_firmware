@@ -64,20 +64,20 @@
 3a26
 3a4c
 3aa8
-3b18: spi_flash_read_status
+3b18: spi_flash_cmd_read_status_register
 3b3c: spi_init
 3bb4: spi_flash_read_wip
-3bc0: spi_flash_erase_sector
+3bc0: spi_flash_cmd_sector_erase
 3bf8: unused_3bf8
 3c04: spi_gpio_init
 3c84: spi_flash_pin_config_init
-3cc4: spi_flash_page_program
-3d04: spi_flash_write_status_register
-3d50: spi_flash_deep_power_down
+3cc4: spi_flash_cmd_page_program
+3d04: spi_flash_cmd_write_status_register
+3d50: spi_flash_cmd_deep_power_down
 3db0: spi_xfer
-3d78: spi_flash_read_data
-3e4c: spi_flash_release_sleep
-3eec: spi_flash_write_enable
+3d78: spi_flash_cmd_read_data
+3e4c: spi_flash_cmd_release_sleep
+3eec: spi_flash_cmd_write_enable
 3f0c: spi_flash_set_status_register
 3f32: gpio_set_pin_direction
 3f42: gpio_set_pin_drive_current
