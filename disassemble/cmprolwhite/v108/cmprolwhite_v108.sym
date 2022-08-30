@@ -52,7 +52,9 @@
 3324
 334c: rand
 335e: srand
-33a6
+3394: _memset
+33a2: _memclr
+33a6: memset
 33e8: sram_init
 3464: afio_set_pin_mux
 35c0: bftm_reset_compare_match_intr_flag
@@ -127,14 +129,18 @@
 5db4: nvic_set_intr_priority
 5df8: nvic_set_vtor
 5e0c: spi_flash_init
+63a8: reset_peripherals
 6a2c: spi_enable
 6a40: spi_config
 6a88: spi_slave_select_output_enable
 6a9a: spi_flash_set_wel
 76c0: usb_entry
 7850: usb_set_intr_flags
+7900: usb_reset
 7af0: usb_get_intr_flags
 7b08: usb_set_lpmode_pdwn
+7b18: usb_set_csr
+7cdc: spi_flash_write_sector
 7fc0
 7fc6
 7fcc
@@ -144,6 +150,7 @@
 8ac8
 8bc0
 8bcc
+8f08: usb_compute_epcsr_addr
 8fe6
 8ff4
 8ff6
