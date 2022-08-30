@@ -73,10 +73,13 @@
 3c84: spi_flash_pin_config_init
 3cc4: spi_flash_cmd_page_program
 3d04: spi_flash_cmd_write_status_register
+3d2c: spi_flash_program_page
 3d50: spi_flash_cmd_deep_power_down
 3db0: spi_xfer
 3d78: spi_flash_cmd_read_data
+3e20: spi_flash_erase_sector
 3e4c: spi_flash_cmd_release_sleep
+3e74: spi_flash_program_sector
 3eec: spi_flash_cmd_write_enable
 3f0c: spi_flash_set_status_register
 3f32: gpio_set_pin_direction
@@ -162,6 +165,7 @@
 36f0: CKCU.HSICR_36f0
 3710: CKCU.HSICR_3710
 3738: CKCU.HSICR_3738
+388c: SRAM.SPI_DATA_0_196_388c
 36d8: GPIOA_BASE_36d8
 3b38: GPIOB_BASE_3b38
 3ba8: SRAM.INIT_STAGE_3ba8
@@ -175,10 +179,17 @@
 3d00: GPIOB_BASE_3d00
 3d28: GPIOB_BASE_3d28
 3d74: GPIOB_BASE_3d74
+38f0: SRAM.SPI_DATA_0_196_38f0
+3918: SRAM.SPI_DATA_0_196_3918
+3934: SRAM.SPI_DATA_0_196_3934
+3964: SRAM.SPI_DATA_0_196_3964
 3dac: GPIOB_BASE_3dac
 3e1c: SPI1_BASE_3e1c
 3e70: GPIOB_BASE_3e70
 3f08: GPIOB_BASE_3f08
+4910: SRAM.SPI_DATA_0_196_4910
+4afc: SRAM.SPI_DATA_0_196_4afc
+5178: SRAM.SPI_DATA_0_196_5178
 5d30: BFTM0_BASE_5d30
 5d34: NVIC.ICER_5d34
 5df0: NVIC.VTOR_5df0
@@ -226,6 +237,8 @@
 6c38: MCTM_BASE_6c38
 6c78: MCTM_BASE_6c78
 6d1c: NVIC.ICER_6d1c
+71c8: SRAM.SPI_DATA_0_196_71c8
+748c: SRAM.SPI_DATA_0_196_748c
 7858: USB_BASE_7858
 78c4: NVIC.ISER_78c4
 78e4: USB_BASE_78e4
@@ -246,6 +259,7 @@
 7ca8: PxLOCKR_LOCK_7ca8
 7cb4: PxLOCKR_LOCK_7cb4
 7cb8: WDT_BASE_7cb8
+7cd4: SRAM.SPI_DATA_0_196_7cd4
 8828: GPIOC_BASE_8828
 882C: GPIOA_BASE_882C
 8830: GPIOB_BASE_8830
