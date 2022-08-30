@@ -68,7 +68,7 @@
 3b3c: spi_init
 3bb4: spi_flash_read_wip
 3bc0: spi_flash_erase_sector
-3bf8
+3bf8: unused_3bf8
 3c04: spi_gpio_init
 3c84: spi_flash_pin_config_init
 3cc4: spi_flash_page_program
@@ -127,6 +127,11 @@
 6a2c: spi_enable
 6a40: spi_config
 6a88: spi_slave_select_output_enable
+6a9a: spi_flash_set_wel
+76c0: usb_entry
+7850: usb_set_intr_flags
+7af0: usb_get_intr_flags
+7b08: usb_set_lpmode_pdwn
 7fc0
 7fc6
 7fcc
@@ -158,6 +163,7 @@
 3710: CKCU.HSICR_3710
 3738: CKCU.HSICR_3738
 36d8: GPIOA_BASE_36d8
+3b38: GPIOB_BASE_3b38
 3ba8: SRAM.INIT_STAGE_3ba8
 3bac: SPI1_BASE_3bac
 3bb0: GPIOB_BASE_3bb0
