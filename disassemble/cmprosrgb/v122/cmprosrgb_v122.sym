@@ -80,6 +80,17 @@
 
 3572: generic_intr
 
+3930: afio_set_pin_mux
+3ac8: ckcu_set_APBCCR0
+3ab0: ckcu_set_AHBCCR
+4458: gpio_pin_set_input_enable
+4478: gpio_pin_set_pull_up_down
+61c8: setup_intr_priority
+6266: nvic_calc_intr_priority
+6298: nvic_set_intr_priority
+62b8: nvic_set_vtor
+9420: main
+
 [data]
 
 # Force data on "code" that isn't code
