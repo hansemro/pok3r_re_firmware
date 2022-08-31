@@ -47,48 +47,86 @@
 
 32d6: generic_intr
 
+# void entry(void)
 32e4: entry
+# void start_main(void)
 32ec: start_main
 3324
 334c: rand
 335e: srand
+# void _memset(uint8_t *ptr, size_t len, uint8_t value)
 3394: _memset
+# void _memclr(uint8_t *ptr, size_t len)
 33a2: _memclr
+# void * memset(uint8_t *ptr, uint8_t value, size_t len)
 33a6: memset
 33e8: sram_init
+# afio_set_pin_mux(int exti_num, int port)
 3464: afio_set_pin_mux
+# void bftm_reset_compare_match_intr_flag(uint32_t *bftm_base)
 35c0: bftm_reset_compare_match_intr_flag
+# void afio_set_pin_config(int port_x, int pin_n, int function)
 35fc: afio_set_pin_config
+# void sleep(int n)
 3624: sleep
 362c
+# void set_peripheral_clock_control(uint32_t AHBCCR, APBCCR0, APBCCR1, int set)
+#   if set != 0, then set registers to given arg1, arg2, and arg3;
+#   otherwise clear them
 3714: set_peripheral_clock_control
 3986
 3a26
 3a4c
 3aa8
+# uint8_t spi_flash_cmd_read_status_register(void)
 3b18: spi_flash_cmd_read_status_register
+# int spi_init(void)
 3b3c: spi_init
+# uint32_t spi_flash_read_wip(void)
 3bb4: spi_flash_read_wip
+# void spi_flash_cmd_sector_erase(uint32_t sectorAddr)
 3bc0: spi_flash_cmd_sector_erase
 3bf8: unused_3bf8
+# int spi_gpio_init(void)
 3c04: spi_gpio_init
+# void spi_flash_pin_config_init(void)
 3c84: spi_flash_pin_config_init
+# void spi_flash_cmd_page_program(uint8_t *src, uint32_t pageAddr, size_t len)
 3cc4: spi_flash_cmd_page_program
+# void spi_flash_cmd_write_status_register(uint8_t value)
 3d04: spi_flash_cmd_write_status_register
+# int spi_flash_program_page(uint8_t *src, uint32_t pageAddr, size_t len)
 3d2c: spi_flash_program_page
+# void spi_flash_cmd_deep_power_down(void)
 3d50: spi_flash_cmd_deep_power_down
+# spi_xfer(uint8_t *src, uint8_t *dst, size_t len)
 3db0: spi_xfer
+# spi_flash_cmd_read_data(uint8_t *dst, uint8_t addr, size_t len)
 3d78: spi_flash_cmd_read_data
+# int spi_flash_erase_sector(uint8_t sectorAddr)
+#   returns 0 on success
+#   returns >0 on error
 3e20: spi_flash_erase_sector
+# void spi_flash_cmd_release_sleep(void)
 3e4c: spi_flash_cmd_release_sleep
+# int spi_flash_program_sector(uint8_t *src, uint32_t sectorAddr, size_t len)
 3e74: spi_flash_program_sector
+# void spi_flash_cmd_write_enable(void)
 3eec: spi_flash_cmd_write_enable
+# int spi_flash_set_status_register(uint32_t value)
 3f0c: spi_flash_set_status_register
+# void gpio_set_pin_direction(uint32_t *gpio_base, uint32_t pin, int out)
 3f32: gpio_set_pin_direction
+# void gpio_set_pin_drive_current(uint32_t *gpio_base, uint32_t pin, int eight_mA)
 3f42: gpio_set_pin_drive_current
+# void gpio_set_pin_input_enable(uint32_t *gpio_base, uint32_t pin, int enable)
 3f72: gpio_set_pin_input_enable
+# void gpio_set_pin_open_drain(uint32_t *gpio_base, uint32_t pin, int open_drain)
 3f82: gpio_set_pin_open_drain
+# void gpio_set_pin_pull_up_down(uint32_t *gpio_base, uint32_t pin, int pull_down)
 3f92: gpio_set_pin_pull_up_down
+# void gpio_set_reset_pin(uint32_t *gpio_base, uint32_t value, int SRR)
+#   if SRR is != 0, then write to set/reset register, otherwise write to reset register
 3fbc: gpio_set_reset_pin
 529c
 52b8
@@ -125,23 +163,64 @@
 5bbc
 5c08
 5c98
+# void setup_intr_priority(void)
 5d7c: setup_intr_priority
+# void nvic_set_intr_priority(TODO)
 5db4: nvic_set_intr_priority
+# void nvic_set_vtor(uint32_t table_base, uint32_t table_offset)
+#   table_base is either 0 (for code) or 0x20000000 (for RAM)
 5df8: nvic_set_vtor
+# int spi_flash_init(void)
 5e0c: spi_flash_init
+# void reset_peripherals(uint32_t AHBPRSTR, uint32_t APBPRSTR0, uint32_t APBPRSTR1, int set)
+#   if set != 0, then set registers to given arg1, arg2, and arg3;
+#   otherwise clear them
 63a8: reset_peripherals
+# void spi_enable(uint32_t *spi_base, int enable)
 6a2c: spi_enable
+# void spi_config(uint32_t *spi_base, struct spi_config_t *config)
+#   struct spi_config_t {
+#       uint32_t MODE_SEL; // either 0 for slave or 0x4000 for master
+#       uint32_t FIFO_EN; // either 0x400 to enable fifo and 0 to disable
+#       uint32_t SPICR1_unk1;
+#       uint32_t DFL; // 4-bit value
+#       uint32_t SPICR1_unk2;
+#       uint32_t CPOL; // either 0 or 0x400
+#       uint32_t CPHA; // either 0 or 1
+#       uint32_t SPICR1_unk3;
+#       uint32_t RX_FIFO_TRIGGER_LEVEL_SEL; // 4-bit value
+#       uint32_t TX_FIFO_TRIGGER_LEVEL_SEL; // 4-bit value
+#       uint32_t PRESCALER; // PRESCALER = f_pclk/(2*f_sck)
+#   };
 6a40: spi_config
+# void spi_slave_select_output_enable(uint32_t *spi_base, int enable)
 6a88: spi_slave_select_output_enable
 6a9a: spi_flash_set_wel
+# void usb_entry(uint32_t addr) // TODO: understand struct at addr
 76c0: usb_entry
+# void usb_set_intr_flags(uint32_t value)
 7850: usb_set_intr_flags
+# void usb_reset(void)
 7900: usb_reset
+# void usb_ep_set_cfgr_ier(uint32_t ep_num, struct *usbep_config_t)
+#   struct usbep_config_t {
+#       uint32_t unk1;
+#       uint32_t EPCFGR;
+#       uint32_t EPIER;
+#       ...  // unsure of size
+#   };
 79be: usb_ep_set_cfgr_ier
-7a4a: usb_ep_onak_odata_idata_toggle
+# void usb_ep_toggle_onak_odata_idata(uint32_t *epcsr_base)
+7a4a: usb_ep_toggle_onak_odata_idata
+# void usb_enable_ier(int enable)
+7ac0: usb_enable_ier
+# uint32_t usb_get_intr_flags(void)
 7af0: usb_get_intr_flags
+# void usb_set_lpmode_pdwn(void)
 7b08: usb_set_lpmode_pdwn
+# void usb_set_csr(void)
 7b18: usb_set_csr
+# void spi_flash_write_sector(uint8_t *src, uint32_t sectorAddr, size_t len)
 7cdc: spi_flash_write_sector
 7fc0
 7fc6
@@ -152,10 +231,12 @@
 8ac8
 8bc0
 8bcc
+# uint32_t usb_compute_epcsr_addr(uint32_t ep_num)
 8f08: usb_compute_epcsr_addr
-8fe6
+8fe6: _memcpy
 8ff4
 8ff6
+# void main(void)
 9004: main
 
 [data]
@@ -201,11 +282,11 @@
 5178: SRAM.SPI_DATA_0_164_5178
 5d30: BFTM0_BASE_5d30
 5d34: NVIC.ICER_5d34
-5df0: NVIC.VTOR_5df0
+5df0: NVIC.CPU_ID_BASE_5df0
 5df4: NVIC.IP0_5df4
 5d78: BFTM0_BASE_5d78
 5e04: vtor_offset_mask_5e04
-5e08: NVIC.VTOR_5e08
+5e08: NVIC.CPU_ID_BASE_5e08
 6118: GPIOC_BASE_6118
 6138: GPIOC_BASE_6138
 6154: GPIOC_BASE_6154
@@ -282,6 +363,11 @@
 8f14: USB.USBEP0CSR_8f14
 8fbc: EXTI.EXTICR_8fbc
 8fc4: USB_BASE_8fc4
+97a8: usb_report1_desc
+97cc: usb_report2_desc
+9b16: usb_iManufacturer_desc
+9b56: usb_iProduct_desc
 
 * 3404
 * 3408
+* 9e28
