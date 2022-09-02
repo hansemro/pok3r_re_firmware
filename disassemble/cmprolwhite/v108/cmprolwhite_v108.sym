@@ -51,15 +51,24 @@
 32e4: entry
 # void start_main(void)
 32ec: start_main
-3324
+# int32_t unsigned_int_div(uint32_t dividend, uint32_t divisor)
+#   returns -1 if dividing by 0
+32f8: unsigned_int_div
+# int32_t signed_int_div(int32_t dividend, int32_t divisor)
+#   returns 1 if dividing by 0
+3324: signed_int_div
 334c: rand
 335e: srand
-# void _memset(uint8_t *ptr, size_t len, uint8_t value)
+# void memcpy(void *dst, void *src, size_t len)
+3370: memcpy
+# void * _memset(void *ptr, size_t len, uint8_t value)
 3394: _memset
-# void _memclr(uint8_t *ptr, size_t len)
-33a2: _memclr
-# void * memset(uint8_t *ptr, uint8_t value, size_t len)
+# void * _memzero(void *ptr, size_t len)
+33a2: _memzero
+# void * memset(void *ptr, uint8_t value, size_t len)
 33a6: memset
+# int memcmp(void *src1, void *src2, size_t len)
+33b8: memcmp
 33e8: sram_init
 # afio_set_pin_mux(int exti_num, int port)
 3464: afio_set_pin_mux
@@ -195,7 +204,11 @@
 6a40: spi_config
 # void spi_slave_select_output_enable(uint32_t *spi_base, int enable)
 6a88: spi_slave_select_output_enable
-6a9a: spi_flash_set_wel
+# int spi_flash_set_check_wel(int op)
+#   op == 0 : return 1 if WEL is set and 0 otherwise
+#   op == 1 : unset WEL (and return 0)
+#   op == 2 : set WEL (and return 1)
+6a9a: spi_flash_set_check_wel
 # void usb_entry(uint32_t addr) // TODO: understand struct at addr
 76c0: usb_entry
 # void usb_set_intr_flags(uint32_t value)
@@ -220,6 +233,8 @@
 7b08: usb_set_lpmode_pdwn
 # void usb_set_csr(void)
 7b18: usb_set_csr
+# void wdt_reload_timer(void)
+7cac: wdt_reload_timer
 # void spi_flash_write_sector(uint8_t *src, uint32_t sectorAddr, size_t len)
 7cdc: spi_flash_write_sector
 7fc0
@@ -233,7 +248,10 @@
 8bcc
 # uint32_t usb_compute_epcsr_addr(uint32_t ep_num)
 8f08: usb_compute_epcsr_addr
-8fe6: _memcpy
+# void copy_words(uint32_t *src, uint32_t *dst, size_t len)
+#   len must be a multiple of 4.
+#   In other words, src and dst must be aligned to 32-bits.
+8fe6: copy_words
 8ff4
 8ff6
 # void main(void)
@@ -363,10 +381,6 @@
 8f14: USB.USBEP0CSR_8f14
 8fbc: EXTI.EXTICR_8fbc
 8fc4: USB_BASE_8fc4
-97a8: usb_report1_desc
-97cc: usb_report2_desc
-9b16: usb_iManufacturer_desc
-9b56: usb_iProduct_desc
 
 * 3404
 * 3408
