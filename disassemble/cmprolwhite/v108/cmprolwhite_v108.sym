@@ -55,7 +55,8 @@
 #   returns -1 if dividing by 0
 32f8: unsigned_int_div
 # int32_t signed_int_div(int32_t dividend, int32_t divisor)
-#   returns 1 if dividing by 0
+#   returns 1 if dividing negative number by 0
+#   returns -1 if dividing positive number by 0
 3324: signed_int_div
 334c: rand
 335e: srand
