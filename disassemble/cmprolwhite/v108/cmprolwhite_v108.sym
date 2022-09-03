@@ -381,7 +381,47 @@
 8f14: USB.USBEP0CSR_8f14
 8fbc: EXTI.EXTICR_8fbc
 8fc4: USB_BASE_8fc4
+940d: gpio_map_1 .word 16
+945d: gpio_map_2 .word 32
+94e8: gpio_map_3 .word 16
 
 * 3404
 * 3408
 * 9e28
+
+[annote]
+
+940d: GPIO C, pin 4
+  +8: GPIO A, pin 5
+  +8: GPIO A, pin 6
+  +8: GPIO A, pin 7
+  +8: GPIO C, pin 8
+  +8: GPIO B, pin 10
+  +8: GPIO B, pin 11
+  +8: GPIO B, pin 12
+
+945d: GPIO D, pin 1
+  +8: GPIO C, pin 1
+  +8: GPIO D, pin 0
+  +8: GPIO B, pin 8
+  +8: GPIO A, pin 11
+  +8: GPIO A, pin 0
+  +8: GPIO A, pin 1
+  +8: GPIO A, pin 2
+  +8: GPIO A, pin 8
+  +8: GPIO A, pin 4
+  +8: GPIO C, pin 5
+  +8: GPIO C, pin 9
+  +8: GPIO C, pin 14
+  +8: GPIO A, pin 10
+  +8: GPIO B, pin 1
+  +8: GPIO A, pin 3
+
+94e8: GPIO C, pin 15
+  +8: GPIO C, pin 14
+  +8: GPIO B, pin 5
+  +8: GPIO B, pin 4
+  +8: GPIO B, pin 3
+  +8: GPIO B, pin 2
+  +8: GPIO D, pin 3
+  +8: GPIO D, pin 2
