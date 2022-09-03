@@ -385,6 +385,24 @@
 940d: gpio_map_1 .word 16
 945d: gpio_map_2 .word 32
 94e8: gpio_map_3 .word 16
+97a8: usb_report1_desc
+97cc: usb_report2_desc
+9854: usb_report0_desc
+9894: usb_config_desc
+  +9: usb_interface0_desc
+  +9: usb_hid0_desc
+  +9: usb_ep1_desc
+  +7: usb_interface1_desc
+  +9: usb_hid1_desc
+  +9: usb_ep3_desc
+  +7: usb_ep4_desc
+  +7: usb_interface2_desc
+  +9: usb_hid2_desc
+  +9: usb_ep2_desc
+98f0: usb_device_desc
+9910: usb_str0_desc
+9914: usb_str2_desc
+9954: usb_str1_desc
 
 * 3404
 * 3408
@@ -426,3 +444,235 @@
   +8: GPIO B, pin 2
   +8: GPIO D, pin 3
   +8: GPIO D, pin 2
+
+97a8: Usage Page (Vendor)
+  +3: Usage (Vendor)
+  +2: Collection (Application)
+  +2: - Usage (Vendor)
+  +2: - Logical Minimum (0x00)
+  +2: - Logical Maximum (0x00ff)
+  +3: - Report Size (0x08)
+  +2: - Report Count (0x40)
+  +2: - Input (Data,Var,Abs)
+  +2: - Usage (Vendor)
+  +2: - Logical Minimum (0x00)
+  +2: - Logical Maximum (0x00ff)
+  +3: - Report Size (0x08)
+  +2: - Report Count (0x40)
+  +2: - Output (Data,Var,Abs)
+  +2: - End Collection
+
+97cc: Usage Page (Generic Desktop Controls)
+  +2: Usage (System Control)
+  +2: Collection (Application)
+  +2: - Report ID (0x01)
+  +2: - Usage Minimum (0x81)
+  +2: - Usage Maximum (0x83)
+  +2: - Logical Minimum (0x00)
+  +2: - Logical Maximum (0x01)
+  +2: - Report Count (0x03)
+  +2: - Report Size (0x01)
+  +2: - Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+  +2: - Report Count (0x01)
+  +2: - Report Size (0x05)
+  +2: - Input (Const,Array,Abs)
+  +2: - End Collection
+  +1: Usage Page (Consumer)
+  +2: Usage (Consumer Control)
+  +2: Collection
+  +2: - Report ID (0x02)
+  +2: - Logicial Minimum (0x00)
+  +2: - Logical Maximum (0x01)
+  +2: - Report Count (0x12)
+  +2: - Report Size (0x01)
+  +2: - Usage (Instance 33537)
+  +3: - Usage (Instance 35329)
+  +3: - Usage (Instance 37377)
+  +3: - Usage (Instance 37889)
+  +3: - Usage (Play/Pause)
+  +2: - Usage (Stop)
+  +2: - Usage (Scan Previous Track)
+  +2: - Usage (Scan Next Track)
+  +2: - Usage (Mute)
+  +2: - Usage (Volume Decrement)
+  +2: - Usage (Volume Increment)
+  +2: - Usage (Instance 8450)
+  +3: - Usage (Instance 8962)
+  +3: - Usage (Instance 9218)
+  +3: - Usage (Instance 9474)
+  +3: - Usage (Instance 9730)
+  +3: - Usage (Instance 9986)
+  +3: - Usage (Instance 10754)
+  +3: - Input (Data,Var,Abs)
+  +2: - Report Count (0x01)
+  +2: - Report Size (0x0e)
+  +2: - Input (Const,Array,Abs)
+  +2: - End Collection
+  +1: Usage Page (Generic Desktop Controls)
+  +2: Usage (Keyboard)
+  +2: Collection (Application)
+  +2: - Report ID (0x04)
+  +2: - Usage Page (Keyboard/Keypad)
+  +2: - Report Count (0x01)
+  +2: - Report Size (0x08)
+  +2: - Input (Const,Var,Abs)
+  +2: - Report Count (0xe8)
+  +2: - Report Size (0x01)
+  +2: - Logical Minimum (0x00)
+  +2: - Logical Maximum (0x01)
+  +2: - Usage Page (Keyboard/Keypad)
+  +2: - Usage Minimum (0x00)
+  +2: - Usage Maximum (0xe7)
+  +2: - Input (Data,Array,Abs)
+  +2: - End Collection
+
+9854: Usage Page (Generic Desktop Controls)
+  +2: Usage (Keyboard)
+  +2: Collection (Application)
+  +2: - Usage Page (Keyboard/Keypad)
+  +2: - Usage Minimum (0xe0)
+  +2: - Usage Maximum (0xe7)
+  +2: - Logical Minimum (0x00)
+  +2: - Logical Maximum (0x01)
+  +2: - Report Size (0x01)
+  +2: - Report Count (0x08)
+  +2: - Input (Data,Var,Abs)
+  +2: - Report Count (0x01)
+  +2: - Report Size (0x08)
+  +2: - Input (Const,Var,Abs)
+  +2: - Report Count (0x03)
+  +2: - Report Size (0x01)
+  +2: - Usage Page (LED)
+  +2: - Usage Minimum (0x01)
+  +2: - Usage Maximum (0x03)
+  +2: - Output (Data,Var,Abs)
+  +2: - Report Count (0x01)
+  +2: - Report Size (0x05)
+  +2: - Output (Const,Var,Abs)
+  +2: - Report Count (0x06)
+  +2: - Report Size (0x08)
+  +2: - Logical Minimum (0x00)
+  +3: - Logical Maximum (0x00a4)
+  +2: - Usage Page (Keyboard/Keypad)
+  +2: - Usage Minimum (0x00)
+  +2: - Usage Maximum (0xa4)
+  +2: - Input (Data,Array,Abs)
+  +2: - End Collection
+
+9894: bLength (0x09)
+  +1: bDescriptorType (CONFIGURATION 0x02)
+  +2: wTotalLength (0x005b)
+  +1: bNumInterfaces (0x03)
+  +1: bConfigurationValue (0x01)
+  +1: iConfiguration (0x00)
+  +1: bmAttributes (NOT SELF-POWERED REMOTE-WAKEUP 0xa0)
+  +1: bMaxPower (50mA 0x32)
+
+989d: bLength (0x09)
+  +1: bDescriptorType (INTERFACE 0x04)
+  +1: bInterfaceNumber (0x00)
+  +1: bAlternateSetting (0x00)
+  +1: bNumEndpoints (0x01)
+  +1: bInterfaceClass (HID 0x03)
+  +1: bInterfaceSubClass (Boot Interface 0x01)
+  +1: bInterfaceProtocol (Keyboard 0x01)
+  +1: iInterface (0x00)
+
+98a6: bLength (0x09)
+  +1: bDescriptorType (HID 0x21)
+  +1: bcdHID (0x0111)
+  +2: bCountryCode (Not Supported 0x00)
+  +1: bNumDescriptors (0x01)
+  +1: bDescriptorType (HID Report 0x22)
+  +1: wDescriptorLength (0x0040)
+
+98af: bLength (0x07)
+  +1: bDescriptorType (ENDPOINT 0x05)
+  +1: bEndpointAddress (Direction:IN,Endpoint:1 0x81)
+  +1: bmAttributes (TransferType:Interrupt-Transfer 0x03)
+  +1: wMaxPacketSize (0x0008)
+  +2: bInterval (0x01)
+
+98b6: bLength (0x09)
+  +1: bDescriptorType (INTERFACE 0x04)
+  +1: bInterfaceNumber (0x01)
+  +1: bAlternateSetting (0x00)
+  +1: bNumEndpoints (0x02)
+  +1: bInterfaceClass (HID 0x03)
+  +1: bInterfaceSubClass (No Subclass 0x00)
+  +1: bInterfaceProtocol (0x00)
+  +1: iInterface (0x00)
+
+98bf: bLength (0x09)
+  +1: bDescriptorType (HID 0x21)
+  +1: bcdHID (0x0111)
+  +2: bCountryCode (Not Supported 0x00)
+  +1: bNumDescriptors (0x01)
+  +1: bDescriptorType (HID Report 0x22)
+  +1: wDescriptorLength (0x0022)
+
+98c8: bLength (0x07)
+  +1: bDescriptorType (ENDPOINT 0x05)
+  +1: bEndpointAddress (Direction:IN,Endpoint:3 0x83)
+  +1: bmAttributes (0x03)
+  +1: wMaxPacketSize (0x0040)
+  +2: bInterval (0x01)
+
+98cf: bLength (0x07)
+  +1: bDescriptorType (ENDPOINT 0x05)
+  +1: bEndpointAddress (Direction:OUT,Endpoint:4 0x04)
+  +1: bmAttributes 0x03
+  +1: wMaxPacketSize (0x0040)
+  +2: bInterval (0x01)
+
+98d6: bLength (0x09)
+  +1: bDescriptorType (INTERFACE 0x04)
+  +1: bInterfaceNumber (0x02)
+  +1: bAlternateSetting (0x00)
+  +1: bNumEndpoints (0x01)
+  +1: bInterfaceClass (HID 0x03)
+  +1: bInterfaceSubClass (No Subclass 0x00)
+  +1: bInterfaceProtocol (0x00)
+  +1: iInterface (0x00)
+
+98df: bLength (0x09)
+  +1: bDescriptorType (HID 0x21)
+  +1: bcdHID (0x0111)
+  +2: bCountryCode (Not Supported 0x00)
+  +1: bNumDescriptors (0x01)
+  +1: bDescriptorType (HID Report 0x22)
+  +1: wDescriptorLength (0x0086)
+
+98e8: bLength (0x07)
+  +1: bDescriptorType (ENDPOINT 0x05)
+  +1: bEndpointAddress (Direction:IN,Endpoint:2 0x82)
+  +1: bmAttributes (0x03)
+  +1: wMaxPacketSize (0x0040)
+  +2: bInterval (0x01)
+
+98f0: bLength (0x12)
+  +1: bDescriptorType (DEVICE 0x01)
+  +1: bcdUSB (0x0110)
+  +2: bDeviceClass (Device 0x00)
+  +1: bDeviceSubClass (0x00)
+  +1: bDeviceProtocol (0x00)
+  +1: bMaxPacketSize0 (0x40)
+  +2: idVendor (0x2516)
+  +2: idProduct (0x0047)
+  +2: bcdDevice (0x1108)
+  +1: iManufacturer (0x01)
+  +1: iProduct (0x02)
+  +1: iSerialNumber (0x00)
+  +1: bNumConfigurations (0x01)
+
+9910: bLength (0x04)
+  +1: bDescriptorType (STRING 0x03)
+  +1: wLANGID (English (United States) 0x0409)
+
+9914: bLength (0x3c)
+  +1: bDescriptorType (STRING 0x03)
+  +1: bString (Cooler Master Technology Inc.)
+
+9954: bLength (0x2e)
+  +1: bDescriptionType (STRING 0x03)
+  +1: bString (MasterKeys Pro L White)
