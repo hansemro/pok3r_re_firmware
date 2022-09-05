@@ -73,8 +73,10 @@
 33e8: sram_init
 # afio_set_pin_mux(int exti_num, int port)
 3464: afio_set_pin_mux
-# void bftm_reset_compare_match_intr_flag(uint32_t *bftm_base)
+# void bftm_reset_compare_match_intr_flag(uint32_t bftm_base)
 35c0: bftm_reset_compare_match_intr_flag
+# void bftm_set_compare_value(uint32_t bftm_base, uint32_t value)
+35f4: bftm_set_compare_value
 # void afio_set_pin_config(int port_x, int pin_n, int function)
 35fc: afio_set_pin_config
 # void sleep(int n)
@@ -96,6 +98,10 @@
 3bb4: spi_flash_read_wip
 # void spi_flash_cmd_sector_erase(uint32_t sectorAddr)
 3bc0: spi_flash_cmd_sector_erase
+# void gpio_set_parr(uint32_t gpio_base, uint32_t value)
+3bf0: gpio_set_parr
+# void gpio_set_pasrr(uint32_t gpio_base, uint32_t value)
+3bf4: gpio_set_pasrr
 3bf8: unused_3bf8
 # int spi_gpio_init(void)
 3c04: spi_gpio_init
@@ -125,17 +131,17 @@
 3eec: spi_flash_cmd_write_enable
 # int spi_flash_set_status_register(uint32_t value)
 3f0c: spi_flash_set_status_register
-# void gpio_set_pin_direction(uint32_t *gpio_base, uint32_t pin, int out)
+# void gpio_set_pin_direction(uint32_t gpio_base, uint32_t pin, int out)
 3f32: gpio_set_pin_direction
-# void gpio_set_pin_drive_current(uint32_t *gpio_base, uint32_t pin, int eight_mA)
+# void gpio_set_pin_drive_current(uint32_t gpio_base, uint32_t pin, int eight_mA)
 3f42: gpio_set_pin_drive_current
-# void gpio_set_pin_input_enable(uint32_t *gpio_base, uint32_t pin, int enable)
+# void gpio_set_pin_input_enable(uint32_t gpio_base, uint32_t pin, int enable)
 3f72: gpio_set_pin_input_enable
-# void gpio_set_pin_open_drain(uint32_t *gpio_base, uint32_t pin, int open_drain)
+# void gpio_set_pin_open_drain(uint32_t gpio_base, uint32_t pin, int open_drain)
 3f82: gpio_set_pin_open_drain
-# void gpio_set_pin_pull_up_down(uint32_t *gpio_base, uint32_t pin, int pull_down)
+# void gpio_set_pin_pull_up_down(uint32_t gpio_base, uint32_t pin, int pull_down)
 3f92: gpio_set_pin_pull_up_down
-# void gpio_set_reset_pin(uint32_t *gpio_base, uint32_t value, int SRR)
+# void gpio_set_reset_pin(uint32_t gpio_base, uint32_t value, int SRR)
 #   if SRR is != 0, then write to set/reset register, otherwise write to reset register
 3fbc: gpio_set_reset_pin
 529c
@@ -186,9 +192,9 @@
 #   if set != 0, then set registers from given arg1, arg2, and arg3;
 #   otherwise clear them
 63a8: reset_peripherals
-# void spi_enable(uint32_t *spi_base, int enable)
+# void spi_enable(uint32_t spi_base, int enable)
 6a2c: spi_enable
-# void spi_config(uint32_t *spi_base, struct spi_config_t *config)
+# void spi_config(uint32_t spi_base, struct spi_config_t *config)
 #   struct spi_config_t {
 #       uint32_t MODE_SEL; // either 0 for slave or 0x4000 for master
 #       uint32_t FIFO_EN; // either 0x400 to enable fifo and 0 to disable
@@ -203,7 +209,7 @@
 #       uint32_t PRESCALER; // PRESCALER = f_pclk/(2*f_sck)
 #   };
 6a40: spi_config
-# void spi_slave_select_output_enable(uint32_t *spi_base, int enable)
+# void spi_slave_select_output_enable(uint32_t spi_base, int enable)
 6a88: spi_slave_select_output_enable
 # int spi_flash_set_check_wel(int op)
 #   op == 0 : return 1 if WEL is set and 0 otherwise
@@ -216,7 +222,7 @@
 7850: usb_set_intr_flags
 # void usb_reset(void)
 7900: usb_reset
-# void usb_ep_set_cfgr_ier(uint32_t ep_num, struct *usbep_config_t)
+# void usb_ep_set_cfgr_ier(uint32_t ep_num, struct usbep_config_t *config)
 #   struct usbep_config_t {
 #       uint32_t unk1;
 #       uint32_t EPCFGR;
@@ -224,7 +230,7 @@
 #       ...  // unsure of size
 #   };
 79be: usb_ep_set_cfgr_ier
-# void usb_ep_toggle_onak_odata_idata(uint32_t *epcsr_base)
+# void usb_ep_toggle_onak_odata_idata(uint32_t epcsr_base)
 7a4a: usb_ep_toggle_onak_odata_idata
 # void usb_enable_ier(int enable)
 7ac0: usb_enable_ier
@@ -269,6 +275,7 @@
 3524: BFTM0_BASE_3524
 35b0: BFTM1_BASE_35b0
 35b8: GPIOA_BASE_35b8
+* 35bc
 3620: AFIO.GPACFGLR_3620
 36dc: CKCU_RSTCU_BASE_36dc
 36f0: CKCU.HSICR_36f0
@@ -321,15 +328,19 @@
 636c: NVIC.VECTKEY_SYSRESETREQ_636c
 6370: NVIC.CPUID_6370
 63cc: RSTCU.GRSR_63cc
+* 6598
+* 6624
 67a0: BFTM1_BASE_67a0
 67a4: GPIOC_BASE_67a4
 67a8: GPIOA_BASE_67a8
 67ac: GPIOB_BASE_67ac
+* 67b0
 682c: BFTM1_BASE_682c
 6830: NVIC.ICER_6830
 6834: GPTM1_BASE_6834
 6838: GPIOC_BASE_6838
 6840: GPIOA_BASE_6840
+* 6908
 690c: GPIOC_BASE_690c
 6910: GPIOA_BASE_6910
 6920: GPTM1_BASE_6920
@@ -349,6 +360,7 @@
 71c8: SRAM.SPI_DATA_0_164_71c8
 748c: SRAM.SPI_DATA_0_164_748c
 7858: USB_BASE_7858
+* 78bc
 78c4: NVIC.ISER_78c4
 78e4: USB_BASE_78e4
 78fc: USB_BASE_78fc
