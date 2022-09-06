@@ -47,6 +47,18 @@
 
 d6: generic_intr
 
+# void entry(void)
+e4: entry
+# void start_main(void)
+ec: start_main
+
+# void wdt_init(void)
+1948: wdt_init
+# void wdt_reload_timer(void)
+19a4: wdt_reload_timer
+# void main(void)
+230c: main
+
 [data]
 
 # Force data on "code" that isn't code
@@ -110,6 +122,7 @@ fb4: GPIOA_BASE_fb4
 1220: PWRCU.BAKSR_1220
 1224: RTC_PWRCU_BASE_1224
 122c: WDT_BASE_122c
+1230: FMC.CFCR_1230
 12f8: MCTM_BASE_12f8
 1338: MCTM_BASE_1338
 1520: USB_BASE_1520
