@@ -70,6 +70,8 @@
 33a6: memset
 # int memcmp(void *src1, void *src2, size_t len)
 33b8: memcmp
+# uint32_t get_word(uint32_t addr)
+33d2: get_word
 33e8: sram_init
 # afio_set_pin_mux(int exti_num, int port)
 3464: afio_set_pin_mux
@@ -240,6 +242,8 @@
 7b08: usb_set_lpmode_pdwn
 # void usb_set_csr(void)
 7b18: usb_set_csr
+# void wdt_init(void)
+7c80: wdt_init
 # void wdt_reload_timer(void)
 7cac: wdt_reload_timer
 # void spi_flash_write_sector(uint8_t *src, uint32_t sectorAddr, size_t len)
@@ -377,8 +381,8 @@
 7c7c: USB_BASE_7c7c
 7c98: RSTCU.GRSR_7c98
 7ca0: WDT_BASE_7ca0
-7ca8: PxLOCKR_LOCK_7ca8
-7cb4: PxLOCKR_LOCK_7cb4
+7ca8: WDT.RELOAD_KEY_7ca8
+7cb4: WDT.RELOAD_KEY_7cb4
 7cb8: WDT_BASE_7cb8
 7cd4: SRAM.SPI_DATA_0_164_7cd4
 8828: GPIOC_BASE_8828
