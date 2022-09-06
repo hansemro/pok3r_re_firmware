@@ -69,6 +69,7 @@ echo
 reas md600/v148/md600_v148_ref.s                        vma34   md600/v148/md600_v148.bin
 echo
 
+reas cmprolwhite/bootrom/cmprolwhite_bootrom_ref.s      vma1f   cmprolwhite/bootrom/cmprolwhite_bootrom.bin
 reas cmprolwhite/builtin/cmprolwhite_builtin_ref.s      vma0    cmprolwhite/builtin/cmprolwhite_builtin.bin
 reas cmprolwhite/v108/cmprolwhite_v108_ref.s            vma32   cmprolwhite/v108/cmprolwhite_v108.bin
 echo

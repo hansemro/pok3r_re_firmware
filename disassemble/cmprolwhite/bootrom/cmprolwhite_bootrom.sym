@@ -1,0 +1,61 @@
+# Cooler Master MasterKeys Pro L White Bootrom/Bootloader @ 0x1F000000
+
+[data]
+
+1f000000 : vectors .word
+
+[code]
+
+*       +4 : reset
+*       +4 : nmi
+*       +4 : hard_fault
+* 1f00003c : systick_intr
+* 1f0000a0 : usart1_intr
+* 1f0000b4 : usb_intr
+
+1f0002f8
+1f00030c
+1f000322
+1f000344
+1f000354
+1f000444
+
+[data]
+
+1f000098: CRC_BASE_1f000098
+1f000298: OB.CK_1f000298
+1f00029c: RSTCU.GRSR_1f00029c
+1f0002a0: CKCU.LPCR_1f0002a0
+1f0002a8: FMC.MDID_1f0002a8
+1f0002b8: NVIC_BASE_1f0002b8
+1f0002bc: CKCU_RSTCU_BASE_1f0002bc
+1f0002c0: USB_BASE_1f0002c0
+1f0002d4: USART1_BASE_1f0002d4
+1f0002d8: NVIC.CPUID_1f0002d8
+1f0002dc: NVIC.NVIC_ISER_1f0002dc
+1f0002e0: AFIO_BASE_1f0002e0
+1f0004f0: USB_BASE_1f0004f0
+1f0004f8: CKCU.LPCR_1f0004f8
+1f000564: USART1_BASE_1f000564
+1f000774: USB_BASE_1f000774
+1f000798: usb_device_desc_1f000798
+1f0007ec: SPI1_BASE_1f0007ec
+
+1f00080c: usb_device_desc
+
+[annote]
+
+1f00080c: bLength (0x12)
+      +1: bDescriptorType (DEVICE 0x01)
+      +1: bcdUSB (0x0110)
+      +2: bDeviceClass (Device 0x00)
+      +1: bDeviceSubClass (0x00)
+      +1: bDeviceProtocol (0x00)
+      +1: bMaxPacketSize (0x40)
+      +1: idVendor (0x04d9)
+      +2: idProduct (0x8010)
+      +2: bcdDevice (0x0100)
+      +2: iManufacturer (0x00)
+      +1: iProduct (0x00)
+      +1: iSerialNumber (0x00)
+      +1: bNumConfigurations (0x01)

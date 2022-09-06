@@ -44,6 +44,7 @@ reas md200/v112                 md200_v112.bin              md200_v112_ref.s    
 
 reas md600/v148                 md600_v148.bin              md600_v148_ref.s            0x3400  md600_v148.sym
 
+reas cmprolwhite/bootrom        cmprolwhite_bootrom.bin     cmprolwhite_bootrom_ref.s   0x1F000000  cmprolwhite_bootrom.sym
 reas cmprolwhite/builtin        cmprolwhite_builtin.bin     cmprolwhite_builtin_ref.s   0x0     cmprolwhite_builtin.sym
 reas cmprolwhite/v108           cmprolwhite_v108.bin        cmprolwhite_v108_ref.s      0x3200  cmprolwhite_v108.sym
 
