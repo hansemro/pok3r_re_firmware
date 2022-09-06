@@ -196,20 +196,21 @@
 63a8: reset_peripherals
 # void spi_enable(uint32_t spi_base, int enable)
 6a2c: spi_enable
-# void spi_config(uint32_t spi_base, struct spi_config_t *config)
-#   struct spi_config_t {
-#       uint32_t MODE_SEL; // either 0 for slave or 0x4000 for master
-#       uint32_t FIFO_EN; // either 0x400 to enable fifo and 0 to disable
-#       uint32_t SPICR1_unk1;
-#       uint32_t DFL; // 4-bit value
-#       uint32_t SPICR1_unk2;
-#       uint32_t CPOL; // either 0 or 0x400
-#       uint32_t CPHA; // either 0 or 1
-#       uint32_t SPICR1_unk3;
-#       uint32_t RX_FIFO_TRIGGER_LEVEL_SEL; // 4-bit value
-#       uint32_t TX_FIFO_TRIGGER_LEVEL_SEL; // 4-bit value
-#       uint32_t PRESCALER; // PRESCALER = f_pclk/(2*f_sck)
-#   };
+# void spi_config(uint32_t spi_base, SPI_InitTypeDef *config)
+#   from HT32_STD_5xxxx_FWLib_V1.1.1_5938.zip/library/HT32F5xxxx_Driver/inc/ht32f5xxxx_spi.h:
+#   typedef struct {
+#       uint32_t SPI_Mode; // either 0 for slave or 0x4000 for master
+#       uint32_t SPI_FIFO; // either 0x400 to enable fifo and 0 to disable
+#       uint32_t SPI_DataLength; // 4-bit value
+#       uint32_t SPI_SELMode; // either 0 for SW or 0x2000 for HW
+#       uint32_t SPI_SELPolarity; // either 0 for low and 0x800 for high
+#       uint32_t SPI_CPOL; // either 0 for low or 0x400 for high
+#       uint32_t SPI_CPHA; // either 0 for first or 1 for second
+#       uint32_t SPI_FirstBit; // either 0 for MSB or 0x1000 for LSB
+#       uint32_t SPI_RxFIFOTriggerLevel; // 4-bit value
+#       uint32_t SPI_TxFIFOTriggerLevel; // 4-bit value
+#       uint32_t SPI_ClockPrescaler; // PRESCALER = f_pclk/(2*f_sck)
+#   } SPI_InitTypeDef;
 6a40: spi_config
 # void spi_slave_select_output_enable(uint32_t spi_base, int enable)
 6a88: spi_slave_select_output_enable
@@ -218,6 +219,15 @@
 #   op == 1 : unset WEL (and return 0)
 #   op == 2 : set WEL (and return 1)
 6a9a: spi_flash_set_check_wel
+# void tm_config(uint32_t tm_base, struct tm_config_t *config)
+#   struct tm_config_t {
+#       uint16_t timer_counter;
+#       uint16_t timer_prescaler;
+#       uint8_t mctm_timer_repetition;
+#       uint32_t timer_counter_configuration;
+#       uint16_t timer_event_generator;
+#   };
+6c3c: tm_config
 # void usb_entry(uint32_t addr) // TODO: understand struct at addr
 76c0: usb_entry
 # void usb_set_intr_flags(uint32_t value)
