@@ -71,7 +71,7 @@ echo
 
 reas cmprolwhite/bootrom/cmprolwhite_bootrom_ref.s      vma1f   cmprolwhite/bootrom/cmprolwhite_bootrom.bin
 reas cmprolwhite/builtin/cmprolwhite_builtin_ref.s      vma0    cmprolwhite/builtin/cmprolwhite_builtin.bin
-reas cmprolwhite/v108/cmprolwhite_v108_ref.s            vma32   cmprolwhite/v108/cmprolwhite_v108.bin
+reas cmprolwhite/v180/cmprolwhite_v180_ref.s            vma32   cmprolwhite/v180/cmprolwhite_v180.bin
 echo
 
 popd > /dev/null
