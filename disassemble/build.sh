@@ -69,6 +69,7 @@ echo
 reas md600/v148/md600_v148_ref.s                        vma34   md600/v148/md600_v148.bin
 echo
 
+reas cmprosrgb/builtin/cmprosrgb_builtin_ref.s          vma0    cmprosrgb/builtin/cmprosrgb_builtin.bin
 reas cmprosrgb/v122/cmprosrgb_v122_ref.s                vma34   cmprosrgb/v122/cmprosrgb_v122.bin
 reas cmprosrgb/v121/cmprosrgb_v121_ref.s                vma34   cmprosrgb/v121/cmprosrgb_v121.bin
 echo

@@ -1,0 +1,251 @@
+# Cooler Master MasterKeys Pro S RGB Bootloader @ 0x0
+
+[data]
+
+0 : vectors .word
+
+[code]
+
+*   +4: reset
+*   +4: nmi
+*   +4
+*   +4
+*   +4
+*   +4
+
+124: generic_intr
+
+20: entry
+28: start_main
+34: load_jump_fw
+76
+e0
+e4
+134
+164
+2de
+2f2
+31a
+34c
+3f0
+4b0
+5f8
+68c
+8e4
+aa0
+b18
+d38
+e3c
+1490
+15a4
+1608
+164c
+1658
+1664
+168c
+173c
+176c
+185c
+186c
+18da
+1ed4
+1f4c
+1f6c
+1fbc
+1fc2
+2090
+220c
+240c
+241a
+241c
+2488: main
+
+[data]
+
+# Force data on "code" that isn't code
+
+a4!
+a8!
+
+d4: AFIO_BASE_d4
+160: BFTM0_BASE_160
+1c0: BFTM1_BASE_1c0
+1c4: GPIOA_BASE_1c4
+214: AFIO.GPACFGR0_214
+2c4: GPIOA_BASE_2c4
+2c8: CKCU_RSTCU_BASE_2c8
+370: CKCU_RSTCU_BASE_370
+388: CKCU_RSTCU_BASE_388
+3a0: CKCU_RSTCU_BASE_3a0
+3b4: CKCU_RSTCU_BASE_3b4
+3c8: CKCU_RSTCU_BASE_3c8
+3dc: CKCU_RSTCU_BASE_3dc
+3ec: FMC_BASE_3ec
+3f8: FMC_BASE_3f8
+4ac: FMC_BASE_4ac
+7c4: BFTM0_BASE_7c4
+7c8: NVIC.ICTR_7c8
+7e4: BFTM0_BASE_7e4
+874: NVIC.AIRCR_874
+98c: GPTM1_BASE_98c
+9d4: GPIOC_BASE_9d4
+9f4: GPIOC_BASE_9f4
+a38: NVIC.SCR_a38
+a84: NVIC.SCR_a84
+a9c: NVIC.SCR_a9c
+b14: FMC_BASE_b14
+b50: FMC_BASE_b50
+d2c: USB_BASE_d2c
+d30: FMC_BASE_d30
+dd8: FMC_BASE_dd8
+de0: GPIOA_BASE_de0
+de4: NVIC.AIRCR_de4
+e38: CKCU_RSTCU_BASE_e38
+e68: CKCU_RSTCU_BASE_e68
+e90: CKCU_RSTCU_BASE_e90
+1098: GPIOC_BASE_1098
+109c: GPIOA_BASE_109c
+11b0: BFTM1_BASE_11b0
+11b4: GPIOC_BASE_11b4
+11b8: GPIOA_BASE_11b8
+11bc: GPIOB_BASE_11bc
+12cc: BFTM1_BASE_12cc
+12d0: NVIC.ICTR_12d0
+12d4: GPIOC_BASE_12d4
+12d8: GPIOA_BASE_12d8
+12dc: GPTM1_BASE_12dc
+1334: GPIOA_BASE_1334
+1338: GPIOC_BASE_1338
+13cc: GPIOC_BASE_13cc
+13d0: GPIOA_BASE_13d0
+142c: GPIOC_BASE_142c
+1430: GPIOA_BASE_1430
+1534: EXTI_BASE_1534
+1538: USB_BASE_1538
+1598: CKCU_RSTCU_BASE_1598
+15a0: FMC_BASE_15a0
+1b24: USB_BASE_1b24
+1b80: NVIC.ICTR_1b80
+1b9c: USB_BASE_1b9c
+1bb8: USB_BASE_1bb8
+1c08: EP_SRAM_1c08
+1c2c: EP_SRAM_1c2c
+1d8c: USB_BASE_1d8c
+1dbc: USB_BASE_1dbc
+1dd0: USB_BASE_1dd0
+1de0: USB_BASE_1de0
+1e58: USB_BASE_1e58
+1eac: EP_SRAM_1eac
+1ebc: USB_BASE_1ebc
+1ed0: USB_BASE_1ed0
+1f30: CKCU_RSTCU_BASE_1f30
+1f34: WDT_BASE_1f34
+1f48: WDT_BASE_1f48
+208c: USB_BASE_208c
+21a4: GPTM1_BASE_21a4
+21d4: GPIOA_BASE_21d4
+2204: GPIOC_BASE_2204
+2208: GPIOA_BASE_2208
+2408: USB.USBEP0CSR_2408
+2544: FMC_BASE_2544
+27f8: xor_key
+2844: usb_report0_desc
+2884: usb_report1_desc
+28a8: usb_report2_desc
+
+[annote]
+
+2844: Usage Page (Generic Desktop Controls)
+  +2: Usage (Keyboard)
+  +2: Collection (Application)
+  +2: - Usage Page (Keyboard/Keypad)
+  +2: - Usage Minimum (0xe0)
+  +2: - Usage Maximum (0xe7)
+  +2: - Logical Minimum (0)
+  +2: - Logical Maximum (1)
+  +2: - Report Size (1)
+  +2: - Report Count (8)
+  +2: - Input (Data,Var,Abs)
+  +2: - Report Count (1)
+  +2: - Report Size (8)
+  +2: - Input (Const,Var,Abs)
+  +2: - Report Count (3)
+  +2: - Report Size (1)
+  +2: - Usage Page (LED)
+  +2: - Usage Minimum (0x01)
+  +2: - Usage Maximum (0x03)
+  +2: - Output (Data,Var,Abs)
+  +2: - Report Count (1)
+  +2: - Report Size (5)
+  +2: - Output (Const,Var,Abs)
+  +2: - Report Count (6)
+  +2: - Report Size (8)
+  +2: - Logical Minimum (0)
+  +2: - Logical Maximum (164)
+  +3: - Usage Page (Keyboard/Keypad)
+  +2: - Usage Minimum (0x00)
+  +2: - Usage Maximum (0xa4)
+  +2: - Input (Data,Array,Abs)
+  +2: - End Collection
+2884: Usage Page (Vendor)
+  +3: Usage (Vendor)
+  +2: Collection (Application)
+  +2: - Usage (Vendor)
+  +2: - Logical Minimum (0)
+  +2: - Logical Maximum (255)
+  +3: - Report Size (8)
+  +2: - Report Count (64)
+  +2: - Input (Data,Var,Abs)
+  +2: - Usage (Vendor)
+  +2: - Logical Minimum (0)
+  +2: - Logical Maximum (255)
+  +3: - Report Size (8)
+  +2: - Report Count (64)
+  +2: - Output (Data,Var,Abs)
+  +2: - End Collection
+28a8: Usage Page (Generic Desktop Controls)
+  +2: Usage (System Control)
+  +2: Collection (Application)
+  +2: - Report ID (0x01)
+  +2: - Usage Minimum (0x81)
+  +2: - Usage Maximum (0x83)
+  +2: - Logical Minimum (0)
+  +2: - Logical Maximum (1)
+  +2: - Report Count (3)
+  +2: - Report Size (1)
+  +2: - Input (Data,Var,Abs)
+  +2: - Report Count (1)
+  +2: - Report Size (5)
+  +2: - Input (Const,Array,Abs)
+  +2: - End Collection
+  +1: Usage Page (Consumer)
+  +2: Usage (Consumer Control)
+  +2: Collection (Application)
+  +2: - Report ID (0x02)
+  +2: - Logical Minimum (0)
+  +2: - Logical Maximum (1)
+  +2: - Report Count (18)
+  +2: - Report Size (1)
+  +2: - Usage (Instance 33537)
+  +3: - Usage (Instance 35329)
+  +3: - Usage (Instance 37377)
+  +3: - Usage (Instance 37889)
+  +3: - Usage (Play/Pause)
+  +2: - Usage (Stop)
+  +2: - Usage (Scan Previous Track)
+  +2: - Usage (Scan Next Track)
+  +2: - Usage (Mute)
+  +2: - Usage (Volume Decrement)
+  +2: - Usage (Volume Increment)
+  +2: - Usage (Instance 8450)
+  +3: - Usage (Instance 8962)
+  +3: - Usage (Instance 9218)
+  +3: - Usage (Instance 9474)
+  +3: - Usage (Instance 9730)
+  +3: - Usage (Instance 9986)
+  +3: - Usage (Instance 10754)
+  +3: - Input (Data,Var,Abs)
+  +2: - Report Count (1)
+  +2: - Report Size (14)
+  +2: - Input (Const,Array,Abs)
+  +2: - End Collection
