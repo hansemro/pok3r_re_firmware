@@ -1,7 +1,7 @@
 Cooler Master MasterKeys Pro S RGB Firmware v122 Exploit Patch:
 
 This patch will allow dumping of 60 (0x3c) bytes of data at any arbitrary
-address using [0x12, 0xff, 0x00, 0x00, <read_addr>] USB command.
+address using [0x12, 0xff, 0x00, 0x00, <32_bit_le_read_addr>] USB command.
 
 FW offset 0x3400
 
