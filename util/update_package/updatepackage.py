@@ -192,6 +192,7 @@ class UpdateFirmware:
 
 class UpdatePackage:
     SIG_MAAJONSN = ".maajonsn"
+    SIG_MAAV101 = ".maaV101"
     SIG_MAAV102 = ".maaV102"
     SIG_MAAV105 = ".maaV105"
     TYPE_KBP = "KBP"
@@ -239,6 +240,8 @@ class UpdatePackage:
 
         if self.type == self.SIG_MAAJONSN:
             self.decode_maajonsn()
+        elif self.type == self.SIG_MAAV101:
+            self.decode_maajonsn(maaV101=True)
         elif self.type == self.SIG_MAAV102:
             self.decode_maav102()
         elif self.type == self.SIG_MAAV105:
@@ -248,20 +251,29 @@ class UpdatePackage:
         else:
             raise Exception("Unknown Package Signature")
 
-    def decode_maajonsn(self):
+    def decode_maajonsn(self, maaV101=False):
         self.firmware = []
-        sig_expect = self.SIG_MAAJONSN
         self.get_size()
 
-        strings_len = 0x4b8
+        if maaV101:
+            strings_len = 0x4bc
+            sig_expect = self.SIG_MAAV101
+        else:
+            strings_len = 0x4b8
+            sig_expect = self.SIG_MAAJONSN
         strings_start = self.exelen - strings_len
         offset_company = 0x10
         offset_product = offset_company + 0x208
         offset_sec_len = 0x420
         offset_layout = offset_sec_len + 4
-        offset_version = offset_layout + 60
-        sig_len = 10
-        offset_sig = strings_len - sig_len
+        if maaV101:
+            sig_len = 8
+            offset_version = offset_layout + 61
+            offset_sig = 0x4af
+        else:
+            sig_len = 10
+            offset_version = offset_layout + 60
+            offset_sig = strings_len - sig_len
 
         with open(self.exe, "rb") as f:
             f.seek(strings_start)
