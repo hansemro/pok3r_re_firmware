@@ -1,0 +1,155 @@
+# Cooler Master MasterKeys Pro S RGB Bootrom/Bootloader @ 0x1f000000
+
+[data]
+
+1f000000: vectors .word
+
+[code]
+
+*       +4: reset
+*       +4: nmi
+*       +4
+* 1f00003c: systick_intr
+* 1f0000fc: usart0_intr
+* 1f000114: usb_intr
+
+1f000104: generic_intr
+
+# void IAP_GoCMD(uint32_t addr)
+#   sp    : *addr
+#   reset : *(addr + 4)
+1f000018: IAP_GoCMD
+# uint32_t crc_compute_checksum(uint32_t CRC_seed, uint8_t *data, size_t len)
+1f000020: compute_crc
+# void copy_words(uint32_t * src, uint32_t * dst, int len)
+1f000040: copy_words
+# void fmc_operation(uint32_t FMC_op, uint32_t addr, uint32_t word_data)
+#   FMC_op: 0 (idle), 4 (Word program), 8 (page erase), 10 (mass erase)
+1f000050: fmc_operation
+# uint32_t usart0_write_crc(uint32_t CRC_seed, uint8_t *data, size_t len)
+1f000064
+# void usb_disable_dp_pull_up(void)
+1f00009c
+# void main(void)
+1f000118: main
+
+1f000304
+1f0003f4
+
+# void usart0_write_word(uint32_t tx_data)
+1f0006dc: usart0_write_word
+
+* 1f000718
+* 1f00071c
+* 1f000720: usart0_write_crc
+* 1f000724
+* 1f000728
+* 1f00072c: usb_disable_dp_pull_up
+
+[data]
+
+1f000038: CRC16_CRC32_BASE_38
+1f000060: FMC_BASE_60
+1f0000a4: USB_BASE_ALIAS_a4
+1f0000e8: USB_BASE_ALIAS_e8
+1f0000f0: FMC.SBVT0_f0
+1f0000f4: VECTKEY_SYSRESETREQ_f4
+1f0000f8: NVIC.AIRCR_f8
+
+1f0002c8: FMC_field_0x180_2c8
+1f0002d4: CKCU_RSTCU_BASE_2d4
+1f0002d8: CKCU_RSTCU_BASE_ALIAS_2d8
+1f0002dc: CKCU.HSICR.REFCLKSEL_2dc
+1f0002e0: USB_BASE_2e0
+1f0002f0: NVIC.VTOR_2f0
+1f0002f4: AFIO_BASE_2f4
+1f0002f8: USB_BASE_ALIAS_2f8
+1f0002fc: CKCU.APBCCR0.USART0_CLK_EN_2fc
+*1f000300
+1f0003e8: FMC_BASE_3e8
+1f0003f0: USB_BASE_3f0
+1f000454: USB_BASE_454
+1f0006a4: USB_BASE_6a4
+*1f0006bc
+1f000730: usb_device_desc
+1f000744: usb_config_desc
+1f00074d: usb_interface0_desc
+1f000756: usb_hid0_desc
+1f00075f: usb_ep1_desc
+1f000766: usb_ep2_desc
+1f000770: usb_report_desc
+
+[annote]
+
+1f000730: bLength (0x12)
+      +1: bDescriptorType (Device 0x01)
+      +1: bcdUSB (1.10)
+      +2: bDeviceClass (0x00)
+      +1: bDeviceSubClass (0x00)
+      +1: bDeviceProtocol (0x00)
+      +1: bMaxPacketSize0 (0x40)
+      +1: idVendor (0x04d9)
+      +2: idProduct (0x8010)
+      +2: bcdDevice (2.00)
+      +2: iManufacturer (0x00)
+      +1: iProduct (0x00)
+      +1: iSerialNumber (0x00)
+      +1: bNumConfigurations (0x01)
+
+1f000744: bLength (0x09)
+      +1: bDescriptorType (Configuration 0x02)
+      +1: wTotalLength (0x29)
+      +2: bNumInterfaces (0x01)
+      +1: bConfigurationValue (0x01)
+      +1: iConfiguration (0x00)
+      +1: bmAttributes (0x80)
+      +1: bMaxPower (128mA 0x40)
+
+1f00074d: bLength (0x09)
+      +1: bDescriptorType (Interface 0x04)
+      +1: bInterfaceNumber (0x00)
+      +1: bAlternateSetting (0x00)
+      +1: bNumEndpoints (0x02)
+      +1: bInterfaceClass (0x03)
+      +1: bInterfaceSubClass (0x00)
+      +1: bInterfaceProtocol (0x00)
+      +1: iInterface (0x00)
+
+1f000756: bLength (0x09)
+      +1: bDescriptorType (HID 0x21)
+      +1: bcdHID (1.10)
+      +2: bCountryCode (0x21)
+      +1: bNumDescriptors (0x01)
+      +1: bDescriptorType[0] (HID)
+      +1: wDescriptorLength[0] (0x0022)
+
+1f00075f: bLength (0x07)
+      +1: bDescriptorType (Endpoint 0x05)
+      +1: bEndpointAddress 0x01 OUT Endpoint:1
+      +1: bmAttributes (0x03)
+      +1: wMaxPacketSize (0x0040)
+      +2: bInterval (0x01)
+
+1f000766: bLength (0x07)
+      +1: bDescriptorType (Endpoint 0x05)
+      +1: bEndpointAddress 0x82 IN Endpoint:2
+      +1: bmAttributes (0x03)
+      +1: wMaxPacketSize (0x0040)
+      +2: bInterval (0x01)
+
+1f000770: Usage Page (Vendor Defined 0xFF00)
+      +3: Usage (0x01)
+      +2: Collection (Application)
+      +2: - Logical Minimum (0)
+      +2: - Logical Maximum (255)
+      +3: - Usage (0x02)
+      +2: - Report Size (8)
+      +2: - Report Count (64)
+      +2: - Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+      +2: - Logical Minimum (0)
+      +2: - Logical Maximum (255)
+      +3: - Usage (0x03)
+      +2: - Report Size (8)
+      +2: - Report Count (64)
+      +2: - Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
+      +2: - End Collection

@@ -44,6 +44,7 @@ reas md200/v112                 md200_v112.bin              md200_v112_ref.s    
 
 reas md600/v148                 md600_v148.bin              md600_v148_ref.s            0x3400  md600_v148.sym
 
+reas cmprosrgb/bootrom          cmprosrgb_bootrom.bin       cmprosrgb_bootrom_ref.s     0x1f000000 cmprosrgb_bootrom.sym
 reas cmprosrgb/builtin          cmprosrgb_builtin.bin       cmprosrgb_builtin_ref.s     0x0     cmprosrgb_builtin.sym
 reas cmprosrgb/v122             cmprosrgb_v122.bin          cmprosrgb_v122_ref.s        0x3400  cmprosrgb_v122.sym
 reas cmprosrgb/v121             cmprosrgb_v121.bin          cmprosrgb_v121_ref.s        0x3400  cmprosrgb_v121.sym
