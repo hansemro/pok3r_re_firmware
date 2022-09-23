@@ -190,6 +190,8 @@
 5df8: nvic_set_vtor
 # int spi_flash_init(void)
 5e0c: spi_flash_init
+# void handle_frame(void)
+6218: handle_frame
 # void reset_peripherals(uint32_t AHBPRSTR, uint32_t APBPRSTR0, uint32_t APBPRSTR1, int set)
 #   if set != 0, then set registers from given arg1, arg2, and arg3;
 #   otherwise clear them
@@ -234,13 +236,16 @@
 7850: usb_set_intr_flags
 # void usb_reset(void)
 7900: usb_reset
-# void usb_ep_set_cfgr_ier(uint32_t ep_num, struct usbep_config_t *config)
-#   struct usbep_config_t {
-#       uint32_t unk1;
-#       uint32_t EPCFGR;
-#       uint32_t EPIER;
-#       ...  // unsure of size
-#   };
+# void usb_ep_set_cfgr_ier(uint32_t ep_num, USBD_Driver_Typedef *config)
+#   from HT32_STD_5xxxx_FWLib_V1.1.1_5938.zip/library/HT32F5xxxx_Driver/inc/ht32f5xxxx_usbd.h:
+#   typedef struct {
+#       uint32_t CFGR;
+#       uint32_t IER;
+#   } USBD_EPTInit_TypeDef;
+#   typedef struct {
+#       uint32_t uInterruptMask;
+#       USBD_EPTInit_TypeDef ept[8];
+#   } USBD_Driver_Typedef;
 79be: usb_ep_set_cfgr_ier
 # void usb_ep_toggle_onak_odata_idata(uint32_t epcsr_base)
 7a4a: usb_ep_toggle_onak_odata_idata
