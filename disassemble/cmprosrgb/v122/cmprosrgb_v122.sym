@@ -80,15 +80,69 @@
 
 3572: generic_intr
 
+3594: rand
+35a8: srand
+35ee
+36a8
+36d4
+37d4
 3930: afio_set_pin_mux
+3a9e
 3ac8: ckcu_set_APBCCR0
 3ab0: ckcu_set_AHBCCR
+3d94
+3db6
+3ec0
+3f14
+3f60
+3f9c
 4458: gpio_pin_set_input_enable
 4478: gpio_pin_set_pull_up_down
+58d0
+58e0
+5994
+59ec
+59fc
+5a08
+5a18
+5a24
+5ab8
+5adc
+5b5c
+5bd0
+5be4
+5c20
+5cec
+5d08
+5d30
+5d40
+5de0
+5e1c
+5e44
+5e50
+5e78
+5ec4
+5efc
+5f34
+5f80
+6028
+607c
+60e4
+6130
+61b8
+# void setup_intr_priority(void)
 61c8: setup_intr_priority
 6266: nvic_calc_intr_priority
+# void nvic_set_intr_priority(uint32_t intr_num, uint32_t priority)
 6298: nvic_set_intr_priority
+# void nvic_set_vtor(uint32_t vtor_base, uint32_t vtor_offset)
 62b8: nvic_set_vtor
+65c8
+6764
+# void handle_frame(void)
+67a0: handle_frame
+7154
+# void main(void)
 9420: main
 
 [data]
@@ -137,6 +191,7 @@
 66fc: NVIC.SCR_66fc
 6748: NVIC.SCR_6748
 6760: NVIC.SCR_6760
+679c: FMC_BASE_679c
 68d4: USB_BASE_68d4
 68dc: FMC_BASE_68dc
 68e0: EP_SRAM.off_0d0_68e0
