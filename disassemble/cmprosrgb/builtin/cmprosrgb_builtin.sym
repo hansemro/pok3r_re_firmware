@@ -166,12 +166,37 @@ e90: CKCU_RSTCU_BASE_e90
 2544: FMC_BASE_2544
 2548: BOOT_MODE_IAP_2548
 *25e0
+25eb: gpio_map .word 46
 27f8: xor_key
 2844: usb_report0_desc
 2884: usb_report1_desc
 28a8: usb_report2_desc
 
 [annote]
+
+25eb: GPIO C, pin 8
+  +8: GPIO C, pin 7
+  +8: GPIO B, pin 5
+  +8: GPIO B, pin 4
+  +8: GPIO B, pin 3
+  +8: GPIO B, pin 2
+  +8: GPIO C, pin 6
+  +8: GPIO C, pin 5
+  +8: GPIO C, pin 4
+  +8: GPIO B, pin 6
+  +8: GPIO D, pin 0
+  +8: GPIO B, pin 11
+  +8: GPIO A, pin 11
+  +8: GPIO A, pin 0
+  +8: GPIO A, pin 1
+  +8: GPIO A, pin 2
+  +8: GPIO A, pin 3
+  +8: GPIO A, pin 4
+  +8: GPIO C, pin 10
+  +8: GPIO C, pin 12
+  +8: GPIO C, pin 3
+  +8: GPIO A, pin 10
+  +8: GPIO B, pin 1
 
 2844: Usage Page (Generic Desktop Controls)
   +2: Usage (Keyboard)
