@@ -109,6 +109,8 @@
 3930: AFIO_GPxConfig
 # void sleep(int n)
 3958: sleep
+# int perip_clock_config(void)
+3964: perip_clock_config
 3a9e
 # void ckcu_set_APBCCR0(uint32_t bits, uint32_t enable)
 3ac8: ckcu_set_APBCCR0
@@ -120,8 +122,10 @@
 3f14
 3f60
 3f9c
-# void spi_flash_gpio_config(void)
-40ec: spi_flash_gpio_config
+# int spi_flash_gpio_config(void)
+4090: spi_flash_gpio_config
+# void spi_flash_afio_config(void)
+40ec: spi_flash_afio_config
 # void spi_flash_deep_power_down(void)
 4130: spi_flash_deep_power_down
 # void spi_flash_cmd_deep_power_down(void)
@@ -193,13 +197,32 @@
 6298: NVIC_SetPriority
 # void NVIC_SetVectorTable(u32 NVIC_VectTable, u32 NVIC_Offset)
 62b8: NVIC_SetVectorTable
+# int spi_flash_init(void)
+62fc: spi_flash_init
 65c8
 6764
 # void handle_frame(void)
 67a0: handle_frame
-6b1c
+# void gpio_config_key_groups(void)
+6b1c: gpio_config_key_groups
 # void gpio_set_reset_key_groups(int reset)
 6cbc: gpio_set_reset_key_groups
+# void spi_config(uint32_t spi_base, SPI_InitTypeDef *config)
+#   from HT32_STD_1xxxx_FWLib_V1.1.1_2647.zip/library/HT32F1xxxx_Driver/inc/ht32f1xxxx_spi.h:
+#   typedef struct {
+#       uint32_t SPI_Mode; // either 0 for slave or 0x4000 for master
+#       uint32_t SPI_FIFO; // either 0x400 to enable fifo and 0 to disable
+#       uint32_t SPI_DataLength; // 4-bit value
+#       uint32_t SPI_SELMode; // either 0 for SW or 0x2000 for HW
+#       uint32_t SPI_SELPolarity; // either 0 for low and 0x800 for high
+#       uint32_t SPI_CPOL; // either 0 for low or 0x400 for high
+#       uint32_t SPI_CPHA; // either 0 for first or 1 for second
+#       uint32_t SPI_FirstBit; // either 0 for MSB or 0x1000 for LSB
+#       uint32_t SPI_RxFIFOTriggerLevel; // 4-bit value
+#       uint32_t SPI_TxFIFOTriggerLevel; // 4-bit value
+#       uint32_t SPI_ClockPrescaler; // PRESCALER = f_pclk/(2*f_sck)
+#   } SPI_InitTypeDef;
+7098: spi_config
 7154
 # void main(void)
 9420: main
