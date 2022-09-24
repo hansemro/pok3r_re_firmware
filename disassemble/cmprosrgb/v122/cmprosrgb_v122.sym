@@ -122,16 +122,36 @@
 3f14
 3f60
 3f9c
+# uint8_t spi_flash_cmd_read_status_register(void)
+3fe8: spi_flash_cmd_read_status_register
+# int spi_flash_config(void)
+4010: spi_flash_config
+# uint8_t spi_flash_read_wip(void)
+4084: spi_flash_read_wip
 # int spi_flash_gpio_config(void)
 4090: spi_flash_gpio_config
 # void spi_flash_afio_config(void)
 40ec: spi_flash_afio_config
 # void spi_flash_deep_power_down(void)
 4130: spi_flash_deep_power_down
+# void spi_flash_cmd_page_program(uint8_t *src, uint32_t pageAddr, size_t len)
+4178: spi_flash_cmd_page_program
+# void spi_flash_cmd_sector_erase(uint32_t sectorAddr)
+41c4: spi_flash_cmd_sector_erase
+# void spi_flash_cmd_write_status_register(uint8_t value)
+41fc: spi_flash_cmd_write_status_register
+# int spi_flash_program_page(uint8_t *src, uint32_t pageAddr, size_t len)
+4228: spi_flash_program_page
 # void spi_flash_cmd_deep_power_down(void)
 424c: spi_flash_cmd_deep_power_down
+# void spi_flash_cmd_read_data(uint8_t *dst, uint32_t addr, size_t len)
+4274: spi_flash_cmd_read_data
 # void spi1_xfer(uint8_t *src, uint8_t *dst, size_t len)
 42b4: spi1_xfer
+# int spi_flash_erase_sector(uint32_t sectorAddr)
+4324: spi_flash_erase_sector
+# void spi_flash_cmd_write_enable(void)
+43ec: spi_flash_cmd_write_enable
 # void gpio_set_pin_direction(uint32_t gpio_base, uint32_t pin, int out)
 4438: gpio_set_pin_direction
 # void gpio_set_pin_output_drive_current(uint32_t gpio_base, uint32_t pin, int eight_mA)
@@ -197,8 +217,8 @@
 6298: NVIC_SetPriority
 # void NVIC_SetVectorTable(u32 NVIC_VectTable, u32 NVIC_Offset)
 62b8: NVIC_SetVectorTable
-# int spi_flash_init(void)
-62fc: spi_flash_init
+# int spi_flash_init_gpio(void)
+62fc: spi_flash_init_gpio
 65c8
 6764
 # void handle_frame(void)
@@ -207,6 +227,8 @@
 6b1c: gpio_config_key_groups
 # void gpio_set_reset_key_groups(int reset)
 6cbc: gpio_set_reset_key_groups
+# void spi_enable(uint32_t spi_base, int enable)
+7084: spi_enable
 # void spi_config(uint32_t spi_base, SPI_InitTypeDef *config)
 #   from HT32_STD_1xxxx_FWLib_V1.1.1_2647.zip/library/HT32F1xxxx_Driver/inc/ht32f1xxxx_spi.h:
 #   typedef struct {
@@ -223,6 +245,8 @@
 #       uint32_t SPI_ClockPrescaler; // PRESCALER = f_pclk/(2*f_sck)
 #   } SPI_InitTypeDef;
 7098: spi_config
+# void spi_set_slave_select_output_enable(uint32_t spi_base, int enable)
+70e2: spi_set_slave_select_output_enable
 7154
 # void main(void)
 9420: main
