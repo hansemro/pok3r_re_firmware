@@ -114,8 +114,16 @@
 3a9e
 # void ckcu_set_APBCCR0(uint32_t bits, uint32_t enable)
 3ac8: ckcu_set_APBCCR0
+# void ckcu_set_APBCCR1(uint32_t bits, uint32_t enable)
+3ae0: ckcu_set_APBCCR1
 # void ckcu_set_AHBCCR(uint32_t bits, uint32_t enable)
 3ab0: ckcu_set_AHBCCR
+# void ckcu_set_usb_clk_prescaler(uint8_t prescaler)
+#   prescaler:
+#       1 : CK_USB = CK_PLL
+#       2 : CK_USB = CK_PLL/2
+#       3 : CK_USB = CK_PLL/3
+3b20: ckcu_set_usb_clk_prescaler
 3d94
 3db6
 3ec0
@@ -329,6 +337,7 @@
 7254: CKCU_RSTCU_BASE_7254
 725c: FMC_BASE_725c
 730c: NVIC.ICTR_730c
+* 8200
 820c: USB_BASE_820c
 8268: NVIC.ICTR_8268
 8284: USB_BASE_8284
@@ -364,6 +373,9 @@
   +9: usb_hid2_desc
   +9: usb_ep2_desc
 9c14: usb_device_desc
+* 9c28
+* 9c2c
+* 9c30
 9c34: usb_str0_desc
 9c38: usb_str2_desc
 9c78: usb_str1_desc
