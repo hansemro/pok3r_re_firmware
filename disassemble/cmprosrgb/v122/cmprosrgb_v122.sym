@@ -82,7 +82,16 @@
 
 3594: rand
 35a8: srand
-35ee
+# void memcpy(void *src, void *dst, size_t len)
+35b8: memcpy
+# void _memset(void *ptr, size_t len, uint8_t value)
+35dc: _memset
+# void _memzero(void *ptr, size_t len)
+35ea: _memzero
+# void * memset(void *ptr, uint8_t value, size_t len)
+35ee: memset
+# void afio_set_pin_mux(int EXTIn, uint8_t port)
+367c: afio_set_pin_mux
 36a8
 36d4
 37d4
@@ -133,13 +142,13 @@
 #    1 - pull down
 #    2 - (tristate) disable
 4478: gpio_set_pin_pull_up_down_disable
-# void _gpio_set_reset_output_data(uint32_t gpio_base, uint32_t value)
+# void _gpio_set_reset_pin(uint32_t gpio_base, uint32_t value)
 #   Set GPIO.PxSRR register to value
-44a0: _gpio_set_reset_output_data
-# void gpio_set_reset_output_data(uint32_t gpio_base, uint16_t value, int set)
-#   Set GPIO.PxRR to value if set == 0;
-#   Set GPIO.PxSRR to value otherwise
-44a4: gpio_set_reset_output_data
+44a0: _gpio_set_reset_pin
+# void gpio_set_reset_pin(uint32_t gpio_base, uint16_t pin, int set)
+#   Set GPIO.PxRR to pin if set == 0;
+#   Set GPIO.PxSRR to pin otherwise
+44a4: gpio_set_reset_pin
 # void TM_Cmd(HT_TM_TypeDef* TMx, int enable)
 44ae: TM_Cmd
 # void do_nothing(void)
