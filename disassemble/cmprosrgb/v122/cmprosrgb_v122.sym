@@ -90,8 +90,8 @@
 35ea: _memzero
 # void * memset(void *ptr, uint8_t value, size_t len)
 35ee: memset
-# void afio_set_pin_mux(int EXTIn, uint8_t port)
-367c: afio_set_pin_mux
+# void afio_set_exti_pin_mux(int EXTIn, uint8_t port)
+367c: afio_set_exti_pin_mux
 36a8
 36d4
 37d4
@@ -118,11 +118,28 @@
 3ae0: ckcu_set_APBCCR1
 # void ckcu_set_AHBCCR(uint32_t bits, uint32_t enable)
 3ab0: ckcu_set_AHBCCR
+# void ckcu_set_CKOUT_source(uint8_t *src_sel)
+#   src_sel is a pointer to uint8_t with one of the following values:
+#       0 : CK_REF is selected
+#       1 : (CK_AHB/16) is selected
+#       2 : (CK_SYS/16) is selected
+#       3 : (CK_HSE/16) is selected
+#       4 : (CK_HSI/16) is selected
+#       5 : CK_LSE is selected
+#       6 : CK_LSI is selected
+3af8: ckcu_set_CKOUT_source
+# void ckcu_set_ref_clk_prescaler(uint8_t prescaler)
+#   prescaler (5 bits): (CK_REF = CK_PLL / (prescaler + 1) * 2)
+#       0 : CK_REF = CK_PLL / 2
+#       1 : CK_REF = CK_PLL / 4
+#       ...
+#       31 : CK_REF = CK_PLL / 64
+3b0c: ckcu_set_ref_clk_prescaler
 # void ckcu_set_usb_clk_prescaler(uint8_t prescaler)
-#   prescaler:
-#       1 : CK_USB = CK_PLL
-#       2 : CK_USB = CK_PLL/2
-#       3 : CK_USB = CK_PLL/3
+#   prescaler (2 bits):
+#       0 : CK_USB = CK_PLL
+#       1 : CK_USB = CK_PLL/2
+#       2 : CK_USB = CK_PLL/3
 3b20: ckcu_set_usb_clk_prescaler
 3d94
 3db6
@@ -138,6 +155,8 @@
 4084: spi_flash_read_wip
 # int spi_flash_gpio_config(void)
 4090: spi_flash_gpio_config
+# void _spi_flash_disable(int disable)
+40e0: _spi_flash_disable
 # void spi_flash_afio_config(void)
 40ec: spi_flash_afio_config
 # void spi_flash_deep_power_down(void)
@@ -183,6 +202,33 @@
 44a4: gpio_set_reset_pin
 # void TM_Cmd(HT_TM_TypeDef* TMx, int enable)
 44ae: TM_Cmd
+# void TM_OutputInit(HT_TM_TypeDef* TMx, TM_OutputInitTypeDef* OutInit)
+# typedef struct {
+#   uint8_t Channel;
+#   uint8_t Reserved1;
+#   uint16_t OutputMode;
+#   uint8_t Control;
+#   uint8_t ControlN;
+#   uint16_t Compare;
+#   uint16_t AsymmetricCompare;
+# } TM_OutputInitTypeDef;
+44c2: TM_OutputInit
+# void TM_OutputStructInit(TM_OutputInitTypeDef* OutInit)
+451a: TM_OutputStructInit
+# void TM_TimeBaseInit(HT_TM_TypeDef* TMx, TM_TimeBaseInitTypeDef* TimeBaseInit)
+# typedef struct {
+#   uint16_t CounterReload;
+#   uint16_t Prescaler;
+#   uint32_t CounterMode;
+#   uint16_t PSCReloadTime;
+# } TM_TimeBaseInitTypeDef;
+452a: TM_TimeBaseInit
+# void sram_write_2(void)
+#   writes 2 to 0x20000040 if it was 1 previously.
+4568: sram_write_2
+# void sram_write_1(void)
+#   writes 1 to 0x20000040 if it was 0 previously.
+4584: sram_write_1
 # void do_nothing(void)
 4598: do_nothing
 58d0
@@ -225,9 +271,23 @@
 6298: NVIC_SetPriority
 # void NVIC_SetVectorTable(u32 NVIC_VectTable, u32 NVIC_Offset)
 62b8: NVIC_SetVectorTable
+# int spi_flash_init(void)
+62cc: spi_flash_init
 # int spi_flash_init_gpio(void)
 62fc: spi_flash_init_gpio
+# void spi_flash_disable(int disable)
+6314: spi_flash_disable
 65c8
+# int mbia_init_gclk(void)
+65e0: mbia_init_gclk
+# void mbia_enable_gpio_port_c_clk(void)
+6654: mbia_enable_gpio_port_c_clk
+# void mbia_gclk_disable(int disable)
+6670: mbia_gclk_disable
+# void _mbia_gclk_enable(void)
+667c: _mbia_gclk_enable
+# void _mbia_gclk_disable(void)
+669c: _mbia_gclk_disable
 6764
 # void handle_frame(void)
 67a0: handle_frame
@@ -235,6 +295,8 @@
 6b1c: gpio_config_key_groups
 # void gpio_set_reset_key_groups(int reset)
 6cbc: gpio_set_reset_key_groups
+# void mbia_init(void)
+6cf8: mbia_init
 # void spi_enable(uint32_t spi_base, int enable)
 7084: spi_enable
 # void spi_config(uint32_t spi_base, SPI_InitTypeDef *config)
@@ -255,7 +317,48 @@
 7098: spi_config
 # void spi_set_slave_select_output_enable(uint32_t spi_base, int enable)
 70e2: spi_set_slave_select_output_enable
+# int spi_flash_check_set_wel(int op)
+#   op:
+#    0 : return 1 if WEL is set and 0 otherwise
+#    1 : unset WEL (with 0) and return 0
+#    2 : set WEL (with 1) and return 1
+70f6: spi_flash_check_set_wel
 7154
+7c3c
+7d04
+7d10
+7d1c
+# void usb_init_class(USBDCore_Class_TypeDef *dst)
+#   typedef struct {
+#       TODO
+#   } USBDCore_Class_TypeDef;
+7dbc: usb_init_class
+* 7de0
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+7dfc
+7e40
+7f44
+7f54
+# void usb_init_desc(USBDCore_Desc_TypeDef *dst)
+# typedef struct {
+#   uint8_t *pDeviceDesc;
+#   uint8_t *pConfnDesc;
+#   uint8_t **ppStringDesc;
+#   uint32_t uStringDescNumber;
+# } USBDCore_Desc_TypeDef;
+81ec: usb_init_desc
+# void usb_set_dp_pull_up(int enable)
+8288: usb_set_dp_pull_up
+85ca
+85ce
+9400
+940e
+9410
 # void main(void)
 9420: main
 
