@@ -80,6 +80,8 @@
 
 3572: generic_intr
 
+# void start_main(void)
+3588: start_main
 3594: rand
 35a8: srand
 # void memcpy(void *src, void *dst, size_t len)
@@ -112,11 +114,13 @@
 # int perip_clock_config(void)
 3964: perip_clock_config
 3a9e
-# void ckcu_set_APBCCR0(uint32_t bits, uint32_t enable)
+# void ckcu_set_AHBCCR(uint32_t bits, int enable)
+3ab0: ckcu_set_AHBCCR
+# void ckcu_set_APBCCR0(uint32_t bits, int enable)
 3ac8: ckcu_set_APBCCR0
-# void ckcu_set_APBCCR1(uint32_t bits, uint32_t enable)
+# void ckcu_set_APBCCR1(uint32_t bits, int enable)
 3ae0: ckcu_set_APBCCR1
-# void ckcu_set_AHBCCR(uint32_t bits, uint32_t enable)
+# void ckcu_set_AHBCCR(uint32_t bits, int enable)
 3ab0: ckcu_set_AHBCCR
 # void ckcu_set_CKOUT_source(uint8_t *src_sel)
 #   src_sel is a pointer to uint8_t with one of the following values:
@@ -179,6 +183,10 @@
 4324: spi_flash_erase_sector
 # void spi_flash_cmd_write_enable(void)
 43ec: spi_flash_cmd_write_enable
+# void spi_flash_write_status_register(uint8_t value)
+4410: spi_flash_write_status_register
+# void gpio_reset_pin(uint32_t gpio_base, uint32_t pin)
+4434: gpio_reset_pin
 # void gpio_set_pin_direction(uint32_t gpio_base, uint32_t pin, int out)
 4438: gpio_set_pin_direction
 # void gpio_set_pin_output_drive_current(uint32_t gpio_base, uint32_t pin, int eight_mA)
@@ -223,6 +231,8 @@
 #   uint16_t PSCReloadTime;
 # } TM_TimeBaseInitTypeDef;
 452a: TM_TimeBaseInit
+# void TM_TimeBaseStructInit(TM_TimeBaseInitTypeDef* TimeBaseInit)
+4554: TM_TimeBaseStructInit
 # void sram_write_2(void)
 #   writes 2 to 0x20000040 if it was 1 previously.
 4568: sram_write_2
@@ -231,6 +241,8 @@
 4584: sram_write_1
 # void do_nothing(void)
 4598: do_nothing
+# void bftm0_clk_enable(void)
+4ba8: bftm0_clk_enable
 58d0
 58e0
 5994
@@ -297,6 +309,10 @@
 6cbc: gpio_set_reset_key_groups
 # void mbia_init(void)
 6cf8: mbia_init
+# int gpio_get_key_A_data(void)
+6fe8: gpio_get_key_A_data
+# void gpio_config_led_groups(void)
+7048: gpio_config_led_groups
 # void spi_enable(uint32_t spi_base, int enable)
 7084: spi_enable
 # void spi_config(uint32_t spi_base, SPI_InitTypeDef *config)
@@ -352,10 +368,24 @@
 #   uint32_t uStringDescNumber;
 # } USBDCore_Desc_TypeDef;
 81ec: usb_init_desc
+# void usb_init(void)
+8210: usb_init
 # void usb_set_dp_pull_up(int enable)
 8288: usb_set_dp_pull_up
 85ca
 85ce
+860c
+8628
+# void mbia_send_instruction(uint32_t instr)
+#
+# instr is the number of DCLK rising edges while LE is asserted.
+#           ___________.....____
+# LE    ___/                    \____
+#             __    __       __
+# DCLK  _____/01\__/02\...../NN\______
+90d0: mbia_send_instruction
+# void mbia_shift_data(uint16_t value, uint32_t bit_len)
+9100: mbia_shift_data
 9400
 940e
 9410
@@ -454,6 +484,7 @@
 8540: USB_BASE_8540
 8594: EP_SRAM_BASE_8594
 85b8: USB_BASE_85b8
+9074: key_gpio_map.KEY_B3_9074
 90cc: GPTM1_BASE_90cc
 90fc: GPIOA_BASE_90fc
 912c: GPIOC_BASE_912c

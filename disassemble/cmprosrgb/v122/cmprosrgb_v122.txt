@@ -655,28 +655,32 @@
 /*0x388c*/      push {r4, r5, r6, lr}
 /*0x388e*/      ldr r5, [pc, #0x54] /* r5 = 0x20000016 */
 /*0x3890*/      ldr r0, [pc, #0x4c] /* r0 = led_gpio_map */
+                ; get Qn from 0x20000017
 /*0x3892*/      ldrb r1, [r5, #1]   ; r1 = *(uint8_t*)0x20000017
+                ; find Qn gpio from led_gpio_map
 /*0x3894*/      add.w r4, r0, r1, lsl #3 ; r4 = led_gpio_map + (r1*8)
 /*0x3898*/      ldr r0, [pc, #0x4c] /* r0 = BFTM1_BASE_38e8 */
                 ; clear BFTM1 compare match interrupt
 /*0x389a*/      bl bftm_clear_compare_match_interrupt
-/*0x389e*/      bl call_7048
-/*0x38a2*/      movs r0, #0xa
+/*0x389e*/      bl gpio_config_led_groups
+/*0x38a2*/      movs r0, #0xa       ; r0 = 0xa
 /*0x38a4*/      bl sleep
-/*0x38a8*/      movs r0, #2
-/*0x38aa*/      bl call_90d0
-/*0x38ae*/      ldr r1, [pc, #0x3c] /* GPIOA_BASE_38ec */
-/*0x38b0*/      mov.w r0, #0x8000
-/*0x38b4*/      str r0, [r1, #0x24]
-/*0x38b6*/      ldrh r0, [r4, #4]
-/*0x38b8*/      movs r2, #1
-/*0x38ba*/      uxth r1, r0
-/*0x38bc*/      ldr r0, [r4]
+/*0x38a8*/      movs r0, #2         ; r0 = 2
+                ; Overall latch instruction
+/*0x38aa*/      bl mbia_send_instruction
+/*0x38ae*/      ldr r1, [pc, #0x3c] /* r1 = GPIOA_BASE_38ec */
+/*0x38b0*/      mov.w r0, #0x8000   ; r0 = 0x8000
+/*0x38b4*/      str r0, [r1, #0x24] ; *(GPIOA.PASRR) = 0x8000
+/*0x38b6*/      ldrh r0, [r4, #4]   ; r0 = *(uint16_t*)(r4+4)
+/*0x38b8*/      movs r2, #1         ; (out) r2 = 1
+/*0x38ba*/      uxth r1, r0         ; (pin) r1 = r0
+/*0x38bc*/      ldr r0, [r4]        ; (gpio_base) r0 = *r4
+                ; set pin direction to out
 /*0x38be*/      bl gpio_set_pin_direction
-/*0x38c2*/      ldrh r0, [r4, #4]
-/*0x38c4*/      uxth r1, r0
-/*0x38c6*/      ldr r0, [r4]
-/*0x38c8*/      bl call_4434
+/*0x38c2*/      ldrh r0, [r4, #4]   ; r0 = *(uint16_t*)(r4+4)
+/*0x38c4*/      uxth r1, r0         ; (pin) r1 = r0
+/*0x38c6*/      ldr r0, [r4]        ; (gpio_base) r0 = *r4
+/*0x38c8*/      bl gpio_reset_pin
 /*0x38cc*/      ldrb r0, [r5, #1]
 /*0x38ce*/      .short 0x1c40 /* adds r0, r0, #1 */
 /*0x38d0*/      and r0, r0, #7
@@ -1200,6 +1204,7 @@
 /*0x3c20*/      movs r2, #0xa4      ; (len) r2 = 0xa4
 /*0x3c22*/      movs r1, #0         ; (addr) r1 = 0
 /*0x3c24*/      ldr r0, [pc, #0x74] /* (dst) r0 = 0x20000c90 */
+                ; read 0xa4 bytes of flash starting at 0x0 to 0x20000c90
 /*0x3c26*/      bl spi_flash_cmd_read_data
 /*0x3c2a*/      ldr r5, [pc, #0x70] /* r5 = 0x20000c90 */
 /*0x3c2c*/      ldrh r0, [r5]       ; r0 = *(uint16_t*)r5
@@ -1212,43 +1217,43 @@
 /*0x3c3e*/      b jump_3c46
             jump_3c40:
 /*0x3c40*/      cmp r4, #0xff
-/*0x3c42*/      bne jump_3c46
-/*0x3c44*/      movs r4, #0
+/*0x3c42*/      bne jump_3c46       ; r4 != 0xff ? jump_3c46 : continue
+/*0x3c44*/      movs r4, #0         ; r4 = 0
             jump_3c46:
 /*0x3c46*/      mov r0, r4          ; r0 = r4
 /*0x3c48*/      bl call_3d00
 /*0x3c4c*/      b jump_3c5e
             jump_3c4e:
 /*0x3c4e*/      cmp r4, #0xff
-/*0x3c50*/      beq jump_3c5e
-/*0x3c52*/      ldrb r0, [r5, #2]
+/*0x3c50*/      beq jump_3c5e       ; r4 == 0xff ? jump_3c5e
+/*0x3c52*/      ldrb r0, [r5, #2]   ; r0 = *(uint8_t*)0x20000c94
 /*0x3c54*/      cmp r0, r4
-/*0x3c56*/      beq jump_3c5e
-/*0x3c58*/      strb r4, [r5, #2]
+/*0x3c56*/      beq jump_3c5e       ; r0 == r4 ? jump_3c5e : continue
+/*0x3c58*/      strb r4, [r5, #2]   ; *(uint8_t*)0x20000c94 = r4
 /*0x3c5a*/      bl call_3d48
             jump_3c5e:
-/*0x3c5e*/      ldrb r0, [r5, #2]
-/*0x3c60*/      movs r2, #2
-/*0x3c62*/      lsls r1, r0, #0xc
+/*0x3c5e*/      ldrb r0, [r5, #2]   ; r0 = *(uint8_t*)0x20000c94
+/*0x3c60*/      movs r2, #2         ; r2 = 2
+/*0x3c62*/      lsls r1, r0, #0xc   ; r1 = r0 << 0xc
 /*0x3c64*/      ldr r0, [pc, #0x34] /* r0 = 0x20000c90 */
-/*0x3c66*/      add.w r1, r1, #0x1000
-/*0x3c6a*/      adds r0, #0xa4
+/*0x3c66*/      add.w r1, r1, #0x1000 ; r1 = r1 + 0x1000
+/*0x3c6a*/      adds r0, #0xa4      ; r0 = r0 + 0xa4
 /*0x3c6c*/      bl spi_flash_cmd_read_data
 /*0x3c70*/      ldr r0, [pc, #0x28] /* r0 = 0x20000c90 */
-/*0x3c72*/      adds r0, #0xa4
-/*0x3c74*/      ldrh r0, [r0]
+/*0x3c72*/      adds r0, #0xa4      ; r0 = r0 + 0xa4
+/*0x3c74*/      ldrh r0, [r0]       ; r0 = *(uint16_t*)0x20000d34
 /*0x3c76*/      cmp r0, #4
-/*0x3c78*/      beq jump_3c82
+/*0x3c78*/      beq jump_3c82       ; r0 == 4 ? jump_3c82 : continue
 /*0x3c7a*/      pop.w {r4, r5, r6, lr}
 /*0x3c7e*/      b.w call_3ca0
             jump_3c82:
-/*0x3c82*/      ldrb r0, [r5, #2]
+/*0x3c82*/      ldrb r0, [r5, #2]   ; r0 = *(uint8_t*)(r5+2)
 /*0x3c84*/      pop.w {r4, r5, r6, lr}
-/*0x3c88*/      lsls r1, r0, #0xc
-/*0x3c8a*/      ldr r0, [pc, #0x10] /* data_3c9c */
-/*0x3c8c*/      mov.w r2, #0xa30
-/*0x3c90*/      adds r0, #0xa4
-/*0x3c92*/      add.w r1, r1, #0x1000
+/*0x3c88*/      lsls r1, r0, #0xc   ; r1 = r0 << 0xc
+/*0x3c8a*/      ldr r0, [pc, #0x10] /* r0 = 0x20000c90 */
+/*0x3c8c*/      mov.w r2, #0xa30    ; r2 = 0xa30
+/*0x3c90*/      adds r0, #0xa4      ; r0 = r0 + 0xa4
+/*0x3c92*/      add.w r1, r1, #0x1000 ; r1 = r1 + 0x1000
 /*0x3c96*/      b.w spi_flash_cmd_read_data
 
 /*0x3c9a*/  .byte 0x00
@@ -1318,6 +1323,7 @@
 /*0x3d10*/      mov r2, r0          ; (value) r2 = 0xff
 /*0x3d12*/      movs r1, #0xa0      ; (len) r1 = 0xa0
 /*0x3d14*/      adds r0, r3, #4     ; (dst) r0 = 0x20000c94
+                ; clear 0xa0 bytes starting at 0x20000c94 with 0xff
 /*0x3d16*/      bl _memset
 /*0x3d1a*/      pop.w {r4, lr}
 /*0x3d1e*/      b.w call_3d48
@@ -1331,18 +1337,18 @@
 
             .thumb_func
             call_3d28:
-/*0x3d28*/      ldr r0, [pc, #4] /* data_3d30 */
-/*0x3d2a*/      ldrb r0, [r0, #2]
+/*0x3d28*/      ldr r0, [pc, #4] /* r0 = 0x20000c90 */
+/*0x3d2a*/      ldrb r0, [r0, #2] ; r0 = *(uint8_t*)0x20000c92
 /*0x3d2c*/      b.w jump_3d34
 
             data_3d30:
 /*0x3d30*/  .word 0x20000c90
 
             jump_3d34:
-/*0x3d34*/      lsls r1, r0, #0xc
-/*0x3d36*/      mov.w r2, #0xa30
-/*0x3d3a*/      ldr r0, [pc, #8] /* data_3d44 */
-/*0x3d3c*/      add.w r1, r1, #0x1000
+/*0x3d34*/      lsls r1, r0, #0xc       ; r1 = arg1 << 0xc
+/*0x3d36*/      mov.w r2, #0xa30        ; r2 = 0xa30
+/*0x3d3a*/      ldr r0, [pc, #8]        /* r0 = 0x20000d34 */
+/*0x3d3c*/      add.w r1, r1, #0x1000   ; r1 = r1 + 0x1000
 /*0x3d40*/      b.w jump_860c
 
             data_3d44:
@@ -1387,16 +1393,16 @@
 
             .thumb_func
             call_3d78:
-/*0x3d78*/      ldr r2, [pc, #0x14] /* data_3d90 */
-/*0x3d7a*/      add r2, r0
-/*0x3d7c*/      movs r0, #0
+/*0x3d78*/      ldr r2, [pc, #0x14] /* r2 = 0x200000df */
+/*0x3d7a*/      add r2, r0          ; r2 = r2 + arg1
+/*0x3d7c*/      movs r0, #0         ; r0 = 0
             jump_3d7e:
-/*0x3d7e*/      .short 0x1c40 /* adds r0, r0, #1 */
-/*0x3d80*/      ldrb r3, [r2], #0x78
-/*0x3d84*/      uxtb r0, r0
-/*0x3d86*/      strb r3, [r1], #1
+/*0x3d7e*/      .short 0x1c40 /* adds r0, r0, #1 */ ; r0 = r0 + 1
+/*0x3d80*/      ldrb r3, [r2], #0x78 ; r3 = *(uint8_t*)r2
+/*0x3d84*/      uxtb r0, r0         ; r0 = r0
+/*0x3d86*/      strb r3, [r1], #1   ; *(uint8_t*)arg2 = r3
 /*0x3d8a*/      cmp r0, #3
-/*0x3d8c*/      blo jump_3d7e
+/*0x3d8c*/      blo jump_3d7e       ; r0 < 3 ? jump_3d7e : continue
 /*0x3d8e*/      bx lr
 
             data_3d90:
@@ -1501,63 +1507,63 @@
             .thumb_func
             call_3e30:
 /*0x3e30*/      push.w {r4, r5, r6, r7, r8, sb, lr}
-/*0x3e34*/      ldr.w sb, [pc, #0x7c] /* data_3eb4 */
-/*0x3e38*/      ldr.w ip, [pc, #0x7c] /* data_3eb8 */
-/*0x3e3c*/      ldr.w r8, [pc, #0x7c] /* data_3ebc */
-/*0x3e40*/      movs r5, #0
+/*0x3e34*/      ldr.w sb, [pc, #0x7c] /* sb = 0x20000248 */
+/*0x3e38*/      ldr.w ip, [pc, #0x7c] /* ip = 0x0000966e */
+/*0x3e3c*/      ldr.w r8, [pc, #0x7c] /* r8 = 0x200000df */
+/*0x3e40*/      movs r5, #0                 ; r5 = 0
             jump_3e42:
-/*0x3e42*/      add.w r1, r5, r5, lsl #1
-/*0x3e46*/      add.w r0, sb, r1, lsl #5
-/*0x3e4a*/      movs r1, #0x10
-/*0x3e4c*/      movs r4, #0
+/*0x3e42*/      add.w r1, r5, r5, lsl #1    ; r1 = r5 + (r5<<1)
+/*0x3e46*/      add.w r0, sb, r1, lsl #5    ; r0 = sb + (r1<<5)
+/*0x3e4a*/      movs r1, #0x10              ; r1 = 0x10
+/*0x3e4c*/      movs r4, #0                 ; r4 = 0
             jump_3e4e:
-/*0x3e4e*/      ldr r7, [pc, #0x68] /* data_3eb8 */
-/*0x3e50*/      ldrb.w r2, [ip, r4]
-/*0x3e54*/      rsb r2, r2, r2, lsl #4
-/*0x3e58*/      add.w r2, r8, r2, lsl #3
-/*0x3e5c*/      adds r3, r2, r5
-/*0x3e5e*/      movs r2, #0xf
-/*0x3e60*/      .short 0x1d3f /* adds r7, r7, #4 */
+/*0x3e4e*/      ldr r7, [pc, #0x68] /* r7 = 0x0000966e */
+/*0x3e50*/      ldrb.w r2, [ip, r4]         ; r2 = *(uint8_t*)(0x0000966e+r4)
+/*0x3e54*/      rsb r2, r2, r2, lsl #4      ; r2 = r2 * 15
+/*0x3e58*/      add.w r2, r8, r2, lsl #3    ; r2 = r8 + (r2*8)
+/*0x3e5c*/      adds r3, r2, r5             ; r3 = r2 + r5
+/*0x3e5e*/      movs r2, #0xf               ; r2 = 0xf
+/*0x3e60*/      .short 0x1d3f /* adds r7, r7, #4 */ ; r7 = r7 + 4
 /*0x3e62*/      b jump_3e78
             jump_3e64:
-/*0x3e64*/      ldrb r6, [r3], #8
-/*0x3e68*/      .short 0x1e49 /* subs r1, r1, #1 */
-/*0x3e6a*/      ands r1, r1, #0xff
-/*0x3e6e*/      ldrh.w r6, [r7, r6, lsl #1]
-/*0x3e72*/      strh r6, [r0]
-/*0x3e74*/      beq jump_3e82
+/*0x3e64*/      ldrb r6, [r3], #8           ; r6 = *(uint8_t*)r3; r3+=8
+/*0x3e68*/      .short 0x1e49 /* subs r1, r1, #1 */ ; r1 = r1 - 1
+/*0x3e6a*/      ands r1, r1, #0xff          ; r1 = r1 & 0xff
+/*0x3e6e*/      ldrh.w r6, [r7, r6, lsl #1] ; r6 = *(uint16_t*)(r7 + r6*2)
+/*0x3e72*/      strh r6, [r0]               ; *(uint16_t*)r0 = r6
+/*0x3e74*/      beq jump_3e82               ; r1 == 0 ? jump_3e82 : continue
 /*0x3e76*/      .short 0x1d80 /* adds r0, r0, #6 */
             jump_3e78:
-/*0x3e78*/      .short 0x1e52 /* subs r2, r2, #1 */
+/*0x3e78*/      .short 0x1e52 /* subs r2, r2, #1 */ ; r2 = r2 - 1
 /*0x3e7a*/      uxtb r2, r2
-/*0x3e7c*/      bhs jump_3e64
-/*0x3e7e*/      movs r2, #1
+/*0x3e7c*/      bhs jump_3e64               ; r2 >= 0 ? jump_3e64 : continue
+/*0x3e7e*/      movs r2, #1                 ; r2 = 1
 /*0x3e80*/      b jump_3e92
             jump_3e82:
-/*0x3e82*/      movs r1, #0x10
-/*0x3e84*/      subs r0, #0x58
+/*0x3e82*/      movs r1, #0x10              ; r1 = 0x10
+/*0x3e84*/      subs r0, #0x58              ; r0 = 0x58
 /*0x3e86*/      b jump_3e78
             jump_3e88:
-/*0x3e88*/      .short 0x1e49 /* subs r1, r1, #1 */
-/*0x3e8a*/      ands r1, r1, #0xff
-/*0x3e8e*/      beq jump_3eac
-/*0x3e90*/      .short 0x1d80 /* adds r0, r0, #6 */
+/*0x3e88*/      .short 0x1e49 /* subs r1, r1, #1 */ ; r1 = r1 - 1
+/*0x3e8a*/      ands r1, r1, #0xff          ; r1 = r1 & 0xff
+/*0x3e8e*/      beq jump_3eac               ; r1 == 0 ? jump_3eac : continue
+/*0x3e90*/      .short 0x1d80 /* adds r0, r0, #6 */ ; r0 = r0 + 6
             jump_3e92:
-/*0x3e92*/      .short 0x1e52 /* subs r2, r2, #1 */
+/*0x3e92*/      .short 0x1e52 /* subs r2, r2, #1 */ ; r2 = r2 - 1
 /*0x3e94*/      uxtb r2, r2
-/*0x3e96*/      bhs jump_3e88
-/*0x3e98*/      .short 0x1c64 /* adds r4, r4, #1 */
+/*0x3e96*/      bhs jump_3e88               ; r2 >= 0 ? jump_3e88
+/*0x3e98*/      .short 0x1c64 /* adds r4, r4, #1 */ ; r4 = r4 + 1
 /*0x3e9a*/      uxtb r4, r4
 /*0x3e9c*/      cmp r4, #3
-/*0x3e9e*/      blo jump_3e4e
-/*0x3ea0*/      .short 0x1c6d /* adds r5, r5, #1 */
+/*0x3e9e*/      blo jump_3e4e               ; r4 < 3 ? jump_3e4e : continue
+/*0x3ea0*/      .short 0x1c6d /* adds r5, r5, #1 */ ; r5 = r5 + 1
 /*0x3ea2*/      uxtb r5, r5
 /*0x3ea4*/      cmp r5, #8
-/*0x3ea6*/      blo jump_3e42
+/*0x3ea6*/      blo jump_3e42               ; r5 < 8 ? jump_3e42 : continue
 /*0x3ea8*/      pop.w {r4, r5, r6, r7, r8, sb, pc}
             jump_3eac:
-/*0x3eac*/      movs r1, #0x10
-/*0x3eae*/      subs r0, #0x58
+/*0x3eac*/      movs r1, #0x10              ; r1 = 0x10
+/*0x3eae*/      subs r0, #0x58              ; r0 = 0x58
 /*0x3eb0*/      b jump_3e92
 
 /*0x3eb2*/  .byte 0x00
@@ -1574,29 +1580,29 @@
             .thumb_func
             loc_3ec0:
 /*0x3ec0*/      push {r4, r5, r6, r7, lr}
-/*0x3ec2*/      ldr r2, [pc, #0x2c] /* data_3ef0 */
-/*0x3ec4*/      movs r5, #0x78
+/*0x3ec2*/      ldr r2, [pc, #0x2c] /* r2 = 0x200000df */
+/*0x3ec4*/      movs r5, #0x78      ; r5 = 0x78
 /*0x3ec6*/      b jump_3ee8
             jump_3ec8:
-/*0x3ec8*/      mov r3, r0
-/*0x3eca*/      movs r4, #3
+/*0x3ec8*/      mov r3, r0          ; r3 = arg1
+/*0x3eca*/      movs r4, #3         ; r4 = 3
 /*0x3ecc*/      b jump_3edc
             jump_3ece:
-/*0x3ece*/      ldrb r6, [r3], #1
-/*0x3ed2*/      ldrb r7, [r1]
-/*0x3ed4*/      muls r6, r7, r6
-/*0x3ed6*/      lsrs r6, r6, #8
-/*0x3ed8*/      strb r6, [r2], #0x78
+/*0x3ece*/      ldrb r6, [r3], #1   ; r6 = *(uint8_t*)r3; r3++
+/*0x3ed2*/      ldrb r7, [r1]       ; r7 = *(uint8_t*)r1
+/*0x3ed4*/      muls r6, r7, r6     ; r6 = r7 * r6
+/*0x3ed6*/      lsrs r6, r6, #8     ; r6 = r6 >> 8
+/*0x3ed8*/      strb r6, [r2], #0x78; *(uint8_t*)r2 = r6; r2 += 0x78
             jump_3edc:
-/*0x3edc*/      .short 0x1e64 /* subs r4, r4, #1 */
+/*0x3edc*/      .short 0x1e64 /* subs r4, r4, #1 */ ; r4 = r4 - 1
 /*0x3ede*/      uxtb r4, r4
-/*0x3ee0*/      bhs jump_3ece
-/*0x3ee2*/      .short 0x1c49 /* adds r1, r1, #1 */
-/*0x3ee4*/      subw r2, r2, #0x167
+/*0x3ee0*/      bhs jump_3ece       ; r4 >= 0 ? jump_3ece : continue
+/*0x3ee2*/      .short 0x1c49 /* adds r1, r1, #1 */ ; r1 = r1 + 1
+/*0x3ee4*/      subw r2, r2, #0x167 ; r2 = r2 - 0x167
             jump_3ee8:
-/*0x3ee8*/      .short 0x1e6d /* subs r5, r5, #1 */
+/*0x3ee8*/      .short 0x1e6d /* subs r5, r5, #1 */ ; r5 = r5 - 1
 /*0x3eea*/      uxtb r5, r5
-/*0x3eec*/      bhs jump_3ec8
+/*0x3eec*/      bhs jump_3ec8       ; r5 >= 0 ? jump_3ec8 : continue
 /*0x3eee*/      pop {r4, r5, r6, r7, pc}
 
             data_3ef0:
@@ -1606,17 +1612,17 @@
             .thumb_func
             call_3ef4:
 /*0x3ef4*/      cmp r0, #0xff
-/*0x3ef6*/      beq jump_3f0e
-/*0x3ef8*/      ldr r2, [pc, #0x14] /* data_3f10 */
-/*0x3efa*/      add r2, r0
-/*0x3efc*/      movs r0, #0
+/*0x3ef6*/      beq jump_3f0e       ; arg1 == 0xff ? jump_3f0e : continue
+/*0x3ef8*/      ldr r2, [pc, #0x14] /* r2 = 0x200000df */
+/*0x3efa*/      add r2, r0          ; r2 = r2 + arg1
+/*0x3efc*/      movs r0, #0         ; r0 = 0
             jump_3efe:
-/*0x3efe*/      .short 0x1c40 /* adds r0, r0, #1 */
-/*0x3f00*/      ldrb r3, [r1], #1
+/*0x3efe*/      .short 0x1c40 /* adds r0, r0, #1 */ ; r0 = r0 + 1
+/*0x3f00*/      ldrb r3, [r1], #1   ; r3 = *(uint8_t*)r1; r1 += 1
 /*0x3f04*/      uxtb r0, r0
-/*0x3f06*/      strb r3, [r2], #0x78
+/*0x3f06*/      strb r3, [r2], #0x78 ; *(uint8_t*)r2 = r3; r2 += 0x78
 /*0x3f0a*/      cmp r0, #3
-/*0x3f0c*/      blo jump_3efe
+/*0x3f0c*/      blo jump_3efe       ; r0 < 3 ? jump_3efe : continue
             jump_3f0e:
 /*0x3f0e*/      bx lr
 
@@ -1628,19 +1634,19 @@
             loc_3f14:
 /*0x3f14*/      push {r4, lr}
 /*0x3f16*/      cmp r0, #0xff
-/*0x3f18*/      beq jump_3f34
-/*0x3f1a*/      ldr r3, [pc, #0x1c] /* data_3f38 */
-/*0x3f1c*/      add r3, r0
-/*0x3f1e*/      movs r0, #0
+/*0x3f18*/      beq jump_3f34       ; arg1 == 0xff ? jump_3f34 : continue
+/*0x3f1a*/      ldr r3, [pc, #0x1c] /* r3 = 0x200000df */
+/*0x3f1c*/      add r3, r0          ; r3 = r3 + arg1
+/*0x3f1e*/      movs r0, #0         ; r0 = 0
             jump_3f20:
-/*0x3f20*/      ldrb r4, [r1], #1
-/*0x3f24*/      .short 0x1c40 /* adds r0, r0, #1 */
-/*0x3f26*/      muls r4, r2, r4
-/*0x3f28*/      lsrs r4, r4, #8
+/*0x3f20*/      ldrb r4, [r1], #1   ; r4 = *(uint8_t*)r1; r1++
+/*0x3f24*/      .short 0x1c40 /* adds r0, r0, #1 */ ; r0 = r0 - 1
+/*0x3f26*/      muls r4, r2, r4     ; r4 = r2 * r4
+/*0x3f28*/      lsrs r4, r4, #8     ; r4 = r4 / 16
 /*0x3f2a*/      uxtb r0, r0
-/*0x3f2c*/      strb r4, [r3], #0x78
+/*0x3f2c*/      strb r4, [r3], #0x78 ; *(uint8_t*)r3 = r4; r3 += 0x78
 /*0x3f30*/      cmp r0, #3
-/*0x3f32*/      blo jump_3f20
+/*0x3f32*/      blo jump_3f20       ; r0 < 3 ? jump_3f20 : continue
             jump_3f34:
 /*0x3f34*/      pop {r4, pc}
 
@@ -2253,20 +2259,20 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             jump_4374:
 /*0x4374*/      push.w {r4, r5, r6, r7, r8, sb, sl, lr}
-/*0x4378*/      mov r5, r1          ; r5 = arg2
-/*0x437a*/      mov r6, r0          ; r6 = arg1
+/*0x4378*/      mov r5, r1          ; (sectorAddr) r5 = arg2
+/*0x437a*/      mov r6, r0          ; (ptr) r6 = arg1
 /*0x437c*/      rsbs r0, r5, #0     ; r0 = 0 - arg2
 /*0x437e*/      uxtb r4, r0         ; r4 = r0
 /*0x4380*/      cmp r4, r2
-/*0x4382*/      bhs jump_438e       ; r4 >= arg3 ? jump_438e : continue
+/*0x4382*/      bhs jump_438e       ; r4 >= arg3 (len) ? jump_438e : continue
 /*0x4384*/      subs r0, r2, r4     ; r0 = arg3 + arg2
 /*0x4386*/      ubfx r7, r0, #8, #0x10 ; r7 = r0[24:8]
 /*0x438a*/      uxtb r0, r0
 /*0x438c*/      b jump_4394
             jump_438e:
-/*0x438e*/      movs r7, #0
-/*0x4390*/      uxth r4, r2
-/*0x4392*/      mov r0, r7
+/*0x438e*/      movs r7, #0         ; r7 = 0
+/*0x4390*/      uxth r4, r2         ; r4 = arg3
+/*0x4392*/      mov r0, r7          ; r0 = 0
             jump_4394:
 /*0x4394*/      mov r8, r0          ; r8 = r0
 /*0x4396*/      cbz r4, jump_43a8   ; r4 == 0 ? jump_43a8 : continue
@@ -2275,40 +2281,40 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
                 ; (pageAddr @ arg2)
 /*0x439c*/      bl spi_flash_program_page
 /*0x43a0*/      cmp r0, #1
-/*0x43a2*/      bne jump_43e0
-/*0x43a4*/      add r5, r4
-/*0x43a6*/      add r6, r4
+/*0x43a2*/      bne jump_43e0       ; r0 != 1 ? jump_43e0 : continue
+/*0x43a4*/      add r5, r4          ; r5 = r5 + r4
+/*0x43a6*/      add r6, r4          ; r6 = r6 + r4
             jump_43a8:
-/*0x43a8*/      movs r4, #0
-/*0x43aa*/      mov.w sb, #0x100
+/*0x43a8*/      movs r4, #0         ; r4 = 0
+/*0x43aa*/      mov.w sb, #0x100    ; sb = 0x100
 /*0x43ae*/      b jump_43c8
             jump_43b0:
-/*0x43b0*/      mov r2, sb
-/*0x43b2*/      mov r1, r5
-/*0x43b4*/      mov r0, r6
+/*0x43b0*/      mov r2, sb          ; r2 = 0x100
+/*0x43b2*/      mov r1, r5          ; r1 = arg2
+/*0x43b4*/      mov r0, r6          ; r0 = arg1
 /*0x43b6*/      bl spi_flash_program_page
 /*0x43ba*/      cmp r0, #1
-/*0x43bc*/      bne jump_43e0
-/*0x43be*/      .short 0x1c64 /* adds r4, r4, #1 */
-/*0x43c0*/      add.w r5, r5, #0x100
-/*0x43c4*/      add.w r6, r6, #0x100
+/*0x43bc*/      bne jump_43e0       ; r0 != 0 ? jump_43e0 : continue
+/*0x43be*/      .short 0x1c64 /* adds r4, r4, #1 */ ; r4 = r4  + 1
+/*0x43c0*/      add.w r5, r5, #0x100 ; r5 = r5 + 0x100
+/*0x43c4*/      add.w r6, r6, #0x100 ; r6 = r6 + 0x100
             jump_43c8:
 /*0x43c8*/      cmp r4, r7
-/*0x43ca*/      blt jump_43b0
-/*0x43cc*/      subs.w r0, r8, #0
-/*0x43d0*/      beq jump_43e6
-/*0x43d2*/      mov r2, r0
-/*0x43d4*/      mov r1, r5
-/*0x43d6*/      mov r0, r6
+/*0x43ca*/      blt jump_43b0       ; r4 < r7 ? jump_43b0 : continue
+/*0x43cc*/      subs.w r0, r8, #0   ; r0 = r8
+/*0x43d0*/      beq jump_43e6       ; r0 == 0 ? jump_43e6 : continue
+/*0x43d2*/      mov r2, r0          ; r2 = r0
+/*0x43d4*/      mov r1, r5          ; r1 = r5
+/*0x43d6*/      mov r0, r6          ; r0 = r6
 /*0x43d8*/      bl spi_flash_program_page
 /*0x43dc*/      cmp r0, #1
-/*0x43de*/      beq jump_43e6
+/*0x43de*/      beq jump_43e6       ; r0 == 1 ? jump_43e6 : continue
             jump_43e0:
-/*0x43e0*/      movs r0, #0
+/*0x43e0*/      movs r0, #0         ; r0 = 0
             jump_43e2:
 /*0x43e2*/      pop.w {r4, r5, r6, r7, r8, sb, sl, pc}
             jump_43e6:
-/*0x43e6*/      movs r0, #1
+/*0x43e6*/      movs r0, #1         ; r0 = 1
 /*0x43e8*/      b jump_43e2
 
 /*0x43ea*/  .byte 0x00
@@ -2338,7 +2344,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_4410:
+            spi_flash_write_status_register:
 /*0x4410*/      push {r4, lr}
 /*0x4412*/      mov.w r4, #0x19a
 /*0x4416*/      bl spi_flash_cmd_write_status_register
@@ -2358,8 +2364,8 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x4432*/      pop {r4, pc}
 
             .thumb_func
-            call_4434:
-/*0x4434*/      str r1, [r0, #0x28]
+            gpio_reset_pin:
+/*0x4434*/      str r1, [r0, #0x28] ; *(gpio_base.PxRR) = arg2
 /*0x4436*/      bx lr
 
             .thumb_func
@@ -3282,45 +3288,45 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_4a94:
 /*0x4a94*/      push.w {r4, r5, r6, r7, r8, sb, lr}
-/*0x4a98*/      movs r3, #0xf
-/*0x4a9a*/      movs r4, #0
-/*0x4a9c*/      ldr.w sb, [pc, #0x4c] /* data_4aec */
-/*0x4aa0*/      mov.w ip, #1
-/*0x4aa4*/      ldr.w r8, [pc, #0x48] /* data_4af0 */
+/*0x4a98*/      movs r3, #0xf           ; r3 = 0xf
+/*0x4a9a*/      movs r4, #0             ; r4 = 0
+/*0x4a9c*/      ldr.w sb, [pc, #0x4c]   /* sb = 0x20000094 */
+/*0x4aa0*/      mov.w ip, #1            ; ip = 1
+/*0x4aa4*/      ldr.w r8, [pc, #0x48]   /* r8 = 0x000099ea */
 /*0x4aa8*/      b jump_4ada
             jump_4aaa:
-/*0x4aaa*/      ldrb.w r5, [sb, r3]
+/*0x4aaa*/      ldrb.w r5, [sb, r3]     ; r5 = *(uint8_t*)(sb+r3)
 /*0x4aae*/      cmp r5, #0xff
-/*0x4ab0*/      beq jump_4ada
-/*0x4ab2*/      movs r2, #8
-/*0x4ab4*/      add.w r7, r8, r3, lsl #3
+/*0x4ab0*/      beq jump_4ada           ; r5 == 0xff ? jump_4ada : continue
+/*0x4ab2*/      movs r2, #8             ; r2 = 8
+/*0x4ab4*/      add.w r7, r8, r3, lsl #3 ; r7 = r8 + (r3*8)
 /*0x4ab8*/      b jump_4ad4
             jump_4aba:
-/*0x4aba*/      lsl.w r6, ip, r2
+/*0x4aba*/      lsl.w r6, ip, r2        ; r6 = ip << r2
 /*0x4abe*/      uxtb r6, r6
 /*0x4ac0*/      tst r5, r6
-/*0x4ac2*/      bne jump_4ad4
-/*0x4ac4*/      cbz r1, jump_4ae6
-/*0x4ac6*/      .short 0x1e49 /* subs r1, r1, #1 */
-/*0x4ac8*/      ldrb r6, [r7, r2]
-/*0x4aca*/      .short 0x1c64 /* adds r4, r4, #1 */
-/*0x4acc*/      strb r6, [r0], #1
+/*0x4ac2*/      bne jump_4ad4           ; r5 & r6 != 0 ? jump_4ad4 : continue
+/*0x4ac4*/      cbz r1, jump_4ae6       ; r1 == 0 ? jump_4ae6 : continue
+/*0x4ac6*/      .short 0x1e49 /* subs r1, r1, #1 */ ; r1 = r1 - 1
+/*0x4ac8*/      ldrb r6, [r7, r2]       ; r6 = *(uint8_t*)(r7+r2)
+/*0x4aca*/      .short 0x1c64 /* adds r4, r4, #1 */ ; r4 = r4 + 1
+/*0x4acc*/      strb r6, [r0], #1       ; *(uint8_t*)r0 = r6; r0++
 /*0x4ad0*/      uxtb r1, r1
 /*0x4ad2*/      uxtb r4, r4
             jump_4ad4:
-/*0x4ad4*/      .short 0x1e52 /* subs r2, r2, #1 */
+/*0x4ad4*/      .short 0x1e52 /* subs r2, r2, #1 */ ; r2 = r2 - 1
 /*0x4ad6*/      uxtb r2, r2
-/*0x4ad8*/      bhs jump_4aba
+/*0x4ad8*/      bhs jump_4aba           ; r2 >= 0 ? jump_4aba : continue
             jump_4ada:
-/*0x4ada*/      .short 0x1e5b /* subs r3, r3, #1 */
+/*0x4ada*/      .short 0x1e5b /* subs r3, r3, #1 */ ; r3 = r3 - 1
 /*0x4adc*/      uxtb r3, r3
-/*0x4ade*/      bhs jump_4aaa
-/*0x4ae0*/      mov r0, r4
+/*0x4ade*/      bhs jump_4aaa           ; r3 >= 0 ? jump_4aaa : continue
+/*0x4ae0*/      mov r0, r4              ; r0 = r4
             jump_4ae2:
 /*0x4ae2*/      pop.w {r4, r5, r6, r7, r8, sb, pc}
             jump_4ae6:
-/*0x4ae6*/      movs r0, #0xff
-/*0x4ae8*/      b jump_4ae2
+/*0x4ae6*/      movs r0, #0xff          ; r0 = 0xff
+/*0x4ae8*/      b jump_4ae2             ; return
 
 /*0x4aea*/  .byte 0x00
 /*0x4aeb*/  .byte 0x00
@@ -3426,7 +3432,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_4ba8:
+            bftm0_clk_enable:
 /*0x4ba8*/      push {r4, lr}
 /*0x4baa*/      movs r1, #1         ; r1 = 1
 /*0x4bac*/      lsls r0, r1, #0x10  ; r0 = 0x10000
@@ -3709,8 +3715,8 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_4da8:
 /*0x4da8*/      push {r3, r4, r5, lr}
-/*0x4daa*/      movs r1, #2
-/*0x4dac*/      mov r0, sp
+/*0x4daa*/      movs r1, #2         ; r1 = 2
+/*0x4dac*/      mov r0, sp          ; r0 = sp
 /*0x4dae*/      bl call_4a94
 /*0x4db2*/      ldr r4, [pc, #0x30] /* data_4de4 */
 /*0x4db4*/      cmp r0, #2
@@ -8126,12 +8132,12 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x6dda*/      ldr.w sl, [pc, #0x108] /* sl = NVIC.ICTR_6ee4 */
 /*0x6dde*/      ldr r4, [pc, #0x108] /* r4 = GPIOC_BASE_6ee8 */
 /*0x6de0*/      ldr r5, [pc, #0x108] /* r5 = GPIOA_BASE_6eec */
-/*0x6de2*/      ldr r0, [sp]        ; r0 = *(sp)
+/*0x6de2*/      ldr r0, [sp]        ; r0 = *(sp) = arg1
 /*0x6de4*/      mov.w sb, #0x400    ; sb = 0x400
 /*0x6de8*/      mov.w fp, #2        ; fp = 2
 /*0x6dec*/      mov.w r6, #0x4000   ; r6 = 0x4000
 /*0x6df0*/      mov.w r8, #0x8000   ; r8 = 0x8000
-/*0x6df4*/      cbz r0, jump_6e40   ; r0 == 0 ? jump_6e40 : continue
+/*0x6df4*/      cbz r0, jump_6e40   ; arg1 == 0 ? jump_6e40 : continue
 /*0x6df6*/      movs r1, #0         ; r1 = 0
 /*0x6df8*/      mov r0, r7          ; r0 = BFTM1_BASE
                 ; disable compare match
@@ -8150,59 +8156,70 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
                 ; disable GPTM1 timer
 /*0x6e14*/      bl TM_Cmd
 /*0x6e18*/      str.w fp, [r4, #0x24] ; *(GPIOC.PCSRR) = 2
-/*0x6e1c*/      bl call_7048
-/*0x6e20*/      movs r2, #1
-/*0x6e22*/      movs r1, #4
-/*0x6e24*/      mov r0, r4
+/*0x6e1c*/      bl gpio_config_led_groups
+/*0x6e20*/      movs r2, #1         ; r2 = 1
+/*0x6e22*/      movs r1, #4         ; r1 = 4
+/*0x6e24*/      mov r0, r4          ; r0 = GPIOC_BASE
+                ; set PC2/MBIA_SDI to open drain
 /*0x6e26*/      bl gpio_set_pin_open_drain
-/*0x6e2a*/      movs r2, #1
-/*0x6e2c*/      mov r1, r6
-/*0x6e2e*/      mov r0, r5
+/*0x6e2a*/      movs r2, #1         ; r2 = 1
+/*0x6e2c*/      mov r1, r6          ; r1 = 0x4000
+/*0x6e2e*/      mov r0, r5          ; r0 = GPIOA_BASE
+                ; set PA14/MBIA_DCLK to open drain
 /*0x6e30*/      bl gpio_set_pin_open_drain
-/*0x6e34*/      movs r2, #1
-/*0x6e36*/      mov r1, r8
-/*0x6e38*/      mov r0, r5
+/*0x6e34*/      movs r2, #1         ; r2 = 1
+/*0x6e36*/      mov r1, r8          ; r1 = 0x8000
+/*0x6e38*/      mov r0, r5          ; r0 = GPIOA_BASE
+                ; set PA15/MBIA_LE to open drain
 /*0x6e3a*/      bl gpio_set_pin_open_drain
+                ; disable MBIA_GCLK
 /*0x6e3e*/      b jump_6ed6
             jump_6e40:
-/*0x6e40*/      bl call_7048
-/*0x6e44*/      movs r1, #4
-/*0x6e46*/      ldr r0, [pc, #0xa0] /* GPIOC_BASE_6ee8 */
+/*0x6e40*/      bl gpio_config_led_groups
+/*0x6e44*/      movs r1, #4         ; r1 = 4
+/*0x6e46*/      ldr r0, [pc, #0xa0] /* r0 = GPIOC_BASE_6ee8 */
+                ; set PC2/MBIA_SDI pin
 /*0x6e48*/      bl _gpio_set_reset_pin
-/*0x6e4c*/      mov r1, r6
-/*0x6e4e*/      mov r0, r5
+/*0x6e4c*/      mov r1, r6          ; r1 = 0x4000
+/*0x6e4e*/      mov r0, r5          ; r0 = GPIOA_BASE
+                ; set PA14/MBIA_DCLK pin
 /*0x6e50*/      bl _gpio_set_reset_pin
-/*0x6e54*/      mov r4, r8
-/*0x6e56*/      mov r1, r8
-/*0x6e58*/      mov r0, r5
+/*0x6e54*/      mov r4, r8          ; r4 = 0x8000
+/*0x6e56*/      mov r1, r8          ; r1 = 0x8000
+/*0x6e58*/      mov r0, r5          ; r0 = GPIOA_BASE
+                ; set PA15/MBIA_DCLK pin
 /*0x6e5a*/      bl _gpio_set_reset_pin
-/*0x6e5e*/      movs r2, #0
-/*0x6e60*/      movs r1, #4
-/*0x6e62*/      ldr r0, [pc, #0x84] /* GPIOC_BASE_6ee8 */
+/*0x6e5e*/      movs r2, #0         ; r2 = 0
+/*0x6e60*/      movs r1, #4         ; r1 = 4
+/*0x6e62*/      ldr r0, [pc, #0x84] /* r0 = GPIOC_BASE_6ee8 */
+                ; CMOS output type on PC2/MBIA_SDI
 /*0x6e64*/      bl gpio_set_pin_open_drain
-/*0x6e68*/      movs r2, #0
-/*0x6e6a*/      mov r1, r6
-/*0x6e6c*/      mov r0, r5
+/*0x6e68*/      movs r2, #0         ; r2 = 0
+/*0x6e6a*/      mov r1, r6          ; r1 = 0x4000
+/*0x6e6c*/      mov r0, r5          ; r0 = GPIOA_BASE
+                ; CMOS output type on PA14/MBIA_DCLK
 /*0x6e6e*/      bl gpio_set_pin_open_drain
-/*0x6e72*/      movs r2, #0
-/*0x6e74*/      mov r1, r4
-/*0x6e76*/      mov r0, r5
+/*0x6e72*/      movs r2, #0         ; r2 = 0
+/*0x6e74*/      mov r1, r4          ; r1 = 0x8000
+/*0x6e76*/      mov r0, r5          ; r0 = GPIOA_BASE
+                ; CMOS output type on PA15/MBIA_LE
 /*0x6e78*/      bl gpio_set_pin_open_drain
-/*0x6e7c*/      movw r0, #0x2710
+/*0x6e7c*/      movw r0, #0x2710    ; r0 = 0x2710
 /*0x6e80*/      bl sleep
-/*0x6e84*/      ldr r1, [pc, #0x60] /* GPIOC_BASE_6ee8 */
-/*0x6e86*/      str.w fp, [r1, #0x28]
-/*0x6e8a*/      mov.w r1, #0x300
-/*0x6e8e*/      ldr r0, [pc, #0x64] /* data_6ef4 */
+/*0x6e84*/      ldr r1, [pc, #0x60] /* r1 = GPIOC_BASE_6ee8 */
+/*0x6e86*/      str.w fp, [r1, #0x28] ; *(GPIOC.PARR) = 2
+/*0x6e8a*/      mov.w r1, #0x300    ; r1 = 0x300
+/*0x6e8e*/      ldr r0, [pc, #0x64] /* r0 = 0x20000248 */
+                ; clear 0x300 bytes starting at 0x20000248
 /*0x6e90*/      bl _memzero
-/*0x6e94*/      ldr r1, [pc, #0x60] /* data_6ef8 */
-/*0x6e96*/      movs r0, #0
-/*0x6e98*/      strb r0, [r1, #1]
-/*0x6e9a*/      movs r0, #0x64
+/*0x6e94*/      ldr r1, [pc, #0x60] /* r1 = 0x20000016 */
+/*0x6e96*/      movs r0, #0         ; r0 = 0
+/*0x6e98*/      strb r0, [r1, #1]   ; *(uint8_t*)0x20000017 = 0
+/*0x6e9a*/      movs r0, #0x64      ; r0 = 0x64
 /*0x6e9c*/      bl sleep
 /*0x6ea0*/      bl call_6f50
 /*0x6ea4*/      movs r0, #2
-/*0x6ea6*/      bl call_90d0
+/*0x6ea6*/      bl mbia_send_instruction
 /*0x6eaa*/      str r4, [r5, #0x24]
 /*0x6eac*/      movs r1, #1
 /*0x6eae*/      ldr r0, [pc, #0x40] /* GPTM1_BASE_6ef0 */
@@ -8243,32 +8260,37 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_6efc:
 /*0x6efc*/      push {r4, r5, lr}
-/*0x6efe*/      movs r0, #0x12
-/*0x6f00*/      bl call_90d0
-/*0x6f04*/      mov.w r4, #0x300
-/*0x6f08*/      movs r1, #0xa
-/*0x6f0a*/      mov r0, r4
-/*0x6f0c*/      bl call_9100
-/*0x6f10*/      movs r1, #0xa
-/*0x6f12*/      mov r0, r4
-/*0x6f14*/      bl call_9100
-/*0x6f18*/      movs r1, #2
-/*0x6f1a*/      movs r0, #0
-/*0x6f1c*/      bl call_9100
-/*0x6f20*/      ldr r4, [pc, #0x24] /* GPIOA_BASE_6f48 */
-/*0x6f22*/      mov.w r0, #0x4000
-/*0x6f26*/      str r0, [r4, #0x28]
-/*0x6f28*/      lsls r5, r0, #1
-/*0x6f2a*/      str r5, [r4, #0x24]
-/*0x6f2c*/      movs r1, #8
-/*0x6f2e*/      mov.w r0, #0xc00
-/*0x6f32*/      bl call_9100
-/*0x6f36*/      ldr r1, [pc, #0x14] /* GPIOC_BASE_6f4c */
-/*0x6f38*/      movs r0, #4
-/*0x6f3a*/      str r0, [r1, #0x24]
-/*0x6f3c*/      str r5, [r4, #0x28]
+/*0x6efe*/      movs r0, #0x12      ; r0 = 0x12
+/*0x6f00*/      bl mbia_send_instruction
+/*0x6f04*/      mov.w r4, #0x300    ; r4 = 0x300
+/*0x6f08*/      movs r1, #0xa       ; r1 = 0xa
+/*0x6f0a*/      mov r0, r4          ; r0 = 0x300
+/*0x6f0c*/      bl mbia_shift_data
+/*0x6f10*/      movs r1, #0xa       ; r1 = 0xa
+/*0x6f12*/      mov r0, r4          ; r0 = 0x300
+/*0x6f14*/      bl mbia_shift_data
+/*0x6f18*/      movs r1, #2         ; r1 = 0x2
+/*0x6f1a*/      movs r0, #0         ; r0 = 0
+/*0x6f1c*/      bl mbia_shift_data
+/*0x6f20*/      ldr r4, [pc, #0x24] /* r4 = GPIOA_BASE_6f48 */
+/*0x6f22*/      mov.w r0, #0x4000   ; r0 = 0x4000
+                ; reset PA14/MBIA_DCLK
+/*0x6f26*/      str r0, [r4, #0x28] ; *(GPIOA.PARR) = 0x4000
+/*0x6f28*/      lsls r5, r0, #1     ; r5 = 0x8000
+                ; set PA15/MBIA_LE
+/*0x6f2a*/      str r5, [r4, #0x24] ; *(GPIOA.PASRR) = 0x8000
+/*0x6f2c*/      movs r1, #8         ; r1 = 8
+/*0x6f2e*/      mov.w r0, #0xc00    ; r0 = 0xc00
+/*0x6f32*/      bl mbia_shift_data
+/*0x6f36*/      ldr r1, [pc, #0x14] /* r1 = GPIOC_BASE_6f4c */
+/*0x6f38*/      movs r0, #4         ; r0 = 4
+                ; reset PC2/MBIA_SDI
+/*0x6f3a*/      str r0, [r1, #0x24] ; *(GPIOC.PCSRR) = 4
+                ; reset PA15/MBIA_LE
+/*0x6f3c*/      str r5, [r4, #0x28] ; *(GPIOA.PARR) = 0x8000
 /*0x6f3e*/      nop
 /*0x6f40*/      nop
+                ; set PA15/MBIA_LE
 /*0x6f42*/      str r5, [r4, #0x24]
 /*0x6f44*/      pop {r4, r5, pc}
 
@@ -8284,59 +8306,67 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_6f50:
 /*0x6f50*/      push.w {r4, r5, r6, r7, r8, sb, sl, fp, lr}
-/*0x6f54*/      ldr r1, [pc, #0x80] /* data_6fd8 */
-/*0x6f56*/      ldr r2, [pc, #0x84] /* data_6fdc */
-/*0x6f58*/      movs r5, #0x10
-/*0x6f5a*/      ldrb r0, [r1, #1]
-/*0x6f5c*/      movs r7, #4
-/*0x6f5e*/      add.w r0, r0, r0, lsl #1
-/*0x6f62*/      add.w r4, r2, r0, lsl #5
-/*0x6f66*/      ldrb r0, [r1]
-/*0x6f68*/      ldr.w sl, [pc, #0x74] /* GPIOC_BASE_6fe0 */
-/*0x6f6c*/      ldr r6, [pc, #0x74] /* GPIOA_BASE_6fe4 */
-/*0x6f6e*/      mov.w fp, #0x4000
-/*0x6f72*/      adds r4, #0x5e
-/*0x6f74*/      cbz r0, jump_6f84
-/*0x6f76*/      .short 0x1e40 /* subs r0, r0, #1 */
-/*0x6f78*/      ands r0, r0, #0xff
-/*0x6f7c*/      strb r0, [r1]
-/*0x6f7e*/      bne jump_6f84
+/*0x6f54*/      ldr r1, [pc, #0x80] /* r1 = 0x20000016 */
+/*0x6f56*/      ldr r2, [pc, #0x84] /* r2 = 0x20000248 */
+/*0x6f58*/      movs r5, #0x10      ; r5 = 0x10
+                ; get Qn from 0x20000017
+/*0x6f5a*/      ldrb r0, [r1, #1]   ; (Qn) r0 = *(uint8_t*)0x20000017
+/*0x6f5c*/      movs r7, #4         ; r7 = 4
+/*0x6f5e*/      add.w r0, r0, r0, lsl #1 ; r0 = Qn*3
+/*0x6f62*/      add.w r4, r2, r0, lsl #5 ; r4 = 0x20000248 + (Qn*0x60)
+/*0x6f66*/      ldrb r0, [r1]       ; r0 = *(uint8_t*)0x20000016
+/*0x6f68*/      ldr.w sl, [pc, #0x74] /* sl = GPIOC_BASE_6fe0 */
+/*0x6f6c*/      ldr r6, [pc, #0x74] /* r6 = GPIOA_BASE_6fe4 */
+/*0x6f6e*/      mov.w fp, #0x4000   ; fp = 0x4000
+/*0x6f72*/      adds r4, #0x5e      ; r4 = r4 + 0x5e
+/*0x6f74*/      cbz r0, jump_6f84   ; r0 == 0 ? jump_6f84 : continue
+/*0x6f76*/      .short 0x1e40 /* subs r0, r0, #1 */ ; r0 = r0 - 1
+/*0x6f78*/      ands r0, r0, #0xff  ; r0 = r0 & 0xff
+/*0x6f7c*/      strb r0, [r1]       ; *(uint8_t*)0x20000016 = r0
+/*0x6f7e*/      bne jump_6f84       ; r0 != 0 ? jump_6f84 : continue
 /*0x6f80*/      bl call_6efc
             jump_6f84:
-/*0x6f84*/      mov sb, r7
+/*0x6f84*/      mov sb, r7          ; sb = 4
             jump_6f86:
-/*0x6f86*/      .short 0x1e6d /* subs r5, r5, #1 */
+/*0x6f86*/      .short 0x1e6d /* subs r5, r5, #1 */ ; r5 = r5 - 1
 /*0x6f88*/      uxtb r5, r5
-/*0x6f8a*/      blo jump_6fd0
-/*0x6f8c*/      mov.w r8, #0x8000
-/*0x6f90*/      str.w r8, [r6, #0x28]
-/*0x6f94*/      ldrh r0, [r4]
-/*0x6f96*/      subs r7, r4, #2
-/*0x6f98*/      movs r1, #0xa
-/*0x6f9a*/      bl call_9100
-/*0x6f9e*/      ldrh r0, [r7]
-/*0x6fa0*/      movs r1, #0xa
-/*0x6fa2*/      bl call_9100
-/*0x6fa6*/      ldrh r0, [r4, #-0x4]
-/*0x6faa*/      movs r1, #9
-/*0x6fac*/      ubfx r7, r0, #6, #1
-/*0x6fb0*/      .short 0x1fa4 /* subs r4, r4, #6 */
-/*0x6fb2*/      bl call_9100
-/*0x6fb6*/      mov r1, fp
-/*0x6fb8*/      str.w fp, [r6, #0x28]
-/*0x6fbc*/      str.w r8, [r6, #0x24]
-/*0x6fc0*/      mov r0, sb
-/*0x6fc2*/      mov r2, sl
-/*0x6fc4*/      cbz r7, jump_6fca
-/*0x6fc6*/      str r0, [r2, #0x24]
+/*0x6f8a*/      blo jump_6fd0       ; r5 < 0 ? jump_6fd0 : continue
+/*0x6f8c*/      mov.w r8, #0x8000   ; r8 = 0x8000
+                ; reset PA15/MBIA_LE
+/*0x6f90*/      str.w r8, [r6, #0x28] ; *(GPIOA.PARR) = 0x8000
+/*0x6f94*/      ldrh r0, [r4]       ; r0 = *(uint16_t*)r4
+/*0x6f96*/      subs r7, r4, #2     ; r7 = r4 - 2
+/*0x6f98*/      movs r1, #0xa       ; r1 = 0xa
+/*0x6f9a*/      bl mbia_shift_data
+/*0x6f9e*/      ldrh r0, [r7]       ; r0 = *(uint16_t*)r7
+/*0x6fa0*/      movs r1, #0xa       ; r1 = 0xa
+/*0x6fa2*/      bl mbia_shift_data
+/*0x6fa6*/      ldrh r0, [r4, #-0x4] ; r0 = *(uint16_t*)(r4-0x4)
+/*0x6faa*/      movs r1, #9         ; r1 = 9
+/*0x6fac*/      ubfx r7, r0, #6, #1 ; r7 = r0[6]
+/*0x6fb0*/      .short 0x1fa4 /* subs r4, r4, #6 */ ; r4 = r4 - 6
+/*0x6fb2*/      bl mbia_shift_data
+/*0x6fb6*/      mov r1, fp          ; r1 = 0x4000
+                ; reset PA14/MBIA_DCLK
+/*0x6fb8*/      str.w fp, [r6, #0x28] ; *(GPIOA.PARR) = 0x4000
+                ; set PA15/MBIA_DCLK
+/*0x6fbc*/      str.w r8, [r6, #0x24] ; *(GPIOA.PASRR) = 0x8000
+/*0x6fc0*/      mov r0, sb          ; r0 = 4
+/*0x6fc2*/      mov r2, sl          ; r2 = GPIOC_BASE
+/*0x6fc4*/      cbz r7, jump_6fca   ; r7 == 0 ?jump_6fca : continue
+                ; set PC2/MBIA_SDI
+/*0x6fc6*/      str r0, [r2, #0x24] ; *(GPIOC.PCSRR) = 4
 /*0x6fc8*/      b jump_6fcc
             jump_6fca:
-/*0x6fca*/      str r0, [r2, #0x28]
+                ; reset PC2/MBIA_SDI
+/*0x6fca*/      str r0, [r2, #0x28] ; *(GPIOC.PCRR) = 4
             jump_6fcc:
-/*0x6fcc*/      str r1, [r6, #0x24]
+                ; set PA14/MBIA_DCLK
+/*0x6fcc*/      str r1, [r6, #0x24] ; *(GPIOA.PASRR) = 0x4000
 /*0x6fce*/      b jump_6f86
             jump_6fd0:
-/*0x6fd0*/      str.w sb, [sl, #0x24]
+                ; set PC2/MBIA_SDI
+/*0x6fd0*/      str.w sb, [sl, #0x24]   ; *(GPIOC.PCSRR) = 4
 /*0x6fd4*/      pop.w {r4, r5, r6, r7, r8, sb, sl, fp, pc}
 
             data_6fd8:
@@ -8350,51 +8380,59 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_6fe8:
-/*0x6fe8*/      ldr r1, [pc, #0x54] /* GPIOC_BASE_7040 */
-/*0x6fea*/      movs r0, #0
-/*0x6fec*/      ldr r2, [r1, #0x1c]
-/*0x6fee*/      lsls r2, r2, #0x16
-/*0x6ff0*/      bpl jump_6ff4
-/*0x6ff2*/      movs r0, #1
+            gpio_get_key_A_data:
+/*0x6fe8*/      ldr r1, [pc, #0x54] /* r1 = GPIOC_BASE_7040 */
+/*0x6fea*/      movs r0, #0         ; r0 = 0
+/*0x6fec*/      ldr r2, [r1, #0x1c] ; r2 = *(GPIOC.PCDINR)
+/*0x6fee*/      lsls r2, r2, #0x16  ; r2 = r2 << 0x16
+                ; continue if PC9/KEY_A1 == 1; jump otherwise
+/*0x6ff0*/      bpl jump_6ff4       ; r2 >= 0 ? jump_6ff4 : continue
+/*0x6ff2*/      movs r0, #1         ; r0 = 1
             jump_6ff4:
-/*0x6ff4*/      ldr r2, [pc, #0x4c] /* GPIOA_BASE_7044 */
-/*0x6ff6*/      ldr r3, [r2, #0x1c]
-/*0x6ff8*/      lsls r3, r3, #0x1a
-/*0x6ffa*/      bpl jump_7000
-/*0x6ffc*/      orr r0, r0, #2
+/*0x6ff4*/      ldr r2, [pc, #0x4c] /* r2 = GPIOA_BASE_7044 */
+/*0x6ff6*/      ldr r3, [r2, #0x1c] ; r3 = *(GPIOA.PADINR)
+/*0x6ff8*/      lsls r3, r3, #0x1a  ; r3 = r3 << 0x1a
+                ; continue if PA5/KEY_A2 == 1; jump otherwise
+/*0x6ffa*/      bpl jump_7000       ; r3 >= 0 ? jump_7000 : continue
+/*0x6ffc*/      orr r0, r0, #2      ; r0 = r0 | 2
             jump_7000:
-/*0x7000*/      ldr r3, [r2, #0x1c]
-/*0x7002*/      lsls r3, r3, #0x19
-/*0x7004*/      bpl jump_700a
-/*0x7006*/      orr r0, r0, #4
+/*0x7000*/      ldr r3, [r2, #0x1c] ; r3 = *(GPIOA.PADINR)
+/*0x7002*/      lsls r3, r3, #0x19  ; r3 = r3 << 0x19
+                ; continue if PA6/KEY_A3 == 1; jump otherwise
+/*0x7004*/      bpl jump_700a       ; r3 >= 0 ? jump_700a : continue
+/*0x7006*/      orr r0, r0, #4      ; r0 = r0 | 4
             jump_700a:
-/*0x700a*/      ldr r2, [r2, #0x1c]
-/*0x700c*/      lsls r2, r2, #0x18
-/*0x700e*/      bpl jump_7014
-/*0x7010*/      orr r0, r0, #8
+/*0x700a*/      ldr r2, [r2, #0x1c] ; r2 = *(GPIOA.PADINR)
+/*0x700c*/      lsls r2, r2, #0x18  ; r2 = r2 << 0x18
+                ; continue if PA7/KEY_A4 == 1; jump otherwise
+/*0x700e*/      bpl jump_7014       ; r2 >= 0 ? jump_7014 : continue
+/*0x7010*/      orr r0, r0, #8      ; r0 = r0 | 8
             jump_7014:
-/*0x7014*/      ldr r2, [r1, #0x1c]
-/*0x7016*/      lsls r2, r2, #0x14
-/*0x7018*/      bpl jump_701e
-/*0x701a*/      orr r0, r0, #0x10
+/*0x7014*/      ldr r2, [r1, #0x1c] ; r2 = *(GPIOC.PCDINR)
+/*0x7016*/      lsls r2, r2, #0x14  ; r2 = r2 << 0x14
+                ; continue if PC11/KEY_A5 == 1; jump otherwise
+/*0x7018*/      bpl jump_701e       ; r2 >= 0 ? jump_701e : continue
+/*0x701a*/      orr r0, r0, #0x10   ; r0 = r0 | 0x10
             jump_701e:
-/*0x701e*/      ldr r2, [r1, #0x1c]
-/*0x7020*/      lsls r2, r2, #0x12
-/*0x7022*/      bpl jump_7028
-/*0x7024*/      orr r0, r0, #0x20
+/*0x701e*/      ldr r2, [r1, #0x1c] ; r2 = *(GPIOC.PCDINR)
+/*0x7020*/      lsls r2, r2, #0x12  ; r2 = r2 << 0x12
+                ; continue if PC13/KEY_A6 == 1; jump otherwise
+/*0x7022*/      bpl jump_7028       ; r2 >= 0 ? jump_7028 : continue
+/*0x7024*/      orr r0, r0, #0x20   ; r0 = r0 | 0x20
             jump_7028:
-/*0x7028*/      ldr r2, [r1, #0x1c]
-/*0x702a*/      lsls r2, r2, #0x11
-/*0x702c*/      bpl jump_7032
-/*0x702e*/      orr r0, r0, #0x40
+/*0x7028*/      ldr r2, [r1, #0x1c] ; r2 = *(GPIOC.PCDINR)
+/*0x702a*/      lsls r2, r2, #0x11  ; r2 = r2 << 0x11
+                ; continue if PC14/KEY_A7 == 1; jump otherwise
+/*0x702c*/      bpl jump_7032       ; r2 >= 0 ? jump_7032 : continue
+/*0x702e*/      orr r0, r0, #0x40   ; r0 = r0 | 0x40
             jump_7032:
-/*0x7032*/      ldr r1, [r1, #0x1c]
-/*0x7034*/      lsls r1, r1, #0x10
-/*0x7036*/      bpl jump_703c
-/*0x7038*/      orr r0, r0, #0x80
+/*0x7032*/      ldr r1, [r1, #0x1c] ; r1 = *(GPIOC.PCDINR)
+/*0x7034*/      lsls r1, r1, #0x10  ; r1 = r1 << 0x10
+                ; continue if PC15/KEY_A8 == 1; jump otherwise
+/*0x7036*/      bpl jump_703c       ; r1 >= 0 ? jump_703c : continue
+/*0x7038*/      orr r0, r0, #0x80   ; r0 = r0 | 0x80
             jump_703c:
-/*0x703c*/      bx lr
+/*0x703c*/      bx lr               ; return r0
 
 /*0x703e*/  .byte 0x00
 /*0x703f*/  .byte 0x00
@@ -8406,18 +8444,19 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_7048:
+            gpio_config_led_groups:
 /*0x7048*/      push {r4, r5, r6, lr}
 /*0x704a*/      ldr r4, [pc, #0x34] /* r4 = led_gpio_map */
 /*0x704c*/      movs r5, #8         ; r5 = 8
 /*0x704e*/      b jump_7076
             jump_7050:
-                ; get pin from led key map
+                ; get pin from led gpio map
 /*0x7050*/      ldrh r0, [r4, #4]   ; r0 = *(uint16_t*)(r4+4)
 /*0x7052*/      movs r2, #0         ; r2 = 0 (IN)
 /*0x7054*/      uxth r1, r0         ; (pin) r1 = r0
-                ; get gpio base of pin from led key map
+                ; get gpio base of pin from led gpio map
 /*0x7056*/      ldr r0, [r4]        ; (gpio_base) r0 = *r4
+                ; set pin direction to input
 /*0x7058*/      bl gpio_set_pin_direction
 /*0x705c*/      ldrh r0, [r4, #4]   ; r0 = *(uint16_t*)(r4+4)
 /*0x705e*/      movs r2, #1         ; r2 = 1
@@ -8431,7 +8470,8 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x706e*/      ldr r0, [r4]        ; r0 = *r4
                 ; disable pull register on pin
 /*0x7070*/      bl gpio_set_pin_pull_up_down_disable
-/*0x7074*/      adds r4, #8
+                ; move to next pin in led gpio map
+/*0x7074*/      adds r4, #8         ; r4 = r4 + 8
             jump_7076:
 /*0x7076*/      .short 0x1e6d /* subs r5, r5, #1 */
 /*0x7078*/      uxtb r5, r5
@@ -8525,7 +8565,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7116*/      bic r4, r0, #2      ; r4 = r0 & ~2
             jump_711a:
 /*0x711a*/      uxtb r0, r4
-/*0x711c*/      bl call_4410
+/*0x711c*/      bl spi_flash_write_status_register
 /*0x7120*/      bl spi_flash_cmd_read_status_register
 /*0x7124*/      bfi r4, r0, #0, #8
             jump_7128:
@@ -11364,16 +11404,17 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             jump_860c:
 /*0x860c*/      push {r4, r5, r6, lr}
-/*0x860e*/      mov r6, r0      ; r6 = arg1
-/*0x8610*/      mov r5, r2      ; r5 = arg3
-/*0x8612*/      mov r4, r1      ; r4 = arg2
+/*0x860e*/      mov r6, r0      ; (ptr) r6 = arg1
+/*0x8610*/      mov r5, r2      ; (len) r5 = arg3
+/*0x8612*/      mov r4, r1      ; (sectorAddr) r4 = arg2
 /*0x8614*/      mov r0, r1      ; (sectorAddr) r0 = arg2
 /*0x8616*/      bl spi_flash_erase_sector
-/*0x861a*/      mov r2, r5      ; r2 = arg3
-/*0x861c*/      mov r1, r4      ; r1 = arg2
-/*0x861e*/      mov r0, r6      ; r0 = arg1
+/*0x861a*/      mov r2, r5      ; (len) r2 = arg3
+/*0x861c*/      mov r1, r4      ; (sectorAddr) r1 = arg2
+/*0x861e*/      mov r0, r6      ; (ptr) r0 = arg1
 /*0x8620*/      pop.w {r4, r5, r6, lr}
 /*0x8624*/      b.w jump_4374
+
             jump_8628:
 /*0x8628*/      push {r4, r5, r6, lr}
 /*0x862a*/      ldr r6, [pc, #0x58] /* data_8684 */
@@ -12749,44 +12790,50 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_9020:
 /*0x9020*/      push {r4, r5, r6, lr}
-/*0x9022*/      ldr r4, [pc, #0x4c] /* data_9070 */
-/*0x9024*/      ldr r5, [pc, #0x4c] /* data_9074 */
-/*0x9026*/      movs r6, #0xf
+/*0x9022*/      ldr r4, [pc, #0x4c] /* r4 = 0x200000df */
+/*0x9024*/      ldr r5, [pc, #0x4c] /* r5 = key_gpio_map.KEY_B3_9074 */
+/*0x9026*/      movs r6, #0xf       ; r6 = 0xf
             jump_9028:
-/*0x9028*/      ldr r1, [r5]
-/*0x902a*/      ldr r0, [r5, #4]
-/*0x902c*/      str r0, [r1, #0x28]
-/*0x902e*/      .short 0x1e76 /* subs r6, r6, #1 */
+/*0x9028*/      ldr r1, [r5]        ; (gpio_base) r1 = *r5
+/*0x902a*/      ldr r0, [r5, #4]    ; (pin) r0 = *(r5+4)
+                ; reset B key
+/*0x902c*/      str r0, [r1, #0x28] ; *(gpio_base.PxRR) = r0
+/*0x902e*/      .short 0x1e76 /* subs r6, r6, #1 */ ; r6 = r6 - 1
 /*0x9030*/      uxtb r6, r6
-/*0x9032*/      movs r0, #4
-/*0x9034*/      .short 0x1ee4 /* subs r4, r4, #3 */
+/*0x9032*/      movs r0, #4         ; r0 = 4
+/*0x9034*/      .short 0x1ee4 /* subs r4, r4, #3 */ ; r4 = r4 - 3
 /*0x9036*/      bl sleep
-/*0x903a*/      bl call_6fe8
-/*0x903e*/      ldr r2, [r5]
-/*0x9040*/      ldr r1, [r5, #4]
-/*0x9042*/      str r1, [r2, #0x24]
-/*0x9044*/      ldrb r1, [r4, #1]
+/*0x903a*/      bl gpio_get_key_A_data ; r0 = A_data
+                ; get gpio base from key map
+/*0x903e*/      ldr r2, [r5]        ; (gpio_base) r2 = *r5
+                ; get pin from key map
+/*0x9040*/      ldr r1, [r5, #4]    ; (pin) r1 = *(r5+4)
+                ; set B key
+/*0x9042*/      str r1, [r2, #0x24] ; *(gpio_base.PxSRR) = r1
+/*0x9044*/      ldrb r1, [r4, #1]   ; r1 = *(uint8_t*)(r4+1)
 /*0x9046*/      cmp r1, r0
-/*0x9048*/      beq jump_9050
-/*0x904a*/      strb r0, [r4, #1]
-/*0x904c*/      movs r0, #3
+/*0x9048*/      beq jump_9050       ; r1 == r0 ? jump_9050 : continue
+/*0x904a*/      strb r0, [r4, #1]   ; *(uint8_t*)(r4+1) = r0
+/*0x904c*/      movs r0, #3         ; r0 = 3
 /*0x904e*/      b jump_905c
             jump_9050:
-/*0x9050*/      ldrb r0, [r4]
-/*0x9052*/      cbz r0, jump_905e
+/*0x9050*/      ldrb r0, [r4]       ; r0 = *(uint8_t*)r4
+/*0x9052*/      cbz r0, jump_905e   ; r0 == 0 ? jump_905e : continue
 /*0x9054*/      cmp r0, #1
-/*0x9056*/      bne jump_905a
-/*0x9058*/      strb r1, [r4, #2]
+/*0x9056*/      bne jump_905a       ; r0 == 1 ? jump_905a : continue
+/*0x9058*/      strb r1, [r4, #2]   ; *(uint8_t*)(r4+2) = r1
             jump_905a:
-/*0x905a*/      .short 0x1e40 /* subs r0, r0, #1 */
+/*0x905a*/      .short 0x1e40 /* subs r0, r0, #1 */ ; r0 = r0 - 1
             jump_905c:
-/*0x905c*/      strb r0, [r4]
+/*0x905c*/      strb r0, [r4]       ; *(uint8_t*)r4 = r0
             jump_905e:
 /*0x905e*/      cmp r6, #0
-/*0x9060*/      beq jump_906c
-/*0x9062*/      movs r0, #5
+                ; reached B5 key ? return
+/*0x9060*/      beq jump_906c       ; r6 == 0 ? jump_906c : continue
+/*0x9062*/      movs r0, #5         ; r0 = 5
 /*0x9064*/      bl sleep
-/*0x9068*/      subs r5, #8
+                ; move to next key...
+/*0x9068*/      subs r5, #8         ; r5 = 8
 /*0x906a*/      b jump_9028
             jump_906c:
 /*0x906c*/      pop {r4, r5, r6, pc}
@@ -12796,23 +12843,23 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             data_9070:
 /*0x9070*/  .word 0x200000df
-            data_9074:
+            key_gpio_map.KEY_B3_9074:
 /*0x9074*/  .word 0x000099e2 /* possible pointer */
 
             jump_9078:
 /*0x9078*/      push {r4, r5, r6, lr}
-/*0x907a*/      ldr r0, [pc, #0x48] /* data_90c4 */
+/*0x907a*/      ldr r0, [pc, #0x48]     /* r0 = 0x20000004 */
 /*0x907c*/      sub sp, #0x18
-/*0x907e*/      ldr r0, [r0]
-/*0x9080*/      ldr r1, [pc, #0x44] /* data_90c8 */
-/*0x9082*/      ldr r6, [pc, #0x48] /* GPTM1_BASE_90cc */
-/*0x9084*/      udiv r4, r0, r1
-/*0x9088*/      .short 0x1e64 /* subs r4, r4, #1 */
-/*0x908a*/      strh.w r4, [sp, #0xc]
-/*0x908e*/      movs r5, #0
-/*0x9090*/      strh.w r5, [sp, #0xe]
-/*0x9094*/      add r1, sp, #0xc
-/*0x9096*/      mov r0, r6
+/*0x907e*/      ldr r0, [r0]            ; r0 = *0x20000004
+/*0x9080*/      ldr r1, [pc, #0x44]     /* r1 = 0x0036ee80 */
+/*0x9082*/      ldr r6, [pc, #0x48]     /* GPTM1_BASE_90cc */
+/*0x9084*/      udiv r4, r0, r1         ; r4 = r0 / r1
+/*0x9088*/      .short 0x1e64 /* subs r4, r4, #1 */ ; r4 = r4 - 1
+/*0x908a*/      strh.w r4, [sp, #0xc]   ; *(uint16_t*)(sp+0xc) = r4
+/*0x908e*/      movs r5, #0             ; r5 = 0
+/*0x9090*/      strh.w r5, [sp, #0xe]   ; *(uint16_t*)(sp+0xe) = r5
+/*0x9094*/      add r1, sp, #0xc        ; r1 = sp + 0xc
+/*0x9096*/      mov r0, r6              ; r0 = r6
 /*0x9098*/      bl TM_TimeBaseInit
 /*0x909c*/      strb.w r5, [sp]
 /*0x90a0*/      movs r0, #7
@@ -12840,27 +12887,32 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_90d0:
+            mbia_send_instruction:
 /*0x90d0*/      push {r4, lr}
-/*0x90d2*/      ldr r1, [pc, #0x28] /* GPIOA_BASE_90fc */
-/*0x90d4*/      mov.w r4, #0x8000
-/*0x90d8*/      str r4, [r1, #0x28]
+/*0x90d2*/      ldr r1, [pc, #0x28] /* r1 = GPIOA_BASE_90fc */
+/*0x90d4*/      mov.w r4, #0x8000   ; r4 = 0x8000
+                ; reset PA15/MBIA_LE
+/*0x90d8*/      str r4, [r1, #0x28] ; *(GPIOA.PARR) = 0x8000
 /*0x90da*/      nop
 /*0x90dc*/      nop
-/*0x90de*/      str r4, [r1, #0x24]
-/*0x90e0*/      mov.w r2, #0x4000
+                ; set PA15/MBIA_LE
+/*0x90de*/      str r4, [r1, #0x24] ; *(GPIOA.PASRR) = 0x8000
+/*0x90e0*/      mov.w r2, #0x4000   ; r2 = 0x4000
 /*0x90e4*/      b jump_90f0
             jump_90e6:
-/*0x90e6*/      str r2, [r1, #0x28]
+                ; reset PA14/MBIA_DCLK
+/*0x90e6*/      str r2, [r1, #0x28] ; *(GPIOA.PARR) = 0x4000
 /*0x90e8*/      nop
 /*0x90ea*/      nop
-/*0x90ec*/      str r2, [r1, #0x24]
+                ; set PA14/MBIA_DCLK
+/*0x90ec*/      str r2, [r1, #0x24] ; *(GPIOA.PASRR) = 0x4000
 /*0x90ee*/      nop
             jump_90f0:
 /*0x90f0*/      .short 0x1e40 /* subs r0, r0, #1 */
-/*0x90f2*/      uxtb r0, r0
-/*0x90f4*/      bhs jump_90e6
-/*0x90f6*/      str r4, [r1, #0x28]
+/*0x90f2*/      uxtb r0, r0         ; r0 = r0
+/*0x90f4*/      bhs jump_90e6       ; r0 >= 0 ? jump_90e6 : continue
+                ; reset PA15/MBIA_LE
+/*0x90f6*/      str r4, [r1, #0x28] ; *(GPIOA.PARR) = 0x8000
 /*0x90f8*/      pop {r4, pc}
 
 /*0x90fa*/  .byte 0x00
@@ -12871,30 +12923,39 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_9100:
+            mbia_shift_data:
+            ; r0 : value
+            ; r1 : len
 /*0x9100*/      push {r4, r5, r6, r7, lr}
-/*0x9102*/      movs r2, #4
-/*0x9104*/      ldr r3, [pc, #0x24] /* GPIOC_BASE_912c */
-/*0x9106*/      lsls r4, r2, #0xc
-/*0x9108*/      ldr r5, [pc, #0x24] /* GPIOA_BASE_9130 */
-/*0x910a*/      movw r6, #0xffff
+/*0x9102*/      movs r2, #4         ; r2 = 4
+/*0x9104*/      ldr r3, [pc, #0x24] /* r3 = GPIOC_BASE_912c */
+/*0x9106*/      lsls r4, r2, #0xc   ; r4 = 0x4000
+/*0x9108*/      ldr r5, [pc, #0x24] /* r5 = GPIOA_BASE_9130 */
+/*0x910a*/      movw r6, #0xffff    ; r6 = 0xffff
 /*0x910e*/      b jump_9124
             jump_9110:
 /*0x9110*/      nop
-/*0x9112*/      str r4, [r5, #0x28]
-/*0x9114*/      lsls r7, r0, #0x10
-/*0x9116*/      bpl jump_911c
-/*0x9118*/      str r2, [r3, #0x24]
+                ; reset PA14/MBIA_DCLK
+/*0x9112*/      str r4, [r5, #0x28] ; *(GPIOA.PARR) = 0x4000
+/*0x9114*/      lsls r7, r0, #0x10  ; r7 = r0 << 0x10
+                ; jump if r0[15] == 1 else continue
+                ; write r0[15] to MBIA_SDI
+/*0x9116*/      bpl jump_911c       ; r7 >= 0 ? jump_911c : continue
+                ; set PC2/MBIA_SDI (write 1)
+/*0x9118*/      str r2, [r3, #0x24] ; *(GPIOC.PCSRR) = 4
 /*0x911a*/      b jump_911e
             jump_911c:
-/*0x911c*/      str r2, [r3, #0x28]
+                ; reset PC2/MBIA_SDI (write 0)
+/*0x911c*/      str r2, [r3, #0x28] ; *(GPIOC.PCRR) = 4
             jump_911e:
-/*0x911e*/      str r4, [r5, #0x24]
-/*0x9120*/      and.w r0, r6, r0, lsl #1
+                ; set PA14/MBIA_DCLK
+/*0x911e*/      str r4, [r5, #0x24] ; *(GPIOA.PASRR) = 0x4000
+                ; move to next bit in src
+/*0x9120*/      and.w r0, r6, r0, lsl #1 ; r0 = 0xffff & (r0<<1)
             jump_9124:
-/*0x9124*/      .short 0x1e49 /* subs r1, r1, #1 */
+/*0x9124*/      .short 0x1e49 /* subs r1, r1, #1 */ ; r1 = r1 - 1
 /*0x9126*/      uxtb r1, r1
-/*0x9128*/      bhs jump_9110
+/*0x9128*/      bhs jump_9110       ; r1 >= 0 ? jump_9110 : continue
 /*0x912a*/      pop {r4, r5, r6, r7, pc}
 
             GPIOC_BASE_912c:
@@ -13318,29 +13379,30 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x943a*/      bl mbia_init
 /*0x943e*/      nop.w
 /*0x9442*/      bl call_951c
-/*0x9446*/      bl call_4ba8
+/*0x9446*/      bl bftm0_clk_enable
 /*0x944a*/      movs r0, #0         ; r0 = 0
+                ; enable
 /*0x944c*/      bl call_4af4
-/*0x9450*/      movs r0, #0xa
+/*0x9450*/      movs r0, #0xa       ; r0 = 0xa
 /*0x9452*/      bl sleep
-/*0x9456*/      movs r0, #1
+/*0x9456*/      movs r0, #1         ; r0 = 1
 /*0x9458*/      bl call_6acc
 /*0x945c*/      bl call_4da8
-/*0x9460*/      ldr r4, [pc, #0xb0] /* data_9514 */
-/*0x9462*/      movs r5, #1
-/*0x9464*/      cbz r0, jump_9468
-/*0x9466*/      strh r5, [r4, #6]
+/*0x9460*/      ldr r4, [pc, #0xb0] /* r4 = 0x20000044 */
+/*0x9462*/      movs r5, #1         ; r5 = 1
+/*0x9464*/      cbz r0, jump_9468   ; r0 == 0 ? jump_9468 : continue
+/*0x9466*/      strh r5, [r4, #6]   ; *(uint16_t*)0x2000004a = 1
             jump_9468:
-/*0x9468*/      ldrh r0, [r4, #6]
-/*0x946a*/      cbz r0, jump_948a
-/*0x946c*/      movs r0, #0
+/*0x9468*/      ldrh r0, [r4, #6]   ; r0 = *(uint16_t*)0x2000004a
+/*0x946a*/      cbz r0, jump_948a   ; r0 == 0 ? jump_948a : continue
+/*0x946c*/      movs r0, #0         ; r0 = 0
 /*0x946e*/      bl call_6dd4
-/*0x9472*/      movs r0, #0
+/*0x9472*/      movs r0, #0         ; r0 = 0
 /*0x9474*/      bl call_6acc
             jump_9478:
-/*0x9478*/      ldrh r0, [r4, #6]
-/*0x947a*/      .short 0x1c40 /* adds r0, r0, #1 */
-/*0x947c*/      strh r0, [r4, #6]
+/*0x9478*/      ldrh r0, [r4, #6]   ; r0 = *(uint16_t*)0x2000004a
+/*0x947a*/      .short 0x1c40 /* adds r0, r0, #1 */ ; r0 = r0 + 1
+/*0x947c*/      strh r0, [r4, #6]   ; *(uint16_t*)0x2000004a = r0
 /*0x947e*/      bl call_9538
 /*0x9482*/      movs r0, #1
 /*0x9484*/      bl call_674c
@@ -13350,7 +13412,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x948c*/      bl call_4af4
 /*0x9490*/      bl call_37ac
 /*0x9494*/      bl call_8210
-/*0x9498*/      ldr r6, [pc, #0x7c] /* data_9518 */
+/*0x9498*/      ldr r6, [pc, #0x7c] /* 0x200009fc */
             jump_949a:
 /*0x949a*/      ldrb r0, [r4, #3]
 /*0x949c*/      cbnz r0, jump_94ae
@@ -13382,7 +13444,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x94d4*/      strb r5, [r4, #1]
 /*0x94d6*/      movs r0, #0
 /*0x94d8*/      bl call_4af4
-/*0x94dc*/      movs r0, #0
+/*0x94dc*/      movs r0, #0         ; r0 = 0
 /*0x94de*/      bl call_6dd4
 /*0x94e2*/      movs r0, #0
 /*0x94e4*/      bl call_6acc
@@ -13395,7 +13457,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x94f2*/      strh r0, [r4, #6]
 /*0x94f4*/      bl handle_frame
 /*0x94f8*/      bl call_9538
-/*0x94fc*/      ldr r0, [pc, #0x14] /* data_9514 */
+/*0x94fc*/      ldr r0, [pc, #0x14] /* 0x20000044 */
 /*0x94fe*/      adds r0, #0xc
 /*0x9500*/      ldr r0, [r0]
 /*0x9502*/      lsrs r0, r0, #0x1e
@@ -13403,7 +13465,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x9506*/      movs r0, #1
 /*0x9508*/      bl call_674c
             jump_950c:
-/*0x950c*/      ldr r0, [pc, #8] /* data_9518 */
+/*0x950c*/      ldr r0, [pc, #8] /* 0x200009fc */
 /*0x950e*/      bl call_819c
 /*0x9512*/      b jump_949a
 
