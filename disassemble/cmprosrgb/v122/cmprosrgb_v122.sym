@@ -113,6 +113,10 @@
 3958: sleep
 # int perip_clock_config(void)
 3964: perip_clock_config
+# void usb_enable_dp_pull_up(void)
+3a18: usb_enable_dp_pull_up
+# void usb_disable_dp_pull_up(void)
+3a2a: usb_disable_dp_pull_up
 3a9e
 # void ckcu_set_AHBCCR(uint32_t bits, int enable)
 3ab0: ckcu_set_AHBCCR
@@ -277,6 +281,8 @@
 61b8
 # void setup_intr_priority(void)
 61c8: setup_intr_priority
+# void nvic_disable_interrupt(IRQn_Type IRQn)
+6250: nvic_disable_interrupt
 # uint32_t NVIC_EncodePriority(uint32_t PriorityGroup, uint32_t PreemptPriority, uint32_t SubPriority)
 6266: NVIC_EncodePriority
 # void NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
@@ -300,6 +306,11 @@
 667c: _mbia_gclk_enable
 # void _mbia_gclk_disable(void)
 669c: _mbia_gclk_disable
+# void mcu_enter_deep_sleep1(int wfe_wfi)
+#   wfe_wfi:
+#       0 : wait for event
+#       1 : wait for interrupt
+66bc: mcu_enter_deep_sleep1
 6764
 # void handle_frame(void)
 67a0: handle_frame
@@ -435,6 +446,8 @@
 6650: GPTM1_BASE_6650
 6698: GPIOC_BASE_6698
 66b8: GPIOC_BASE_66b8
+66f4: CKCU.APBCCR1.BKPREN_66f4
+66f8: PWRCU.BAKSR.BAKPORF_66f8
 66fc: NVIC.SCR_66fc
 6748: NVIC.SCR_6748
 6760: NVIC.SCR_6760
