@@ -407,28 +407,29 @@
 82c0: usb_clear_ep_stall_status
 # void usb_clear_ep_intr_flags(uint32_t ep_num, uint32_t value)
 82d0: usb_clear_ep_intr_flags
-# uint32_t usb_get_ep_in_buffer_addr(uint32_t ep_num)
-82dc: usb_get_ep_in_buffer_addr
-# uint32_t usb_get_ep_out_buffer_addr(uint32_t ep_num)
-82f4: usb_get_ep_out_buffer_addr
+# uint32_t USBD_EPTGetBuffer0Addr(uint32_t ep_num)
+82dc: USBD_EPTGetBuffer0Addr
+# uint32_t USBD_EPTGetBuffer1Addr(uint32_t ep_num)
+82f4: USBD_EPTGetBuffer1Addr
 # uint32_t usb_get_ep_len(uint32_t ep_num)
 8318: usb_get_ep_len
 # uint32_t usb_get_ep_stall_status(uint32_t ep_num)
 8326: usb_get_ep_stall_status
 # uint32_t usb_get_ep_intr_flags(uint32_t ep_num)
 8340: usb_get_ep_intr_flags
-# uint32_t usb_get_ep_xfer_byte_count(uint32_t ep_num, int shift_amount)
-#   shift_amount:
-#       0 : TXCNT
-#       16 : RXCNT
+# uint32_t usb_get_ep_xfer_byte_count(uint32_t ep_num, int offset)
 834e: usb_get_ep_xfer_byte_count
-# void usb_clear_ep_nakrx_data_toggle_status(uint32_t ep_num)
-83f0: usb_clear_ep_nakrx_data_toggle_status
+# void USBD_EPTInit(uint32_t ep_num, uint32_t *pDriver)
+8360: USBD_EPTInit
+# uint32_t usb_read_ep_out_buffer(uint32_t ep_num, uint8_t *dst, size_t len)
+8386: usb_read_ep_out_buffer
+# void USBD_EPTReset(uint32_t ep_num)
+83f0: USBD_EPTReset
 # void usb_toggle_ep_stltx_status(uint32_t ep_num)
 8400: usb_toggle_ep_stltx_status
 # void usb_set_ep_stall_status(uint32_t ep_num)
 840c: usb_set_ep_stall_status
-# int usb_write_ep_in_buffer(uint32_t ep_num, uint8_t *src, size_t len)
+# uint32_t usb_write_ep_in_buffer(uint32_t ep_num, uint8_t *src, size_t len)
 #   len cannot exceed endpoint buffer length (writes nothing if len is greater).
 #   Returns byte length written to buffer.
 8420: usb_write_ep_in_buffer
@@ -438,6 +439,14 @@
 8498: usb_get_intr_flags
 # void usb_power_down(void)
 84ac: usb_power_down
+# void usb_wake_up(void)
+84bc: usb_wake_up
+# void USBD_ReadSETUPData(uint32_t *dst)
+8588: USBD_ReadSETUPData
+# void USBD_RemoteWakeup(void)
+8598: USBD_RemoteWakeup
+# void USBD_SetAddress(uint32_t address)
+85a8: USBD_SetAddress
 # void do_nothing_2(void)
 85c8: do_nothing_2
 85ca
@@ -564,6 +573,7 @@
 84c8: USB_BASE_84c8
 8540: USB_BASE_8540
 8594: EP_SRAM_BASE_8594
+85a4: USB_BASE_85a4
 85b8: USB_BASE_85b8
 9074: key_gpio_map.KEY_B3_9074
 90cc: GPTM1_BASE_90cc

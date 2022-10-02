@@ -10261,7 +10261,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7db8*/  .word 0x20000548
 
             .thumb_func
-            call_7dbc:
+            usb_init_class:
 /*0x7dbc*/      ldr r1, [pc, #0x20] /* r1 = 0x00007dfd */
 /*0x7dbe*/      str r1, [r0]        ; *(arg1) = r1
 /*0x7dc0*/      ldr r1, [pc, #0x20] /* r1 = 0x00007ef5 */
@@ -10424,39 +10424,39 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7ef0*/  .word 0x00007f45 /* possible pointer */
 
             jump_7ef4:
-/*0x7ef4*/      ldr r0, [pc, #0x40] /* data_7f38 */
+/*0x7ef4*/      ldr r0, [pc, #0x40] /* r0 = 0x20000018 */
 /*0x7ef6*/      push {r4, lr}
-/*0x7ef8*/      movs r3, #1
-/*0x7efa*/      str r3, [r0, #0xc]
-/*0x7efc*/      str r3, [r0, #0x10]
-/*0x7efe*/      movs r1, #0
-/*0x7f00*/      add.w r2, r0, #0x20
-/*0x7f04*/      movs r0, #5
-/*0x7f06*/      strb r1, [r2]
+/*0x7ef8*/      movs r3, #1         ; r3 = 1
+/*0x7efa*/      str r3, [r0, #0xc]  ; *0x20000024 = 1
+/*0x7efc*/      str r3, [r0, #0x10] ; *0x20000028 = 1
+/*0x7efe*/      movs r1, #0         ; r1 = 0
+/*0x7f00*/      add.w r2, r0, #0x20 ; r2 = 0x20000038
+/*0x7f04*/      movs r0, #5         ; r0 = 5
+/*0x7f06*/      strb r1, [r2]       ; *(uint8_t*)0x20000038 = 0
             jump_7f08:
-/*0x7f08*/      adds r4, r2, r0
-/*0x7f0a*/      .short 0x1e40 /* subs r0, r0, #1 */
-/*0x7f0c*/      strb r1, [r4, #2]
-/*0x7f0e*/      bpl jump_7f08
-/*0x7f10*/      ldr r0, [pc, #0x24] /* data_7f38 */
-/*0x7f12*/      movs r2, #2
-/*0x7f14*/      .short 0x1d00 /* adds r0, r0, #4 */
-/*0x7f16*/      strb r3, [r0]
-/*0x7f18*/      strb r1, [r0, #1]
-/*0x7f1a*/      adds r0, #0x14
-/*0x7f1c*/      strb r2, [r0]
-/*0x7f1e*/      ldr r2, [pc, #0x1c] /* data_7f3c */
-/*0x7f20*/      str.w r1, [r0, #1]
-/*0x7f24*/      movs r0, #4
-/*0x7f26*/      strb r0, [r2]
-/*0x7f28*/      movs r0, #0x1c
+/*0x7f08*/      adds r4, r2, r0     ; r4 = 0x20000038 + r0
+/*0x7f0a*/      .short 0x1e40 /* subs r0, r0, #1 */ ; r0 = r0 - 1
+/*0x7f0c*/      strb r1, [r4, #2]   ; *(uint8_t*)(r4+2) = 0
+/*0x7f0e*/      bpl jump_7f08       ; r0 >= 0 ? jump_7f08 : continue
+/*0x7f10*/      ldr r0, [pc, #0x24] /* r0 = 0x20000018 */
+/*0x7f12*/      movs r2, #2         ; r2 = 2
+/*0x7f14*/      .short 0x1d00 /* adds r0, r0, #4 */ ; r0 = 0x2000001c
+/*0x7f16*/      strb r3, [r0]       ; *(uint8_t*)0x2000001c = 1
+/*0x7f18*/      strb r1, [r0, #1]   ; *(uint8_t*)0x2000001d = 0
+/*0x7f1a*/      adds r0, #0x14      ; r0 = 0x20000030
+/*0x7f1c*/      strb r2, [r0]       ; *(uint8_t*)0x20000030 = 2
+/*0x7f1e*/      ldr r2, [pc, #0x1c] /* r2 = 0x200009d0 */
+/*0x7f20*/      str.w r1, [r0, #1]  ; *0x20000031 = 0
+/*0x7f24*/      movs r0, #4         ; r0 = 4
+/*0x7f26*/      strb r0, [r2]       ; *(uint8_t*)0x200009d0 = 4
+/*0x7f28*/      movs r0, #0x1c      ; r0 = 0x1c
             jump_7f2a:
-/*0x7f2a*/      adds r4, r2, r0
-/*0x7f2c*/      .short 0x1e40 /* subs r0, r0, #1 */
-/*0x7f2e*/      strb r1, [r4, #2]
-/*0x7f30*/      bpl jump_7f2a
-/*0x7f32*/      ldr r0, [pc, #0xc] /* data_7f40 */
-/*0x7f34*/      strb r3, [r0]
+/*0x7f2a*/      adds r4, r2, r0     ; r4 = r2 + r0
+/*0x7f2c*/      .short 0x1e40 /* subs r0, r0, #1 */ ; r0 = r0 - 1
+/*0x7f2e*/      strb r1, [r4, #2]   ; *(r4+2) = 0
+/*0x7f30*/      bpl jump_7f2a       ; r0 >= 0 ? jump_7f2a : continue
+/*0x7f32*/      ldr r0, [pc, #0xc] /* r0 = 0x20000044 */
+/*0x7f34*/      strb r3, [r0]       ; *(uint8_t*)0x20000044 = 1
 /*0x7f36*/      pop {r4, pc}
 
             data_7f38:
@@ -10556,7 +10556,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             loc_7fc2:
 /*0x7fc2*/      push.w {r4, r5, r6, r7, r8, lr}
-/*0x7fc6*/      mov r4, r0              ; r4 = arg1
+/*0x7fc6*/      mov r4, r0              ; r4 = arg1 (0x200009fc)
 /*0x7fc8*/      bl usb_get_intr_flags
 /*0x7fcc*/      mov r5, r0
 /*0x7fce*/      lsls r0, r0, #0x1e
@@ -10599,10 +10599,10 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8024*/      strb r0, [r4, #0x12]
 /*0x8026*/      str r6, [r4, #0x18]
 /*0x8028*/      bl usb_reset
-/*0x802c*/      bl call_84bc
+/*0x802c*/      bl usb_wake_up
 /*0x8030*/      movs r0, #0
 /*0x8032*/      ldr r1, [r4, #0x64]
-/*0x8034*/      bl call_8360
+/*0x8034*/      bl USBD_EPTInit
 /*0x8038*/      ldr r0, [r7]
 /*0x803a*/      bl usb_set_intr_enable
 /*0x803e*/      ldr r1, [r4, #0x24]
@@ -10617,7 +10617,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             jump_804e:
 /*0x804e*/      lsls r0, r5, #0x1c
 /*0x8050*/      bpl jump_8064
-/*0x8052*/      bl call_84bc
+/*0x8052*/      bl usb_wake_up
 /*0x8056*/      ldrb.w r0, [r4, #0x33]
 /*0x805a*/      strb.w r0, [r4, #0x32]
 /*0x805e*/      movs r0, #8
@@ -10633,7 +10633,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8074*/      lsls r0, r0, #0x16
 /*0x8076*/      bpl jump_80be
 /*0x8078*/      mov r0, r4
-/*0x807a*/      bl call_8588
+/*0x807a*/      bl USBD_ReadSETUPData
 /*0x807e*/      strb.w r6, [r4, #0x24]
 /*0x8082*/      str r6, [r4, #0x20]
 /*0x8084*/      ldrb r0, [r4]
@@ -10804,9 +10804,9 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_81dc:
 /*0x81dc*/      push {r4, lr}
-/*0x81de*/      bl call_84bc
+/*0x81de*/      bl usb_wake_up
 /*0x81e2*/      pop.w {r4, lr}
-/*0x81e6*/      b.w jump_8598
+/*0x81e6*/      b.w USBD_RemoteWakeup
 
 /*0x81ea*/  .byte 0x00
 /*0x81eb*/  .byte 0x00
@@ -10868,7 +10868,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x823a*/      bl usb_get_desc
 /*0x823e*/      ldr r0, [pc, #0x20] /* r0 = 0x20000a8c */
 /*0x8240*/      subs r0, #0x54		; r0 = 0x20000a38
-/*0x8242*/      bl call_7dbc
+/*0x8242*/      bl usb_init_class
 /*0x8246*/      ldr r0, [pc, #0x18] /* r0 = 0x20000a8c */
 /*0x8248*/      subs r0, #0x90		; r0 = 0x200009fc
 /*0x824a*/      bl call_8174
@@ -10964,7 +10964,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x82da*/      pop {r4, pc}
 
             .thumb_func
-            usb_get_ep_in_buffer_address:
+            USBD_EPTGetBuffer0Addr:
 /*0x82dc*/      push {r4, lr}
 /*0x82de*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
 /*0x82e2*/      ldr r0, [r0, #0x10]     ; r0 = *(USB.EPxCFGR)
@@ -10981,7 +10981,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            usb_get_ep_out_buffer_addr:
+            USBD_EPTGetBuffer1Addr:
 /*0x82f4*/      push {r4, r5, r6, lr}
 /*0x82f6*/      mov r5, r0              ; r5 = arg1
 /*0x82f8*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
@@ -11045,7 +11045,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x835e*/      pop {r4, pc}
 
             .thumb_func
-            call_8360:
+            USBD_EPTInit:
 /*0x8360*/      push {r4, r5, r6, lr}
 /*0x8362*/      mov r4, r1          ; r4 = arg2
 /*0x8364*/      mov r5, r0          ; r5 = arg1 (ep_num)
@@ -11059,24 +11059,26 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x837a*/      str r1, [r0, #8]    ; *(USB.EPxISR) = r1
 /*0x837c*/      mov r0, r5          ; r0 = arg1
 /*0x837e*/      pop.w {r4, r5, r6, lr}
-/*0x8382*/      b.w usb_clear_ep_nakrx_data_toggle_status
+/*0x8382*/      b.w USBD_EPTReset
 
             .thumb_func
-            call_8386:
+            usb_read_ep_out_buffer:
 /*0x8386*/      push.w {r4, r5, r6, r7, r8, lr}
-/*0x838a*/      mov r6, r2
-/*0x838c*/      mov r7, r1
-/*0x838e*/      movs r5, r0
-/*0x8390*/      beq jump_83b6
-/*0x8392*/      movs r1, #0
+/*0x838a*/      mov r6, r2          ; r6 = arg3
+/*0x838c*/      mov r7, r1          ; r7 = arg2
+/*0x838e*/      movs r5, r0         ; r5 = arg1 (ep_num)
+/*0x8390*/      beq jump_83b6       ; arg1 == 0 ? jump_83b6 : continue
+                ; get EPxTCR.TCNT0 (for ep_num > 0)
+/*0x8392*/      movs r1, #0         ; r1 = 0
             jump_8394:
-/*0x8394*/      bl usb_get_ep_xfer_byte_count
-/*0x8398*/      mov r4, r0
+                ; get number of bytes received by endpoint ep_num
+/*0x8394*/      bl usb_get_ep_xfer_byte_count r0 = RXCNT
+/*0x8398*/      mov r4, r0          ; r4 = RXCNT
 /*0x839a*/      cmp r0, r6
-/*0x839c*/      bhi jump_83b0
-/*0x839e*/      mov r0, r5
-/*0x83a0*/      cbz r5, jump_83ba
-/*0x83a2*/      bl usb_get_ep_in_buffer_address
+/*0x839c*/      bhi jump_83b0       ; RXCNT > arg3 ? jump_83b0 : continue
+/*0x839e*/      mov r0, r5          ; r0 = arg1
+/*0x83a0*/      cbz r5, jump_83ba   ; arg1 == 0 ? jump_83ba : continue
+/*0x83a2*/      bl USBD_EPTGetBuffer0Addr
             jump_83a6:
 /*0x83a6*/      adds r1, r4, #3
 /*0x83a8*/      lsrs r2, r1, #2
@@ -11086,10 +11088,11 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x83b0*/      mov r0, r4
 /*0x83b2*/      pop.w {r4, r5, r6, r7, r8, pc}
             jump_83b6:
-/*0x83b6*/      movs r1, #0x10
+/*0x83b6*/      movs r1, #0x10      ; r1 = 0x10
+                ; check EP0TCR.RXCNT
 /*0x83b8*/      b jump_8394
             jump_83ba:
-/*0x83ba*/      bl usb_get_ep_out_buffer_addr
+/*0x83ba*/      bl USBD_EPTGetBuffer1Addr
 /*0x83be*/      b jump_83a6
 
             .thumb_func
@@ -11105,7 +11108,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x83d4*/      mov r2, r5
 /*0x83d6*/      mov r1, r6
 /*0x83d8*/      mov r0, r7
-/*0x83da*/      bl call_8386
+/*0x83da*/      bl usb_read_ep_out_buffer
 /*0x83de*/      cbnz r0, jump_83e4
 /*0x83e0*/      cmp r5, #0
 /*0x83e2*/      bne jump_83ec
@@ -11116,7 +11119,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             jump_83ec:
 /*0x83ec*/      pop.w {r4, r5, r6, r7, r8, pc}
 
-            usb_clear_ep_nakrx_data_toggle_status:
+            USBD_EPTReset:
 /*0x83f0*/      push {r4, lr}
 /*0x83f2*/      bl usb_compute_epcsr_addr
 /*0x83f6*/      ldr r1, [r0]        ; r1 = *(USB.EPxCSR)
@@ -11169,7 +11172,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8448*/      pop.w {r4, r5, r6, r7, r8, pc}
             jump_844c:
 /*0x844c*/      mov r0, r7          ; r0 = arg1
-/*0x844e*/      bl usb_get_ep_in_buffer_address ; r0 = EPx_IN_buffer_address
+/*0x844e*/      bl USBD_EPTGetBuffer0Addr ; r0 = EPx_IN_buffer_address
 /*0x8452*/      mov r1, r0          ; (dst) r1 = EPx_IN_buffer_address
                 ; word align arg3 (byte length)
 /*0x8454*/      adds r0, r4, #3     ; r0 = arg3 + 3
@@ -11199,20 +11202,20 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             .thumb_func
             call_8478:
-/*0x8478*/      mov r3, r0
-/*0x847a*/      movs r1, #7
+/*0x8478*/      mov r3, r0          ; r3 = arg1
+/*0x847a*/      movs r1, #7         ; r1 = 7
             jump_847c:
-/*0x847c*/      add.w r2, r1, #8
-/*0x8480*/      lsr.w r0, r3, r2
-/*0x8484*/      lsls r2, r0, #0x1f
-/*0x8486*/      beq jump_848c
-/*0x8488*/      sxtb r0, r1
+/*0x847c*/      add.w r2, r1, #8    ; r2 = r1 + 8
+/*0x8480*/      lsr.w r0, r3, r2    ; r0 = arg1 >> r2
+/*0x8484*/      lsls r2, r0, #0x1f  ; r2 = r0 << 0x1f
+/*0x8486*/      beq jump_848c       ; r2 == 0 ? jump_848c : continue
+/*0x8488*/      sxtb r0, r1         ; r0 = r1
 /*0x848a*/      bx lr
             jump_848c:
-/*0x848c*/      .short 0x1e49 /* subs r1, r1, #1 */
+/*0x848c*/      .short 0x1e49 /* subs r1, r1, #1 */ ; r1 = r1 - 1
 /*0x848e*/      cmp r1, #0
-/*0x8490*/      bgt jump_847c
-/*0x8492*/      mov.w r0, #-1
+/*0x8490*/      bgt jump_847c       ; r1 > 0 ? jump_847c : continue
+/*0x8492*/      mov.w r0, #-1       ; r0 = -1
 /*0x8496*/      bx lr
 
             .thumb_func
@@ -11237,8 +11240,8 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x84ac*/      ldr r0, [pc, #8]    /* r0 = USB_BASE_84b8 */
 /*0x84ae*/      ldr r1, [r0]        ; r1 = *(USB.USBCSR)
 /*0x84b0*/      orr r1, r1, #0xc    ; r1 = r1 | 0xc
-                ; enter low power mode
-                ; enter power down mode
+                ; enter usb low power mode
+                ; enter usb power down mode
 /*0x84b4*/      str r1, [r0]        ; *(USB.USBCSR) = r1
 /*0x84b6*/      bx lr
 
@@ -11247,11 +11250,11 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_84bc:
-/*0x84bc*/      ldr r0, [pc, #8] /* USB_BASE_84c8 */
-/*0x84be*/      ldr r1, [r0]
-/*0x84c0*/      and r1, r1, #0x400
-/*0x84c4*/      str r1, [r0]
+            usb_wake_up:
+/*0x84bc*/      ldr r0, [pc, #8]    /* r0 = USB_BASE_84c8 */
+/*0x84be*/      ldr r1, [r0]        ; r1 = *(USB.USBCSR)
+/*0x84c0*/      and r1, r1, #0x400  ; r1 = r1 & 0x400
+/*0x84c4*/      str r1, [r0]        ; *(USB.USBCSR) = r1
 /*0x84c6*/      bx lr
 
             USB_BASE_84c8:
@@ -11261,50 +11264,57 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_84cc:
 /*0x84cc*/      push {r4, lr}
-/*0x84ce*/      mov r4, r0
-/*0x84d0*/      ldr r0, [pc, #0x68] /* data_853c */
-/*0x84d2*/      ldr r2, [r0]
+/*0x84ce*/      mov r4, r0          ; r4 = arg1
+/*0x84d0*/      ldr r0, [pc, #0x68] /* r0 = 0x2000000c */
+/*0x84d2*/      ldr r2, [r0]        ; r2 = *0x2000000c
 /*0x84d4*/      cmp r2, #1
-/*0x84d6*/      bne jump_8538
-/*0x84d8*/      movs r2, #0
-/*0x84da*/      str r2, [r0]
-/*0x84dc*/      ldr r0, [pc, #0x60] /* USB_BASE_8540 */
-/*0x84de*/      ldr r2, [r0]
-/*0x84e0*/      lsls r3, r2, #0x19
-/*0x84e2*/      mov.w r2, #-1
-/*0x84e6*/      bpl jump_8502
-/*0x84e8*/      movw r3, #0x40c
-/*0x84ec*/      str r3, [r0]
-/*0x84ee*/      str r2, [r0, #8]
-/*0x84f0*/      cbnz r1, jump_84f8
-/*0x84f2*/      movs r0, #0
+/*0x84d6*/      bne jump_8538       ; r2 != 1 ? jump_8538 : continue
+/*0x84d8*/      movs r2, #0         ; r2 = 0
+/*0x84da*/      str r2, [r0]        ; *0x2000000c = 0
+/*0x84dc*/      ldr r0, [pc, #0x60] /* r0 = USB_BASE_8540 */
+/*0x84de*/      ldr r2, [r0]        ; r2 = *(USB.USBCSR)
+/*0x84e0*/      lsls r3, r2, #0x19  ; r3 = r2 << 0x19
+/*0x84e2*/      mov.w r2, #-1       ; r2 = -1
+                ; jump if usb is not in low power mode
+/*0x84e6*/      bpl jump_8502       ; r3 >= 0 ? jump_8502 : continue
+/*0x84e8*/      movw r3, #0x40c     ; r3 = 0x40c
+                ; enable dp pull up
+                ; enter usb low power mode
+                ; enter usb power down mode
+/*0x84ec*/      str r3, [r0]        ; *(USB.USBCSR) = 0x40c
+                ; clear usb interrupts
+/*0x84ee*/      str r2, [r0, #8]    ; *(USB.USBISR) = -1
+/*0x84f0*/      cbnz r1, jump_84f8  ; arg2 != 0 ? jump_84f8 : continue
+/*0x84f2*/      movs r0, #0         ; r0 = 0 (wfe)
 /*0x84f4*/      bl mcu_enter_deep_sleep
             jump_84f8:
-/*0x84f8*/      ldr r0, [r4]
+/*0x84f8*/      ldr r0, [r4]        ; r0 = *(arg1)
 /*0x84fa*/      pop.w {r4, lr}
 /*0x84fe*/      b.w usb_set_intr_enable
             jump_8502:
-/*0x8502*/      movw r3, #0xc0c
-/*0x8506*/      str r3, [r0]
-/*0x8508*/      str r2, [r0, #8]
-/*0x850a*/      cbnz r1, jump_8512
-/*0x850c*/      movs r0, #0
+/*0x8502*/      movw r3, #0xc0c     ; r3 = 0xc0c
+/*0x8506*/      str r3, [r0]        ; *(arg1) = 0xc0c
+/*0x8508*/      str r2, [r0, #8]    ; *(arg1+8) = -1
+/*0x850a*/      cbnz r1, jump_8512  ; arg2 != 0 ? jump_8512 : continue
+/*0x850c*/      movs r0, #0         ; r0 = 0 (wfe)
 /*0x850e*/      bl mcu_enter_deep_sleep
             jump_8512:
-/*0x8512*/      movs r0, #0
+/*0x8512*/      movs r0, #0         ; r0 = 0
+                ; disable dp wake up
 /*0x8514*/      bl usb_set_dp_wake_up
-/*0x8518*/      ldr r0, [r4]
+/*0x8518*/      ldr r0, [r4]        ; r0 = *(arg1)
 /*0x851a*/      bl usb_set_intr_enable
-/*0x851e*/      movs r0, #0
+/*0x851e*/      movs r0, #0         ; r0 = 0
+                ; disable dp pull up
 /*0x8520*/      bl usb_set_dp_pull_up
-/*0x8524*/      movs r1, #0xc8
-/*0x8526*/      movs r0, #0
+/*0x8524*/      movs r1, #0xc8      ; r1 = 0xc8
+/*0x8526*/      movs r0, #0         ; r0 = 0
             jump_8528:
-/*0x8528*/      .short 0x1c40 /* adds r0, r0, #1 */
+/*0x8528*/      .short 0x1c40 /* adds r0, r0, #1 */ ; r0 = r0 + 1
 /*0x852a*/      cmp r0, r1
-/*0x852c*/      blo jump_8528
+/*0x852c*/      blo jump_8528       ; r0 < 0xc8 ? jump_8528 : continue
 /*0x852e*/      pop.w {r4, lr}
-/*0x8532*/      movs r0, #1
+/*0x8532*/      movs r0, #1         ; r0 = 1
 /*0x8534*/      b.w usb_set_dp_pull_up
             jump_8538:
 /*0x8538*/      pop {r4, pc}
@@ -11353,35 +11363,36 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_8588:
-/*0x8588*/      ldr r1, [pc, #8] /* EP_SRAM_BASE_8594 */
-/*0x858a*/      ldr r2, [r1]
-/*0x858c*/      str r2, [r0]
-/*0x858e*/      ldr r1, [r1, #4]
-/*0x8590*/      str r1, [r0, #4]
+            USBD_ReadSETUPData:
+/*0x8588*/      ldr r1, [pc, #8]    /* r1 = EP_SRAM_BASE_8594 */
+/*0x858a*/      ldr r2, [r1]        ; r2 = *(EP_SRAM)
+/*0x858c*/      str r2, [r0]        ; *(arg1) = r2
+/*0x858e*/      ldr r1, [r1, #4]    ; r1 = *(EP_SRAM+0x4)
+/*0x8590*/      str r1, [r0, #4]    ; *(arg1+4) = r1
 /*0x8592*/      bx lr
 
             EP_SRAM_BASE_8594:
 /*0x8594*/  .word 0x400aa000
 
-            jump_8598:
-/*0x8598*/      ldr r0, [pc, #8] /* data_85a4 */
-/*0x859a*/      ldr r1, [r0]
-/*0x859c*/      orr r1, r1, #0x20
-/*0x85a0*/      str r1, [r0]
+            USBD_RemoteWakeup:
+/*0x8598*/      ldr r0, [pc, #8]    /* r0 = USB_BASE_85a4 */
+/*0x859a*/      ldr r1, [r0]        ; r1 = *(USB.USBCSR)
+/*0x859c*/      orr r1, r1, #0x20   ; r1 = r1 | 0x20
+                ; Resume request generation
+/*0x85a0*/      str r1, [r0]        ; *(USB.USBCSR) = r1
 /*0x85a2*/      bx lr
 
-            data_85a4:
+            USB_BASE_85a4:
 /*0x85a4*/  .word 0x400a8000
 
 
             .thumb_func
-            call_85a8:
-/*0x85a8*/      ldr r1, [pc, #0xc] /* USB_BASE_85b8 */
-/*0x85aa*/      ldr r2, [r1]
-/*0x85ac*/      orr r2, r2, #0x100
-/*0x85b0*/      str r2, [r1]
-/*0x85b2*/      str r0, [r1, #0x10]
+            USBD_SetAddress:
+/*0x85a8*/      ldr r1, [pc, #0xc]  /* r1 = USB_BASE_85b8 */
+/*0x85aa*/      ldr r2, [r1]        ; r2 = *(USB.USBCSR)
+/*0x85ac*/      orr r2, r2, #0x100  ; r2 = r2 | 0x100
+/*0x85b0*/      str r2, [r1]        ; *(USB.USBCSR) = r2
+/*0x85b2*/      str r0, [r1, #0x10] ; *(USB.USBDEVA) = arg1
 /*0x85b4*/      bx lr
 
 /*0x85b6*/  .byte 0x00
@@ -11393,7 +11404,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             .thumb_func
             usb_intr:
-/*0x85bc*/      ldr r0, [pc, #4] /* data_85c4 */
+/*0x85bc*/      ldr r0, [pc, #4] /* r0 = 0x200009fc */
 /*0x85be*/      b.w loc_7fc2
 
 /*0x85c2*/  .byte 0x00
@@ -13180,63 +13191,63 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_9278:
 /*0x9278*/      push {r4, r5, r6, lr}
-/*0x927a*/      mov r4, r0
-/*0x927c*/      ldrh r0, [r0]
-/*0x927e*/      movs r5, #1
+/*0x927a*/      mov r4, r0          ; r4 = arg1
+/*0x927c*/      ldrh r0, [r0]       ; r0 = *(uint16_t*)arg1
+/*0x927e*/      movs r5, #1         ; r5 = 1
 /*0x9280*/      cmp.w r0, #0x500
-/*0x9284*/      beq jump_9322
-/*0x9286*/      bgt jump_92ca
+/*0x9284*/      beq jump_9322       ; r0 == 0x500 ? jump_9322
+/*0x9286*/      bgt jump_92ca       ; r0 > 0x500 ? jump_93ca
 /*0x9288*/      cmp.w r0, #0x100
-/*0x928c*/      beq jump_9314
-/*0x928e*/      bgt jump_92a8
+/*0x928c*/      beq jump_9314       ; r0 == 0x100 ? jump_9314
+/*0x928e*/      bgt jump_92a8       ; r0 > 0x100 ? jump_92a8
 /*0x9290*/      cmp r0, #0x80
-/*0x9292*/      beq jump_930c
+/*0x9292*/      beq jump_930c       ; r0 == 0x80 ? jump_930c
 /*0x9294*/      cmp r0, #0x81
-/*0x9296*/      beq jump_9310
+/*0x9296*/      beq jump_9310       ; r0 == 0x81 ? jump_9310
 /*0x9298*/      cmp r0, #0x82
-/*0x929a*/      bne jump_9366
-/*0x929c*/      movs r1, #2
+/*0x929a*/      bne jump_9366       ; r0 != 0x82 ? jump_9366
+/*0x929c*/      movs r1, #2         ; r1 = 2
             jump_929e:
-/*0x929e*/      mov r0, r4
+/*0x929e*/      mov r0, r4          ; r0 = arg1
 /*0x92a0*/      pop.w {r4, r5, r6, lr}
 /*0x92a4*/      b.w jump_9242
             jump_92a8:
 /*0x92a8*/      cmp.w r0, #0x102
-/*0x92ac*/      beq jump_9318
+/*0x92ac*/      beq jump_9318       ; r0 == 0x102 ? jump_9318 : continue
 /*0x92ae*/      cmp.w r0, #0x300
-/*0x92b2*/      beq jump_931c
-/*0x92b4*/      sub.w r0, r0, #0x300
-/*0x92b8*/      subs r0, #2
-/*0x92ba*/      bne jump_9366
-/*0x92bc*/      movs r2, #1
+/*0x92b2*/      beq jump_931c       ; r0 == 0x300 ? jump_931c : continue
+/*0x92b4*/      sub.w r0, r0, #0x300 ; r0 = r0 - 0x300
+/*0x92b8*/      subs r0, #2         ; r0 = r0 - 2
+/*0x92ba*/      bne jump_9366       ; r0 != 0 ? jump_9366 : continue
+/*0x92bc*/      movs r2, #1         ; r2 = 1
             jump_92be:
-/*0x92be*/      movs r1, #2
+/*0x92be*/      movs r1, #2         ; r1 = 2
             jump_92c0:
-/*0x92c0*/      mov r0, r4
+/*0x92c0*/      mov r0, r4          ; r0 = arg1
 /*0x92c2*/      pop.w {r4, r5, r6, lr}
 /*0x92c6*/      b.w jump_9394
             jump_92ca:
 /*0x92ca*/      cmp.w r0, #0x900
-/*0x92ce*/      beq jump_936c
-/*0x92d0*/      bgt jump_92f2
+/*0x92ce*/      beq jump_936c       ; r0 == 0x900 ? jump_936c : continue
+/*0x92d0*/      bgt jump_92f2       ; r0 > 0x900 ? jump_92f2 : continue
 /*0x92d2*/      cmp.w r0, #0x680
-/*0x92d6*/      beq jump_9330
-/*0x92d8*/      sub.w r0, r0, #0x600
-/*0x92dc*/      subs r0, #0x81
-/*0x92de*/      beq jump_9368
-/*0x92e0*/      sub.w r0, r0, #0x100
-/*0x92e4*/      subs r0, #0xff
-/*0x92e6*/      bne jump_9366
-/*0x92e8*/      add.w r0, r4, #0x30
-/*0x92ec*/      strd r0, r5, [r4, #0x1c]
+/*0x92d6*/      beq jump_9330       ; r0 == 0x680 ? jump_9330 : continue
+/*0x92d8*/      sub.w r0, r0, #0x600 ; r0 = r0 - 0x600
+/*0x92dc*/      subs r0, #0x81      ; r0 = r0 - 0x81
+/*0x92de*/      beq jump_9368       ; r0 == 0 ? jump_9368 : continue
+/*0x92e0*/      sub.w r0, r0, #0x100 ; r0 = r0 - 0x100
+/*0x92e4*/      subs r0, #0xff      ; r0 = r0 - 0xff
+/*0x92e6*/      bne jump_9366       ; r0 != 0 ? jump_9366 : continue
+/*0x92e8*/      add.w r0, r4, #0x30 ; r0 = arg1 + 0x30
+/*0x92ec*/      strd r0, r5, [r4, #0x1c] ; *(arg1+0x1c)=r0; *(arg1+0x20)=r5
 /*0x92f0*/      b jump_9362
             jump_92f2:
-/*0x92f2*/      sub.w r0, r0, #0xa00
-/*0x92f6*/      subs r0, #0x81
-/*0x92f8*/      beq jump_9390
+/*0x92f2*/      sub.w r0, r0, #0xa00 ; r0 = r0 - 0xa00
+/*0x92f6*/      subs r0, #0x81      ; r0 = r0 - 0x81
+/*0x92f8*/      beq jump_9390       ; r0 == 0 ? jump_9390
 /*0x92fa*/      cmp r0, #0x80
-/*0x92fc*/      bne jump_9366
-/*0x92fe*/      ldr r1, [r4, #0x58]
+/*0x92fc*/      bne jump_9366       ; r0 != 0x80 ? jump_9366 : continue
+/*0x92fe*/      ldr r1, [r4, #0x58] ; r1 = *(arg1+0x58)
             jump_9300:
 /*0x9300*/      cmp r1, #0
 /*0x9302*/      beq jump_9366
@@ -13262,7 +13273,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x9320*/      b jump_92c0
             jump_9322:
 /*0x9322*/      ldrb r0, [r4, #2]
-/*0x9324*/      bl call_85a8
+/*0x9324*/      bl USBD_SetAddress
 /*0x9328*/      strb.w r5, [r4, #0x24]
 /*0x932c*/      movs r0, #5
 /*0x932e*/      b jump_938a
@@ -13310,7 +13321,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             jump_9378:
 /*0x9378*/      sxtb r0, r5
 /*0x937a*/      ldr.w r1, [r4, #0x84]
-/*0x937e*/      bl call_8360
+/*0x937e*/      bl USBD_EPTInit
 /*0x9382*/      .short 0x1c6d /* adds r5, r5, #1 */
 /*0x9384*/      cmp r5, #8
 /*0x9386*/      blo jump_9378
