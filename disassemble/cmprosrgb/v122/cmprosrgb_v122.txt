@@ -155,11 +155,11 @@
             .thumb_func
             reset:
 /*0x3554*/      ldr r0, [pc, #0x1c] /* data_3574 */
-/*0x3556*/      blx r0 /* loc_85c8 */
+/*0x3556*/      blx r0 /* do_nothing_2 */
 /*0x3558*/      ldr r0, [pc, #0x1c] /* data_3578 */
-/*0x355a*/      blx r0 /* loc_7200 */
+/*0x355a*/      blx r0 /* ckcu_config_sys_clk */
 /*0x355c*/      ldr r0, [pc, #0x1c] /* data_357c */
-/*0x355e*/      bx r0 /* loc_3580 */
+/*0x355e*/      bx r0 /* entry */
 
             .thumb_func
             nmi:
@@ -202,21 +202,21 @@
 /*0x3572*/      b generic_intr
 
             data_3574:
-/*0x3574*/  .word loc_85c8
+/*0x3574*/  .word do_nothing_2
             data_3578:
-/*0x3578*/  .word loc_7200
+/*0x3578*/  .word ckcu_config_sys_clk
             data_357c:
-/*0x357c*/  .word loc_3580
+/*0x357c*/  .word entry
 
 
             .thumb_func
-            loc_3580:
-/*0x3580*/      ldr.w sp, [pc, #0xc] /* data_3590 */
-/*0x3584*/      bl call_3600
+            entry:
+/*0x3580*/      ldr.w sp, [pc, #0xc] /* sp = 0x20002748 */
+/*0x3584*/      bl sram_init
 
             .thumb_func
-            call_3588:
-/*0x3588*/      ldr r0, [pc, #0] /* data_358c */
+            start_main:
+/*0x3588*/      ldr r0, [pc, #0] /* r0 = main */
 /*0x358a*/      bx r0 /* main */
 
             data_358c:
@@ -302,24 +302,24 @@
 /*0x35fe*/      pop {r4, pc}
 
             .thumb_func
-            call_3600:
-/*0x3600*/      ldr r4, [pc, #0x18] /* data_361c */
-/*0x3602*/      ldr r5, [pc, #0x1c] /* data_3620 */
+            sram_init:
+/*0x3600*/      ldr r4, [pc, #0x18] /* r4 = 0x0000a194 */
+/*0x3602*/      ldr r5, [pc, #0x1c] /* r5 = 0x0000a1b4 */
 /*0x3604*/      b jump_3614
             jump_3606:
-/*0x3606*/      ldr r0, [r4, #0xc]
-/*0x3608*/      orr r3, r0, #1
-/*0x360c*/      ldm.w r4, {r0, r1, r2}
-/*0x3610*/      blx r3
-/*0x3612*/      adds r4, #0x10
+/*0x3606*/      ldr r0, [r4, #0xc]  ; r0 = *(r4+c)
+/*0x3608*/      orr r3, r0, #1      ; r3 = r0 | 1
+/*0x360c*/      ldm.w r4, {r0, r1, r2} ; r0=*r4; r1=*(r4+4); r2=*(r4+8)
+/*0x3610*/      blx r3              ; branch to r3
+/*0x3612*/      adds r4, #0x10      ; r4 = r4 + 0x10
             jump_3614:
 /*0x3614*/      cmp r4, r5
-/*0x3616*/      blo jump_3606
-/*0x3618*/      bl call_3588
+/*0x3616*/      blo jump_3606       ; r4 < r5 ? jump_3606 : continue
+/*0x3618*/      bl start_main
 
-            data_361c:
+            0x0000a194:
 /*0x361c*/  .word 0x0000a194 /* possible pointer */
-            data_3620:
+            0x0000a1b4:
 /*0x3620*/  .word 0x0000a1b4 /* possible pointer */
 
 /*0x3624*/      push {r4, r5, r6, lr}
@@ -951,14 +951,14 @@
 
             .thumb_func
             loc_3a9e:
-/*0x3a9e*/      ldr r1, [r0, #4]
-/*0x3aa0*/      ldr r0, [r0]
+/*0x3a9e*/      ldr r1, [r0, #4]    ; r1 = *(arg1+4)
+/*0x3aa0*/      ldr r0, [r0]        ; r0 = *(arg1)
 /*0x3aa2*/      cmp r1, r0
-/*0x3aa4*/      bne jump_3aaa
-/*0x3aa6*/      movs r0, #1
+/*0x3aa4*/      bne jump_3aaa       ; r1 != r0 ? jump_3aaa : continue
+/*0x3aa6*/      movs r0, #1         ; r0 = 1
 /*0x3aa8*/      bx lr
             jump_3aaa:
-/*0x3aaa*/      movs r0, #0
+/*0x3aaa*/      movs r0, #0         ; r0 = 0
 /*0x3aac*/      bx lr
 
 /*0x3aae*/  .byte 0x00
@@ -2625,7 +2625,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            do_nothing:
+            do_nothing_1:
 /*0x4598*/      bx lr
 
 /*0x459a*/  .byte 0x00
@@ -3095,41 +3095,41 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_4914:
 /*0x4914*/      push.w {r4, r5, r6, r7, r8, lr}
-/*0x4918*/      ldr r4, [pc, #0x134] /* data_4a50 */
-/*0x491a*/      ldr r2, [pc, #0x138] /* data_4a54 */
-/*0x491c*/      and r7, r0, #7
-/*0x4920*/      strb r0, [r4, #3]
-/*0x4922*/      ldrb r3, [r2, r0]
-/*0x4924*/      lsrs r6, r0, #3
-/*0x4926*/      strb r3, [r4, #2]
-/*0x4928*/      ldrb r0, [r4, #1]
-/*0x492a*/      movs r5, #1
-/*0x492c*/      bic r2, r0, #1
-/*0x4930*/      bfi r2, r1, #1, #1
-/*0x4934*/      mov r0, r4
-/*0x4936*/      strb r2, [r4, #1]
-/*0x4938*/      ldrb r0, [r0]
+/*0x4918*/      ldr r4, [pc, #0x134] 	/* r4 = 0x20000058 */
+/*0x491a*/      ldr r2, [pc, #0x138] 	/* r2 = 0x000099ea */
+/*0x491c*/      and r7, r0, #7			; r7 = r0 & 7
+/*0x4920*/      strb r0, [r4, #3]		; *(uint8_t*)0x2000005b = arg1
+/*0x4922*/      ldrb r3, [r2, r0]		; r3 = *(uint8_t*)(r2+arg1)
+/*0x4924*/      lsrs r6, r0, #3			; r6 = r0 >> 3
+/*0x4926*/      strb r3, [r4, #2]		; *(uint8_t*)0x2000005a = r3
+/*0x4928*/      ldrb r0, [r4, #1]		; r0 = *(uint8_t*)0x20000059
+/*0x492a*/      movs r5, #1				; r5 = 1
+/*0x492c*/      bic r2, r0, #1			; r2 = r0 & ~1
+/*0x4930*/      bfi r2, r1, #1, #1		; r2[0] = r1[1]
+/*0x4934*/      mov r0, r4				; r0 = 0x20000058
+/*0x4936*/      strb r2, [r4, #1]		; *(0x20000059) = r2
+/*0x4938*/      ldrb r0, [r0]			; r0 = *(uint8_t*)0x20000058
 /*0x493a*/      cmp r3, #0xe8
-/*0x493c*/      beq jump_4968
-/*0x493e*/      lsl.w r7, r5, r7
-/*0x4942*/      mov.w ip, #0x1c
+/*0x493c*/      beq jump_4968			; r3 == 0xe8 ? jump_4968 : continue
+/*0x493e*/      lsl.w r7, r5, r7		; r7 = r5 << r7
+/*0x4942*/      mov.w ip, #0x1c			; ip = 0x1c
 /*0x4946*/      uxtb r7, r7
 /*0x4948*/      cmp.w ip, r3, lsr #3
-/*0x494c*/      bne jump_498e
-/*0x494e*/      ands ip, r3, #3
-/*0x4952*/      beq jump_4976
+/*0x494c*/      bne jump_498e			; ip != (r3>>3) ? jump_498e : continue
+/*0x494e*/      ands ip, r3, #3			; ip = r3 & 3
+/*0x4952*/      beq jump_4976			; ip == 0 ? jump_4976 : continue
 /*0x4954*/      cmp.w ip, #1
-/*0x4958*/      beq jump_497c
+/*0x4958*/      beq jump_497c			; ip == 1 ? jump_497c : continue
 /*0x495a*/      cmp.w ip, #2
-/*0x495e*/      beq jump_4982
+/*0x495e*/      beq jump_4982			; ip == 2 ? jump_4982 : continue
 /*0x4960*/      cmp.w ip, #3
-/*0x4964*/      bne jump_4998
+/*0x4964*/      bne jump_4998			; ip != 3 ? jump_4998 : continue
 /*0x4966*/      b jump_4988
             jump_4968:
-/*0x4968*/      bfi r0, r1, #4, #1
-/*0x496c*/      strb r0, [r4]
-/*0x496e*/      bic r0, r2, #4
-/*0x4972*/      strb r0, [r4, #1]
+/*0x4968*/      bfi r0, r1, #4, #1		; r0 = r1[4]
+/*0x496c*/      strb r0, [r4]			; *(uint8_t*)r4 = r0
+/*0x496e*/      bic r0, r2, #4			; r0 = r2 & ~4
+/*0x4972*/      strb r0, [r4, #1]		; *(uint8_t*)(r4+1) = r0
 /*0x4974*/      b jump_49b0
             jump_4976:
 /*0x4976*/      bfi r0, r1, #0, #1
@@ -3362,7 +3362,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x4b1a*/      str.w r5, [r7, #0x180]  ; *(NVIC.ICTR) = 0x200
             jump_4b1e:
 /*0x4b1e*/      mov r0, r4          ; r0 = arg1
-/*0x4b20*/      bl do_nothing       ; do_nothing (returns after call)
+/*0x4b20*/      bl do_nothing_1       ; do_nothing_1 (returns after call)
 /*0x4b24*/      mov r0, r4          ; r0 = arg1
 /*0x4b26*/      bl spi_flash_disable
 /*0x4b2a*/      mov r0, r4          ; r0 = arg1
@@ -7242,31 +7242,31 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             jump_6700:
 /*0x6700*/      push.w {r4, r5, r6, r7, r8, sb, sl, lr}
-/*0x6704*/      ldr r4, [pc, #0x38] /* data_6740 */
-/*0x6706*/      ldr r7, [r4]
-/*0x6708*/      ldr r5, [pc, #0x34] /* data_6740 */
-/*0x670a*/      adds r5, #0x48
-/*0x670c*/      ldr r6, [r5]
-/*0x670e*/      mov.w sb, #1
-/*0x6712*/      str.w sb, [r4]
-/*0x6716*/      mov.w r8, #0
-/*0x671a*/      str.w r8, [r5]
+/*0x6704*/      ldr r4, [pc, #0x38] /* r4 = CKCU.APBCCR1.BKPREN_6740 */
+/*0x6706*/      ldr r7, [r4]        ; r7 = *(CKCU.APBCCR1.BKPREN)
+/*0x6708*/      ldr r5, [pc, #0x34] /* r5 = CKCU.APBCCR1.BKPREN_6740 */
+/*0x670a*/      adds r5, #0x48      ; r5 = CKCU.APBCCR1.ADCCEN
+/*0x670c*/      ldr r6, [r5]        ; r6 = *(CKCU.APBCCR1.ADCCEN)
+/*0x670e*/      mov.w sb, #1        ; sb = 1
+/*0x6712*/      str.w sb, [r4]      ; *(CKCU.APBCCR1.BKPREN) = 1
+/*0x6716*/      mov.w r8, #0        ; r8 = 0
+/*0x671a*/      str.w r8, [r5]      ; *(CKCU.APBCCR1.ADCCEN) = 0
 /*0x671e*/      bl call_6a04
-/*0x6722*/      ldr r0, [pc, #0x20] /* data_6744 */
-/*0x6724*/      str.w r8, [r0, #0x9c]
-/*0x6728*/      str.w sb, [r0, #0x8c]
-/*0x672c*/      str r7, [r4]
-/*0x672e*/      ldr r0, [pc, #0x18] /* NVIC.SCR_6748 */
-/*0x6730*/      ldr r1, [r0]
-/*0x6732*/      orr r1, r1, #4
-/*0x6736*/      str r1, [r0]
+/*0x6722*/      ldr r0, [pc, #0x20] /* r0 = PWRCU.BAKSR.BAKPORF_6744 */
+/*0x6724*/      str.w r8, [r0, #0x9c] ; *(PWRCU.BAKCR.DMOSON) = 0
+/*0x6728*/      str.w sb, [r0, #0x8c] ; *(PWRCU.BAKCR.LDOOFF) = 1
+/*0x672c*/      str r7, [r4]        ; *(CKCU.APBCCR1.BKPREN) = r7
+/*0x672e*/      ldr r0, [pc, #0x18] /* r0 = NVIC.SCR_6748 */
+/*0x6730*/      ldr r1, [r0]        ; r1 = *(NVIC.SCR)
+/*0x6732*/      orr r1, r1, #4      ; r1 = r1 | 4
+/*0x6736*/      str r1, [r0]        ; *(NVIC.SCR) = r1
 /*0x6738*/      wfe
-/*0x673a*/      str r6, [r5]
+/*0x673a*/      str r6, [r5]        ; *(CKCU.APBCCR1.ADCCEN) = r6
 /*0x673c*/      pop.w {r4, r5, r6, r7, r8, sb, sl, pc}
 
-            data_6740:
+            CKCU.APBCCR1.BKPREN_6740:
 /*0x6740*/  .word 0x43100618
-            data_6744:
+            PWRCU.BAKSR.BAKPORF_6744:
 /*0x6744*/  .word 0x42d42000
             NVIC.SCR_6748:
 /*0x6748*/  .word 0xe000ed10
@@ -7607,23 +7607,23 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             data_69d0:
 /*0x69d0*/  .word 0x20000ad4
 
-            jump_69d4:
+            reset_peripherals:
 /*0x69d4*/      push {r4, r5, r6, r7, lr}
 /*0x69d6*/      ldr r7, [pc, #0x28] /* CKCU_RSTCU_BASE_6a00 */
-/*0x69d8*/      ldr.w r4, [r7, #0x104]
-/*0x69dc*/      ldr.w r5, [r7, #0x108]
-/*0x69e0*/      ldr.w r6, [r7, #0x10c]
-/*0x69e4*/      bics r4, r0
-/*0x69e6*/      bics r5, r1
-/*0x69e8*/      bics r6, r2
-/*0x69ea*/      cbz r3, jump_69f2
-/*0x69ec*/      orrs r4, r0
-/*0x69ee*/      orrs r5, r1
-/*0x69f0*/      orrs r6, r2
+/*0x69d8*/      ldr.w r4, [r7, #0x104]  ; r4 = *RSTCU.AHBPRSTR
+/*0x69dc*/      ldr.w r5, [r7, #0x108]  ; r5 = *RSTCU.APBPRSTR0
+/*0x69e0*/      ldr.w r6, [r7, #0x10c]  ; r6 = *RSTCU.APBPRSTR1
+/*0x69e4*/      bics r4, r0             ; r4 = r4 & ~arg1
+/*0x69e6*/      bics r5, r1             ; r5 = r5 & ~arg2
+/*0x69e8*/      bics r6, r2             ; r6 = r6 & ~arg3
+/*0x69ea*/      cbz r3, jump_69f2       ; arg4 == 0 ? jump_69f2 : continue
+/*0x69ec*/      orrs r4, r0             ; r4 = r4 | arg1
+/*0x69ee*/      orrs r5, r1             ; r5 = r5 | arg2
+/*0x69f0*/      orrs r6, r2             ; r6 = r6 | arg3
             jump_69f2:
-/*0x69f2*/      str.w r4, [r7, #0x104]
-/*0x69f6*/      str.w r5, [r7, #0x108]
-/*0x69fa*/      str.w r6, [r7, #0x10c]
+/*0x69f2*/      str.w r4, [r7, #0x104]  ; *RSTCU.AHBPRSTR = r4
+/*0x69f6*/      str.w r5, [r7, #0x108]  ; *RSTCU.APBPRSTR0 = r5
+/*0x69fa*/      str.w r6, [r7, #0x10c]  ; *RSTCU.APBPRSTR1 = r6
 /*0x69fe*/      pop {r4, r5, r6, r7, pc}
 
             CKCU_RSTCU_BASE_6a00:
@@ -7632,23 +7632,23 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             .thumb_func
             call_6a04:
-/*0x6a04*/      ldr r2, [pc, #0x1c] /* data_6a24 */
-/*0x6a06*/      movs r1, #0
-/*0x6a08*/      mov.w r0, #0x1c20
-/*0x6a0c*/      str.w r1, [r2, #0x108]
+/*0x6a04*/      ldr r2, [pc, #0x1c]     /* r2 = RTC_PWRCU_ALIAS_BASE_6a24 */
+/*0x6a06*/      movs r1, #0             ; r1 = 0
+/*0x6a08*/      mov.w r0, #0x1c20       ; r0 = 0x1c20
+/*0x6a0c*/      str.w r1, [r2, #0x108]  ; *(RTC.RTCCR.LSIEN)
             jump_6a10:
-/*0x6a10*/      .short 0x1e40 /* subs r0, r0, #1 */
-/*0x6a12*/      bhs jump_6a10
-/*0x6a14*/      movs r0, #1
-/*0x6a16*/      str.w r0, [r2, #0x108]
-/*0x6a1a*/      ldr r0, [pc, #0xc] /* CKCU_RSTCU_BASE_6a28 */
+/*0x6a10*/      .short 0x1e40 /* subs r0, r0, #1 */ ; r0 = r0 - 1
+/*0x6a12*/      bhs jump_6a10           ; r0 >= 0 ? jump_6a10 : continue
+/*0x6a14*/      movs r0, #1             ; r0 = 1
+/*0x6a16*/      str.w r0, [r2, #0x108]  ; *(RTC.RTCCR.LSIEN) = 1
+/*0x6a1a*/      ldr r0, [pc, #0xc] /* r0 = CKCU_RSTCU_BASE_6a28 */
             jump_6a1c:
-/*0x6a1c*/      ldr r1, [r0, #8]
-/*0x6a1e*/      lsls r1, r1, #0x1a
-/*0x6a20*/      bpl jump_6a1c
+/*0x6a1c*/      ldr r1, [r0, #8]        ; r1 = *(RTC.RTCCR.CMPCLR)
+/*0x6a1e*/      lsls r1, r1, #0x1a      ; r1 = r1 << 0x1a
+/*0x6a20*/      bpl jump_6a1c           ; r1 >= 0 ? jump_6a1c : continue
 /*0x6a22*/      bx lr
 
-            data_6a24:
+            RTC_PWRCU_ALIAS_BASE_6a24:
 /*0x6a24*/  .word 0x42d40000
             CKCU_RSTCU_BASE_6a28:
 /*0x6a28*/  .word 0x40088000
@@ -8273,7 +8273,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_6efc:
 /*0x6efc*/      push {r4, r5, lr}
-/*0x6efe*/      movs r0, #0x12      ; r0 = 0x12
+/*0x6efe*/      movs r0, #0x12      ; r0 = 18
 /*0x6f00*/      bl mbia_send_instruction
 /*0x6f04*/      mov.w r4, #0x300    ; r4 = 0x300
 /*0x6f08*/      movs r1, #0xa       ; r1 = 0xa
@@ -8612,14 +8612,14 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             loc_7154:
 /*0x7154*/      push.w {r4, r5, r6, r7, r8, sb, sl, lr}
-/*0x7158*/      ldr r0, [pc, #0x94] /* data_71f0 */
+/*0x7158*/      ldr r0, [pc, #0x94] /* 0x200009fc */
 /*0x715a*/      bl call_7fb8
 /*0x715e*/      mov r6, r0
 /*0x7160*/      mov.w sb, #0x8000
 /*0x7164*/      movs r1, #1
 /*0x7166*/      mov r0, sb
 /*0x7168*/      bl ckcu_set_APBCCR0
-/*0x716c*/      ldr r4, [pc, #0x84] /* data_71f4 */
+/*0x716c*/      ldr r4, [pc, #0x84] /* 0x40024000 */
 /*0x716e*/      movw r5, #0xeae0
 /*0x7172*/      cmp r6, #1
 /*0x7174*/      bne jump_7184
@@ -8631,17 +8631,17 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7180*/      orrs r0, r5
 /*0x7182*/      str r0, [r4, #0x50]
             jump_7184:
-/*0x7184*/      ldr r7, [pc, #0x68] /* data_71f0 */
+/*0x7184*/      ldr r7, [pc, #0x68] /* 0x200009fc */
 /*0x7186*/      ldrb.w r0, [r7, #0x32]
 /*0x718a*/      cmp r0, #3
 /*0x718c*/      bne jump_71ca
-/*0x718e*/      ldr.w r8, [pc, #0x68] /* data_71f8 */
+/*0x718e*/      ldr.w r8, [pc, #0x68] /* 0x400a8000 */
 /*0x7192*/      ldr.w r0, [r8]
 /*0x7196*/      tst.w r0, #0xc0
 /*0x719a*/      beq jump_71ca
 /*0x719c*/      movs r0, #1
 /*0x719e*/      bl call_4af4
-/*0x71a2*/      ldr r1, [pc, #0x58] /* data_71fc */
+/*0x71a2*/      ldr r1, [pc, #0x58] /* 0x20000044 */
 /*0x71a4*/      movs r0, #0
 /*0x71a6*/      strb r0, [r1, #1]
 /*0x71a8*/      ldrb.w r0, [r7, #0x32]
@@ -8661,7 +8661,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x71ce*/      beq jump_71e2
 /*0x71d0*/      cmp r6, #1
 /*0x71d2*/      bne jump_71e2
-/*0x71d4*/      ldr r0, [pc, #0x18] /* data_71f0 */
+/*0x71d4*/      ldr r0, [pc, #0x18] /* 0x200009fc */
 /*0x71d6*/      bl call_818c
 /*0x71da*/      cmp r0, #1
 /*0x71dc*/      bne jump_71e2
@@ -8686,39 +8686,53 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            loc_7200:
-/*0x7200*/      ldr r0, [pc, #0x50] /* CKCU_RSTCU_BASE_7254 */
-/*0x7202*/      movs r1, #1
-/*0x7204*/      str.w r1, [r0, #0x300]
-/*0x7208*/      ldr r2, [pc, #0x4c] /* data_7258 */
-/*0x720a*/      str.w r1, [r2, #0xa8]
+            ckcu_config_sys_clk:
+/*0x7200*/      ldr r0, [pc, #0x50]     /* r0 = CKCU_RSTCU_BASE_7254 */
+/*0x7202*/      movs r1, #1             ; r1 = 1
+                ; do not isolate backup domain from other power domain
+/*0x7204*/      str.w r1, [r0, #0x300]  ; *(CKCU.LPCR) = 1
+/*0x7208*/      ldr r2, [pc, #0x4c]     /* r2 = CKCU_RSTCU_ALIAS_BASE_7258 */
+                ; enable external (8 MHz) crystal oscillator
+/*0x720a*/      str.w r1, [r2, #0xa8]   ; *(CKCU.GCCR.HSEEN) = 1
             jump_720e:
-/*0x720e*/      ldr.w r3, [r2, #0x108]
+                ; wait for HSE to be ready
+/*0x720e*/      ldr.w r3, [r2, #0x108]  ; r3 = *(CKCU.GCSR.HSERDY)
 /*0x7212*/      cmp r3, #0
-/*0x7214*/      beq jump_720e
-/*0x7216*/      movs r3, #0
-/*0x7218*/      str r3, [r2, #0x20]
-/*0x721a*/      mov.w r3, #0x9000000
-/*0x721e*/      str r3, [r0, #0x18]
-/*0x7220*/      str.w r1, [r2, #0xa4]
+/*0x7214*/      beq jump_720e           ; r3 == 0 ? jump_720e : continue
+/*0x7216*/      movs r3, #0             ; r3 = 0
+                ; set PLL clock source to external crystal oscillator
+/*0x7218*/      str r3, [r2, #0x20]     ; *(CKCU.GCFGR.PLLSRC) = 0
+/*0x721a*/      mov.w r3, #0x9000000    ; r3 = 0x9000000
+                ; set PLL VCO feedback divider 2 to 18
+                ; set PLL output divider 2 to 1 (0x00)
+                ; PLL_{out} = CK_{in} * 18
+                ; PLL_{out} = 8MHz * 18 = 144 MHz
+/*0x721e*/      str r3, [r0, #0x18]     ; *(CKCU.PLLCFGR) = 0x9000000
+                ; enable PLL
+/*0x7220*/      str.w r1, [r2, #0xa4]   ; *(CKCU.GCCR.PLLEN) = 1
             jump_7224:
-/*0x7224*/      ldr.w r3, [r2, #0x104]
+                ; wait for PLL to be ready
+/*0x7224*/      ldr.w r3, [r2, #0x104]  ; r3 = *(CKCU.GCSR.PLLRDY)
 /*0x7228*/      cmp r3, #0
-/*0x722a*/      beq jump_7224
-/*0x722c*/      ldr r2, [pc, #0x2c] /* FMC_BASE_725c */
-/*0x722e*/      ldr.w r3, [r2, #0x200]
-/*0x7232*/      bic r3, r3, #7
-/*0x7236*/      .short 0x1cdb /* adds r3, r3, #3 */
-/*0x7238*/      str.w r3, [r2, #0x200]
-/*0x723c*/      str r1, [r0, #0x20]
-/*0x723e*/      ldr r2, [r0, #4]
-/*0x7240*/      bic r2, r2, #3
-/*0x7244*/      .short 0x1c52 /* adds r2, r2, #1 */
-/*0x7246*/      str r2, [r0, #4]
+/*0x722a*/      beq jump_7224           ; r3 == 0 ? jump_7224 : continue
+/*0x722c*/      ldr r2, [pc, #0x2c]     /* r2 = FMC_BASE_725c */
+/*0x722e*/      ldr.w r3, [r2, #0x200]  ; r3 = *(FMC.CFCR)
+/*0x7232*/      bic r3, r3, #7          ; r3 = r3 & ~7
+/*0x7236*/      .short 0x1cdb /* adds r3, r3, #3 */ ; r3 = r3 + 3
+                ; set Flash Wait-state setting to 2 clock cycles
+/*0x7238*/      str.w r3, [r2, #0x200]  ; *(FMC.CFCR) = r3
+                ; CK_AHB = CK_SYS/2 = 72 MHz
+/*0x723c*/      str r1, [r0, #0x20]     ; *(CKCU.AHBCFGR) = 1
+/*0x723e*/      ldr r2, [r0, #4]        ; r2 = *(CKCU.GCCR)
+/*0x7240*/      bic r2, r2, #3          ; r2 = r2 & ~3
+/*0x7244*/      .short 0x1c52 /* adds r2, r2, #1 */ ; r2 = r2 + 1
+                ; set CK_PLL clock as system clock
+/*0x7246*/      str r2, [r0, #4]        ; *(CKCU.GCCR) = r2
             jump_7248:
-/*0x7248*/      ldr r2, [r0, #0x34]
+                ; wait for system clock to switch to PLL
+/*0x7248*/      ldr r2, [r0, #0x34]     ; r2 = *(CKCU.CKST)
 /*0x724a*/      cmp.w r1, r2, lsr #30
-/*0x724e*/      bne jump_7248
+/*0x724e*/      bne jump_7248           ; CKCU.CKST.CKSWST != 1 ? jump_7248 : continue
 /*0x7250*/      bx lr
 
 /*0x7252*/  .byte 0x00
@@ -8726,7 +8740,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             CKCU_RSTCU_BASE_7254:
 /*0x7254*/  .word 0x40088000
-            data_7258:
+            CKCU_RSTCU_ALIAS_BASE_7258:
 /*0x7258*/  .word 0x43100000
             FMC_BASE_725c:
 /*0x725c*/  .word 0x40080000
@@ -10035,7 +10049,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7c4e*/      str r5, [r4, #0xc]
 /*0x7c50*/      movs r2, #8
 /*0x7c52*/      add.w r1, r4, #0x20
-/*0x7c56*/      bl call_8420
+/*0x7c56*/      bl usb_write_ep_in_buffer
 /*0x7c5a*/      strb r5, [r4, #1]
             jump_7c5c:
 /*0x7c5c*/      pop.w {r4, r5, r6, r7, r8, pc}
@@ -10055,7 +10069,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7c7a*/      ldr r1, [pc, #0x1c] /* data_7c98 */
 /*0x7c7c*/      movs r2, #8
 /*0x7c7e*/      adds r1, #0x20
-/*0x7c80*/      bl call_8420
+/*0x7c80*/      bl usb_write_ep_in_buffer
 /*0x7c84*/      ldr r0, [r7]
 /*0x7c86*/      mov.w r1, #0xfa0
 /*0x7c8a*/      muls r0, r1, r0
@@ -10087,7 +10101,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7cb2*/      movs r2, #5
 /*0x7cb4*/      add.w r1, r4, #0x18
 /*0x7cb8*/      movs r0, #2
-/*0x7cba*/      bl call_8420
+/*0x7cba*/      bl usb_write_ep_in_buffer
 /*0x7cbe*/      strb r5, [r4, #3]
             jump_7cc0:
 /*0x7cc0*/      pop {r4, r5, r6, pc}
@@ -10102,7 +10116,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7cd0*/      movs r2, #2
 /*0x7cd2*/      .short 0x1d09 /* adds r1, r1, #4 */
 /*0x7cd4*/      mov r0, r2
-/*0x7cd6*/      bl call_8420
+/*0x7cd6*/      bl usb_write_ep_in_buffer
 /*0x7cda*/      strb r5, [r4, #2]
             jump_7cdc:
 /*0x7cdc*/      pop {r4, r5, r6, pc}
@@ -10117,7 +10131,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7cec*/      movs r2, #0x1f
 /*0x7cee*/      ldr r1, [pc, #0x10] /* data_7d00 */
 /*0x7cf0*/      movs r0, #2
-/*0x7cf2*/      bl call_8420
+/*0x7cf2*/      bl usb_write_ep_in_buffer
 /*0x7cf6*/      strb r5, [r4]
 /*0x7cf8*/      pop {r4, r5, r6, pc}
 
@@ -10535,13 +10549,15 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             .thumb_func
             call_7fb8:
-/*0x7fb8*/      ldrb.w r0, [r0, #0x34]
-/*0x7fbc*/      ubfx r0, r0, #1, #1
+/*0x7fb8*/      ldrb.w r0, [r0, #0x34]  ; r0 = *(uint8_t*)(arg1+0x34)
+/*0x7fbc*/      ubfx r0, r0, #1, #1     ; r0 = r0[1]
 /*0x7fc0*/      bx lr
-            jump_7fc2:
+
+            .thumb_func
+            loc_7fc2:
 /*0x7fc2*/      push.w {r4, r5, r6, r7, r8, lr}
-/*0x7fc6*/      mov r4, r0
-/*0x7fc8*/      bl call_8498
+/*0x7fc6*/      mov r4, r0              ; r4 = arg1
+/*0x7fc8*/      bl usb_get_intr_flags
 /*0x7fcc*/      mov r5, r0
 /*0x7fce*/      lsls r0, r0, #0x1e
 /*0x7fd0*/      bpl jump_7fe0
@@ -10551,16 +10567,18 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x7fd8*/      blx r1
             jump_7fda:
 /*0x7fda*/      movs r0, #2
-/*0x7fdc*/      bl call_8204
+                ; clear SOF interrupt flag
+/*0x7fdc*/      bl usb_clear_intr_flags
             jump_7fe0:
 /*0x7fe0*/      lsls r0, r5, #0x1b
 /*0x7fe2*/      bpl jump_8004
 /*0x7fe4*/      movs r0, #0x10
-/*0x7fe6*/      bl call_8204
+                ; clear Suspend interrupt flag
+/*0x7fe6*/      bl usb_clear_intr_flags
 /*0x7fea*/      ldrb.w r0, [r4, #0x32]
 /*0x7fee*/      cmp r0, #2
 /*0x7ff0*/      blo jump_8004
-/*0x7ff2*/      bl call_84ac
+/*0x7ff2*/      bl usb_power_down
 /*0x7ff6*/      ldrb.w r0, [r4, #0x32]
 /*0x7ffa*/      strb.w r0, [r4, #0x33]
 /*0x7ffe*/      movs r0, #3
@@ -10580,13 +10598,13 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8022*/      movs r0, #4
 /*0x8024*/      strb r0, [r4, #0x12]
 /*0x8026*/      str r6, [r4, #0x18]
-/*0x8028*/      bl call_82a4
+/*0x8028*/      bl usb_reset
 /*0x802c*/      bl call_84bc
 /*0x8030*/      movs r0, #0
 /*0x8032*/      ldr r1, [r4, #0x64]
 /*0x8034*/      bl call_8360
 /*0x8038*/      ldr r0, [r7]
-/*0x803a*/      bl call_8468
+/*0x803a*/      bl usb_set_intr_enable
 /*0x803e*/      ldr r1, [r4, #0x24]
 /*0x8040*/      subs r4, #0x20
 /*0x8042*/      cbz r1, jump_8048
@@ -10594,7 +10612,8 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8046*/      blx r1
             jump_8048:
 /*0x8048*/      movs r0, #4
-/*0x804a*/      bl call_8204
+                ; clear URSTIF interrupt flag
+/*0x804a*/      bl usb_clear_intr_flags
             jump_804e:
 /*0x804e*/      lsls r0, r5, #0x1c
 /*0x8050*/      bpl jump_8064
@@ -10602,13 +10621,14 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8056*/      ldrb.w r0, [r4, #0x33]
 /*0x805a*/      strb.w r0, [r4, #0x32]
 /*0x805e*/      movs r0, #8
-/*0x8060*/      bl call_8204
+                ; clear RSMIF interrupt flag
+/*0x8060*/      bl usb_clear_intr_flags
             jump_8064:
 /*0x8064*/      lsls r0, r5, #0x17
 /*0x8066*/      mov.w r7, #0x100
 /*0x806a*/      bpl jump_8162
 /*0x806c*/      movs r0, #0
-/*0x806e*/      bl call_8340
+/*0x806e*/      bl usb_get_ep_intr_flags
 /*0x8072*/      mov r5, r0
 /*0x8074*/      lsls r0, r0, #0x16
 /*0x8076*/      bpl jump_80be
@@ -10638,17 +10658,17 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x80aa*/      cmp r0, #2
 /*0x80ac*/      beq jump_80ec
 /*0x80ae*/      movs r0, #0
-/*0x80b0*/      bl call_8400
+/*0x80b0*/      bl usb_toggle_ep_stltx_status
             jump_80b4:
 /*0x80b4*/      mov.w r1, #0x200
 /*0x80b8*/      movs r0, #0
-/*0x80ba*/      bl call_82d0
+/*0x80ba*/      bl usb_clear_ep_intr_flags
             jump_80be:
 /*0x80be*/      lsls r0, r5, #0x1e
 /*0x80c0*/      bpl jump_8120
 /*0x80c2*/      movs r1, #2
 /*0x80c4*/      movs r0, #0
-/*0x80c6*/      bl call_82d0
+/*0x80c6*/      bl usb_clear_ep_intr_flags
 /*0x80ca*/      ldr r0, [r4, #0x20]
 /*0x80cc*/      .short 0x1c40 /* adds r0, r0, #1 */
 /*0x80ce*/      beq jump_8120
@@ -10670,7 +10690,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x80ec*/      movs r2, #0
 /*0x80ee*/      mov r1, r2
 /*0x80f0*/      mov r0, r2
-/*0x80f2*/      bl call_8420
+/*0x80f2*/      bl usb_write_ep_in_buffer
 /*0x80f6*/      b jump_80b4
             jump_80f8:
 /*0x80f8*/      movs r2, #0x40
@@ -10698,28 +10718,28 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8126*/      bl call_9200
 /*0x812a*/      movs r1, #0x10
 /*0x812c*/      movs r0, #0
-/*0x812e*/      bl call_82d0
+/*0x812e*/      bl usb_clear_ep_intr_flags
             jump_8132:
 /*0x8132*/      mov r0, r7
-/*0x8134*/      bl call_8204
+/*0x8134*/      bl usb_clear_intr_flags
 /*0x8138*/      b jump_8162
             jump_813a:
 /*0x813a*/      mov r0, r5
-/*0x813c*/      bl call_8340
+/*0x813c*/      bl usb_get_ep_intr_flags
 /*0x8140*/      tst.w r0, #0x12
 /*0x8144*/      beq jump_8162
 /*0x8146*/      movs r1, #0x12
 /*0x8148*/      mov r0, r5
-/*0x814a*/      bl call_82d0
+/*0x814a*/      bl usb_clear_ep_intr_flags
 /*0x814e*/      lsl.w r0, r7, r5
-/*0x8152*/      bl call_8204
+/*0x8152*/      bl usb_clear_intr_flags
 /*0x8156*/      add.w r0, r4, r5, lsl #2
 /*0x815a*/      ldr r1, [r0, #0x64]
 /*0x815c*/      cbz r1, jump_8162
 /*0x815e*/      mov r0, r5
 /*0x8160*/      blx r1
             jump_8162:
-/*0x8162*/      bl call_8498
+/*0x8162*/      bl usb_get_intr_flags
 /*0x8166*/      bl call_8478
 /*0x816a*/      mov r5, r0
 /*0x816c*/      .short 0x1c40 /* adds r0, r0, #1 */
@@ -10728,11 +10748,11 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             .thumb_func
             call_8174:
-/*0x8174*/      ldr r1, [pc, #0x10] /* data_8188 */
-/*0x8176*/      str r0, [r1]
-/*0x8178*/      movs r1, #2
-/*0x817a*/      strb.w r1, [r0, #0x32]
-/*0x817e*/      ldr.w r0, [r0, #0x84]
+/*0x8174*/      ldr r1, [pc, #0x10]     /* r1 = 0x20000008 */
+/*0x8176*/      str r0, [r1]            ; *0x20000008 = arg1
+/*0x8178*/      movs r1, #2             ; r1 = 2
+/*0x817a*/      strb.w r1, [r0, #0x32]  ; *(uint8_t*)(arg1+0x32) = 2
+/*0x817e*/      ldr.w r0, [r0, #0x84]   ; r0 = *(arg1+0x84)
 /*0x8182*/      b.w jump_84a8
 
 /*0x8186*/  .byte 0x00
@@ -10812,9 +10832,9 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_8204:
-/*0x8204*/      ldr r1, [pc, #4] /* USB_BASE_820c */
-/*0x8206*/      str r0, [r1, #8]
+            usb_clear_intr_flags:
+/*0x8204*/      ldr r1, [pc, #4]    /* r1 = USB_BASE_820c */
+/*0x8206*/      str r0, [r1, #8]    ; *(USB.USBISR) = arg1
 /*0x8208*/      bx lr
 
 /*0x820a*/  .byte 0x00
@@ -10867,17 +10887,17 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_826c:
-/*0x826c*/      ldr r1, [pc, #0x14] /* USB_BASE_8284 */
+            usb_set_dp_wake_up:
+/*0x826c*/      ldr r1, [pc, #0x14] /* r1 = USB_BASE_8284 */
 /*0x826e*/      cmp r0, #1
-/*0x8270*/      ldr r0, [r1]
-/*0x8272*/      beq jump_827c
-/*0x8274*/      bic r0, r0, #0x800
+/*0x8270*/      ldr r0, [r1]        ; r0 = *(USB.USBCSR)
+/*0x8272*/      beq jump_827c       ; arg1 == 1 ? jump_827c : continue
+/*0x8274*/      bic r0, r0, #0x800  ; r0 = r0 & ~0x800
             jump_8278:
-/*0x8278*/      str r0, [r1]
+/*0x8278*/      str r0, [r1]        ; *(USB.USBCSR) = r0
 /*0x827a*/      bx lr
             jump_827c:
-/*0x827c*/      orr r0, r0, #0x800
+/*0x827c*/      orr r0, r0, #0x800  ; r0 = r0 | 0x800
 /*0x8280*/      b jump_8278
 
 /*0x8282*/  .byte 0x00
@@ -10909,47 +10929,48 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_82a4:
-/*0x82a4*/      movs r1, #0
-/*0x82a6*/      movs r0, #0x20
-/*0x82a8*/      movs r3, #1
-/*0x82aa*/      mov r2, r1
-/*0x82ac*/      b.w jump_69d4
+            usb_reset:
+/*0x82a4*/      movs r1, #0     ; r1 = 0
+/*0x82a6*/      movs r0, #0x20  ; r0 = 0x20 (USBRST)
+/*0x82a8*/      movs r3, #1     ; r3 = 1 (do reset)
+/*0x82aa*/      mov r2, r1      ; r2 = 0
+/*0x82ac*/      b.w reset_peripherals
 
             .thumb_func
-            call_82b0:
+            usb_clear_ep_data_toggle_status:
 /*0x82b0*/      push {r4, lr}
-/*0x82b2*/      bl call_93f0
-/*0x82b6*/      ldr r1, [r0]
-/*0x82b8*/      and r1, r1, #9
-/*0x82bc*/      str r1, [r0]
+/*0x82b2*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x82b6*/      ldr r1, [r0]    ; r1 = *(USB.EPxCSR)
+/*0x82b8*/      and r1, r1, #9  ; r1 = r1 & 9
+/*0x82bc*/      str r1, [r0]    ; *(USB.EPxCSR) = r1
 /*0x82be*/      pop {r4, pc}
 
             .thumb_func
-            call_82c0:
+            usb_clear_ep_stall_status:
 /*0x82c0*/      push {r4, lr}
-/*0x82c2*/      bl call_93f0
-/*0x82c6*/      ldr r1, [r0]
-/*0x82c8*/      and r1, r1, #0x24
-/*0x82cc*/      str r1, [r0]
+/*0x82c2*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x82c6*/      ldr r1, [r0]        ; r1 = *(USB.EPxCSR)
+/*0x82c8*/      and r1, r1, #0x24   ; r1 = r1 & 0x24
+                ; clear STALL status
+/*0x82cc*/      str r1, [r0]        ; *(USB.EPxCSR) = r1
 /*0x82ce*/      pop {r4, pc}
 
             .thumb_func
-            call_82d0:
+            usb_clear_ep_intr_flags:
 /*0x82d0*/      push {r4, lr}
-/*0x82d2*/      mov r4, r1
-/*0x82d4*/      bl call_93f0
-/*0x82d8*/      str r4, [r0, #8]
+/*0x82d2*/      mov r4, r1          ; r4 = arg2
+/*0x82d4*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x82d8*/      str r4, [r0, #8]    ; *(USB.EPxISR) = arg2
 /*0x82da*/      pop {r4, pc}
 
             .thumb_func
-            call_82dc:
+            usb_get_ep_in_buffer_address:
 /*0x82dc*/      push {r4, lr}
-/*0x82de*/      bl call_93f0
-/*0x82e2*/      ldr r0, [r0, #0x10]
-/*0x82e4*/      ldr r1, [pc, #8] /* EP_SRAM_BASE_82f0 */
-/*0x82e6*/      ubfx r0, r0, #0, #0xa
-/*0x82ea*/      add r0, r1
+/*0x82de*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x82e2*/      ldr r0, [r0, #0x10]     ; r0 = *(USB.EPxCFGR)
+/*0x82e4*/      ldr r1, [pc, #8]        /* r1 = EP_SRAM_BASE_82f0 */
+/*0x82e6*/      ubfx r0, r0, #0, #0xa   ; r0 = r0[9:0] (EPBUFA)
+/*0x82ea*/      add r0, r1              ; r0 = r0 + EP_SRAM_BASE
 /*0x82ec*/      pop {r4, pc}
 
 /*0x82ee*/  .byte 0x00
@@ -10960,18 +10981,18 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_82f4:
+            usb_get_ep_out_buffer_addr:
 /*0x82f4*/      push {r4, r5, r6, lr}
-/*0x82f6*/      mov r5, r0
-/*0x82f8*/      bl call_93f0
-/*0x82fc*/      mov r4, r0
-/*0x82fe*/      mov r0, r5
-/*0x8300*/      bl call_8318
-/*0x8304*/      ldr r1, [r4, #0x10]
-/*0x8306*/      ubfx r1, r1, #0, #0xa
-/*0x830a*/      add r0, r1
-/*0x830c*/      ldr r1, [pc, #4] /* EP_SRAM_BASE_8314 */
-/*0x830e*/      add r0, r1
+/*0x82f6*/      mov r5, r0              ; r5 = arg1
+/*0x82f8*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x82fc*/      mov r4, r0              ; r4 = USB.EPxCSR
+/*0x82fe*/      mov r0, r5              ; r0 = arg1
+/*0x8300*/      bl usb_get_ep_len       ; r0 = EPxCFGR.EPLEN
+/*0x8304*/      ldr r1, [r4, #0x10]     ; r1 = *(USB.EPxCFGR)
+/*0x8306*/      ubfx r1, r1, #0, #0xa   ; r1 = r1[9:0] (EPBUFA)
+/*0x830a*/      add r0, r1              ; r0 = EPLEN + EPBUFA (EP OUT buffer)
+/*0x830c*/      ldr r1, [pc, #4]        /* r1 = EP_SRAM_BASE_8314 */
+/*0x830e*/      add r0, r1              ; r0 = r0 + r1
 /*0x8310*/      pop {r4, r5, r6, pc}
 
 /*0x8312*/  .byte 0x00
@@ -10982,62 +11003,63 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            call_8318:
+            usb_get_ep_len:
 /*0x8318*/      push {r4, lr}
-/*0x831a*/      bl call_93f0
-/*0x831e*/      ldr r0, [r0, #0x10]
-/*0x8320*/      ubfx r0, r0, #0xa, #0xa
+/*0x831a*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x831e*/      ldr r0, [r0, #0x10]         ; r0 = *(USB.EPxCFGR)
+/*0x8320*/      ubfx r0, r0, #0xa, #0xa     ; r0 = r0[19:10] (EP Buffer Length)
 /*0x8324*/      pop {r4, pc}
 
             .thumb_func
-            call_8326:
+            usb_get_ep_stall_status:
 /*0x8326*/      push {r4, lr}
-/*0x8328*/      bl call_93f0
-/*0x832c*/      ldr r1, [r0, #0x10]
-/*0x832e*/      ldr r0, [r0]
-/*0x8330*/      lsls r1, r1, #3
-/*0x8332*/      bpl jump_833a
-/*0x8334*/      ubfx r0, r0, #2, #1
+/*0x8328*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x832c*/      ldr r1, [r0, #0x10]         ; r1 = *(USB.EPxCFGR)
+/*0x832e*/      ldr r0, [r0]                ; r0 = *(USB.EPxCSR)
+/*0x8330*/      lsls r1, r1, #3             ; r1 = r1 << 3
+                ; jump if EPDIR is IN
+/*0x8332*/      bpl jump_833a               ; r1 >= 0 ? jump_833a : continue
+/*0x8334*/      ubfx r0, r0, #2, #1         ; r0 = r0[2] (STLTX)
 /*0x8338*/      pop {r4, pc}
             jump_833a:
-/*0x833a*/      ubfx r0, r0, #5, #1
+/*0x833a*/      ubfx r0, r0, #5, #1         ; r0 = r0[5] (STLRX)
 /*0x833e*/      pop {r4, pc}
 
             .thumb_func
-            call_8340:
+            usb_get_ep_intr_flags:
 /*0x8340*/      push {r4, lr}
-/*0x8342*/      bl call_93f0
-/*0x8346*/      ldr r1, [r0, #4]
-/*0x8348*/      ldr r0, [r0, #8]
-/*0x834a*/      ands r0, r1
+/*0x8342*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x8346*/      ldr r1, [r0, #4]    ; r1 = *(USB.EPxIER)
+/*0x8348*/      ldr r0, [r0, #8]    ; r0 = *(USB.EPxISR)
+/*0x834a*/      ands r0, r1         ; r0 = r0 & r1
 /*0x834c*/      pop {r4, pc}
 
             .thumb_func
-            call_834e:
+            usb_get_ep_xfer_byte_count:
 /*0x834e*/      push {r4, lr}
-/*0x8350*/      mov r4, r1
-/*0x8352*/      bl call_93f0
-/*0x8356*/      ldr r0, [r0, #0xc]
-/*0x8358*/      lsrs r0, r4
-/*0x835a*/      ubfx r0, r0, #0, #9
+/*0x8350*/      mov r4, r1          ; r4 = arg2
+/*0x8352*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x8356*/      ldr r0, [r0, #0xc]  ; r0 = *(USB.EPxTCR)
+/*0x8358*/      lsrs r0, r4         ; r0 = r0 >> arg2
+/*0x835a*/      ubfx r0, r0, #0, #9 ; r0 = r0[8:0]
 /*0x835e*/      pop {r4, pc}
 
             .thumb_func
             call_8360:
 /*0x8360*/      push {r4, r5, r6, lr}
-/*0x8362*/      mov r4, r1
-/*0x8364*/      mov r5, r0
-/*0x8366*/      bl call_93f0
-/*0x836a*/      add.w r1, r4, r5, lsl #3
-/*0x836e*/      ldr r2, [r1, #4]
-/*0x8370*/      str r2, [r0, #0x10]
-/*0x8372*/      ldr r1, [r1, #8]
-/*0x8374*/      str r1, [r0, #4]
-/*0x8376*/      mov.w r1, #-1
-/*0x837a*/      str r1, [r0, #8]
-/*0x837c*/      mov r0, r5
+/*0x8362*/      mov r4, r1          ; r4 = arg2
+/*0x8364*/      mov r5, r0          ; r5 = arg1 (ep_num)
+/*0x8366*/      bl usb_compute_epcsr_addr   ; r0 = USB.EPxCSR
+/*0x836a*/      add.w r1, r4, r5, lsl #3    ; r1 = arg2 + (arg1*8)
+/*0x836e*/      ldr r2, [r1, #4]    ; r2 = *(r1+4)
+/*0x8370*/      str r2, [r0, #0x10] ; *(USB.EPxCFGR) = r2
+/*0x8372*/      ldr r1, [r1, #8]    ; r1 = *(r1+8)
+/*0x8374*/      str r1, [r0, #4]    ; *(USB.EPxIER) = r1
+/*0x8376*/      mov.w r1, #-1       ; r1 = -1
+/*0x837a*/      str r1, [r0, #8]    ; *(USB.EPxISR) = r1
+/*0x837c*/      mov r0, r5          ; r0 = arg1
 /*0x837e*/      pop.w {r4, r5, r6, lr}
-/*0x8382*/      b.w jump_83f0
+/*0x8382*/      b.w usb_clear_ep_nakrx_data_toggle_status
 
             .thumb_func
             call_8386:
@@ -11048,18 +11070,18 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8390*/      beq jump_83b6
 /*0x8392*/      movs r1, #0
             jump_8394:
-/*0x8394*/      bl call_834e
+/*0x8394*/      bl usb_get_ep_xfer_byte_count
 /*0x8398*/      mov r4, r0
 /*0x839a*/      cmp r0, r6
 /*0x839c*/      bhi jump_83b0
 /*0x839e*/      mov r0, r5
 /*0x83a0*/      cbz r5, jump_83ba
-/*0x83a2*/      bl call_82dc
+/*0x83a2*/      bl usb_get_ep_in_buffer_address
             jump_83a6:
 /*0x83a6*/      adds r1, r4, #3
 /*0x83a8*/      lsrs r2, r1, #2
 /*0x83aa*/      mov r1, r7
-/*0x83ac*/      bl call_93e0
+/*0x83ac*/      bl copy_words_1
             jump_83b0:
 /*0x83b0*/      mov r0, r4
 /*0x83b2*/      pop.w {r4, r5, r6, r7, r8, pc}
@@ -11067,7 +11089,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x83b6*/      movs r1, #0x10
 /*0x83b8*/      b jump_8394
             jump_83ba:
-/*0x83ba*/      bl call_82f4
+/*0x83ba*/      bl usb_get_ep_out_buffer_addr
 /*0x83be*/      b jump_83a6
 
             .thumb_func
@@ -11076,7 +11098,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x83c4*/      mov r5, r2
 /*0x83c6*/      mov r6, r1
 /*0x83c8*/      mov r7, r0
-/*0x83ca*/      bl call_93f0
+/*0x83ca*/      bl usb_compute_epcsr_addr
 /*0x83ce*/      mov r4, r0
 /*0x83d0*/      movs r0, #0
 /*0x83d2*/      cbz r5, jump_83e4
@@ -11093,75 +11115,79 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x83ea*/      str r1, [r4]
             jump_83ec:
 /*0x83ec*/      pop.w {r4, r5, r6, r7, r8, pc}
-            jump_83f0:
+
+            usb_clear_ep_nakrx_data_toggle_status:
 /*0x83f0*/      push {r4, lr}
-/*0x83f2*/      bl call_93f0
-/*0x83f6*/      ldr r1, [r0]
-/*0x83f8*/      and r1, r1, #0x19
-/*0x83fc*/      str r1, [r0]
+/*0x83f2*/      bl usb_compute_epcsr_addr
+/*0x83f6*/      ldr r1, [r0]        ; r1 = *(USB.EPxCSR)
+/*0x83f8*/      and r1, r1, #0x19   ; r1 = r1 & 0x19
+/*0x83fc*/      str r1, [r0]        ; *(USB.EPxCSR) = r1
 /*0x83fe*/      pop {r4, pc}
 
             .thumb_func
-            call_8400:
+            usb_toggle_ep_stltx_status:
 /*0x8400*/      push {r4, lr}
-/*0x8402*/      bl call_93f0
-/*0x8406*/      movs r1, #4
-/*0x8408*/      str r1, [r0]
+/*0x8402*/      bl usb_compute_epcsr_addr
+/*0x8406*/      movs r1, #4     ; r1 = 4
+/*0x8408*/      str r1, [r0]    ; *(USB.EPxCSR) = 4
 /*0x840a*/      pop {r4, pc}
 
             .thumb_func
-            call_840c:
+            usb_set_ep_stall_status:
 /*0x840c*/      push {r4, lr}
-/*0x840e*/      bl call_93f0
-/*0x8412*/      movs r1, #0x40
-/*0x8414*/      str r1, [r0, #8]
-/*0x8416*/      ldr r2, [r0]
-/*0x8418*/      movs r1, #0x24
-/*0x841a*/      bics r1, r2
-/*0x841c*/      str r1, [r0]
+/*0x840e*/      bl usb_compute_epcsr_addr
+/*0x8412*/      movs r1, #0x40      ; r1 = 0x40
+                ; clear IN Data Transmitted interrupt flag
+/*0x8414*/      str r1, [r0, #8]    ; *(USB.EPxISR) = 0x40
+/*0x8416*/      ldr r2, [r0]        ; r2 = *(USB.EPxCSR)
+/*0x8418*/      movs r1, #0x24      ; r1 = 0x24
+/*0x841a*/      bics r1, r2         ; r1 = r1 & ~r2
+                ; set stall status (STLRX and STLTX)
+/*0x841c*/      str r1, [r0]        ; *(USB.EPxCSR) = r1
 /*0x841e*/      pop {r4, pc}
 
             .thumb_func
-            call_8420:
+            usb_write_ep_in_buffer:
 /*0x8420*/      push.w {r4, r5, r6, r7, r8, lr}
-/*0x8424*/      mov r4, r2
-/*0x8426*/      mov r8, r1
-/*0x8428*/      mov r7, r0
-/*0x842a*/      bl call_8318
-/*0x842e*/      mov r6, r0
-/*0x8430*/      mov r0, r7
-/*0x8432*/      bl call_93f0
-/*0x8436*/      mov r5, r0
-/*0x8438*/      movs r1, #0
-/*0x843a*/      mov r0, r7
-/*0x843c*/      bl call_834e
+/*0x8424*/      mov r4, r2          ; r4 = arg3 (len)
+/*0x8426*/      mov r8, r1          ; r8 = arg2 (src)
+/*0x8428*/      mov r7, r0          ; r7 = arg1 (ep_num)
+/*0x842a*/      bl usb_get_ep_len   ; r0 = USB.EPxCFGR.EPLEN (EPxLEN)
+/*0x842e*/      mov r6, r0          ; r6 = USB.EPxCFGR.EPLEN (EPxLEN)
+/*0x8430*/      mov r0, r7          ; r0 = arg1
+/*0x8432*/      bl usb_compute_epcsr_addr ; r0 = USB.EPxCSR
+/*0x8436*/      mov r5, r0          ; r5 = USB.EPxCSR
+/*0x8438*/      movs r1, #0         ; r1 = 0
+/*0x843a*/      mov r0, r7          ; r0 = arg1
+/*0x843c*/      bl usb_get_ep_xfer_byte_count ; r0 = EPxTXCNT
 /*0x8440*/      cmp r4, r6
-/*0x8442*/      bhi jump_8446
-/*0x8444*/      cbz r0, jump_844c
+/*0x8442*/      bhi jump_8446       ; arg3 > EPxLEN ? jump_8446 : continue
+/*0x8444*/      cbz r0, jump_844c   ; EPxTXCNT == 0 ? jump_844c : continue
             jump_8446:
-/*0x8446*/      movs r0, #0
+/*0x8446*/      movs r0, #0         ; r0 = 0
             jump_8448:
 /*0x8448*/      pop.w {r4, r5, r6, r7, r8, pc}
             jump_844c:
-/*0x844c*/      mov r0, r7
-/*0x844e*/      bl call_82dc
-/*0x8452*/      mov r1, r0
-/*0x8454*/      adds r0, r4, #3
-/*0x8456*/      lsrs r2, r0, #2
-/*0x8458*/      mov r0, r8
-/*0x845a*/      bl call_93e0
-/*0x845e*/      str r4, [r5, #0xc]
-/*0x8460*/      movs r0, #2
-/*0x8462*/      str r0, [r5]
-/*0x8464*/      mov r0, r4
+/*0x844c*/      mov r0, r7          ; r0 = arg1
+/*0x844e*/      bl usb_get_ep_in_buffer_address ; r0 = EPx_IN_buffer_address
+/*0x8452*/      mov r1, r0          ; (dst) r1 = EPx_IN_buffer_address
+                ; word align arg3 (byte length)
+/*0x8454*/      adds r0, r4, #3     ; r0 = arg3 + 3
+/*0x8456*/      lsrs r2, r0, #2     ; (w_len) r2 = r0 >> 2
+/*0x8458*/      mov r0, r8          ; (src) r0 = arg2
+/*0x845a*/      bl copy_words_1
+/*0x845e*/      str r4, [r5, #0xc]  ; *(USB.EPxTCR) = arg3
+/*0x8460*/      movs r0, #2         ; r0 = 2
+/*0x8462*/      str r0, [r5]        ; *(USB.EPxCSR) = 2
+/*0x8464*/      mov r0, r4          ; r0 = arg3
 /*0x8466*/      b jump_8448
 
             .thumb_func
-            call_8468:
-/*0x8468*/      ldr r1, [pc, #8] /* USB_BASE_8474 */
-/*0x846a*/      ldr r2, [r1, #4]
-/*0x846c*/      orrs r2, r0
-/*0x846e*/      str r2, [r1, #4]
+            usb_set_intr_enable:
+/*0x8468*/      ldr r1, [pc, #8]    /* r1 = USB_BASE_8474 */
+/*0x846a*/      ldr r2, [r1, #4]    ; r2 = *(USB.USBIER)
+/*0x846c*/      orrs r2, r0         ; r2 = r2 | arg1
+/*0x846e*/      str r2, [r1, #4]    ; *(USB.USBIER) = r2
 /*0x8470*/      bx lr
 
 /*0x8472*/  .byte 0x00
@@ -11190,11 +11216,11 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8496*/      bx lr
 
             .thumb_func
-            call_8498:
-/*0x8498*/      ldr r0, [pc, #8] /* USB_BASE_84a4 */
-/*0x849a*/      ldr r1, [r0, #4]
-/*0x849c*/      ldr r0, [r0, #8]
-/*0x849e*/      ands r0, r1
+            usb_get_intr_flags:
+/*0x8498*/      ldr r0, [pc, #8]    /* r0 = USB_BASE_84a4 */
+/*0x849a*/      ldr r1, [r0, #4]    ; r1 = *(USB.USBIER)
+/*0x849c*/      ldr r0, [r0, #8]    ; r0 = *(USB.USBISR)
+/*0x849e*/      ands r0, r1         ; r0 = r0 & r1
 /*0x84a0*/      bx lr
 
 /*0x84a2*/  .byte 0x00
@@ -11207,11 +11233,13 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x84a8*/      b.w jump_8544
 
             .thumb_func
-            call_84ac:
-/*0x84ac*/      ldr r0, [pc, #8] /* USB_BASE_84b8 */
-/*0x84ae*/      ldr r1, [r0]
-/*0x84b0*/      orr r1, r1, #0xc
-/*0x84b4*/      str r1, [r0]
+            usb_power_down:
+/*0x84ac*/      ldr r0, [pc, #8]    /* r0 = USB_BASE_84b8 */
+/*0x84ae*/      ldr r1, [r0]        ; r1 = *(USB.USBCSR)
+/*0x84b0*/      orr r1, r1, #0xc    ; r1 = r1 | 0xc
+                ; enter low power mode
+                ; enter power down mode
+/*0x84b4*/      str r1, [r0]        ; *(USB.USBCSR) = r1
 /*0x84b6*/      bx lr
 
             USB_BASE_84b8:
@@ -11254,7 +11282,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             jump_84f8:
 /*0x84f8*/      ldr r0, [r4]
 /*0x84fa*/      pop.w {r4, lr}
-/*0x84fe*/      b.w call_8468
+/*0x84fe*/      b.w usb_set_intr_enable
             jump_8502:
 /*0x8502*/      movw r3, #0xc0c
 /*0x8506*/      str r3, [r0]
@@ -11264,9 +11292,9 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x850e*/      bl mcu_enter_deep_sleep
             jump_8512:
 /*0x8512*/      movs r0, #0
-/*0x8514*/      bl call_826c
+/*0x8514*/      bl usb_set_dp_wake_up
 /*0x8518*/      ldr r0, [r4]
-/*0x851a*/      bl call_8468
+/*0x851a*/      bl usb_set_intr_enable
 /*0x851e*/      movs r0, #0
 /*0x8520*/      bl usb_set_dp_pull_up
 /*0x8524*/      movs r1, #0xc8
@@ -11290,26 +11318,26 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x8540*/  .word 0x400a8000
 
             jump_8544:
-/*0x8544*/      movw r1, #0x171d
-/*0x8548*/      str r1, [r0]
-/*0x854a*/      ldr r1, [pc, #0x28] /* data_8574 */
-/*0x854c*/      str r1, [r0, #4]
-/*0x854e*/      movw r1, #0x212
-/*0x8552*/      str r1, [r0, #8]
-/*0x8554*/      ldr r1, [pc, #0x20] /* data_8578 */
-/*0x8556*/      str r1, [r0, #0xc]
-/*0x8558*/      ldr r2, [pc, #0x20] /* data_857c */
-/*0x855a*/      movs r1, #0x10
-/*0x855c*/      strd r1, r2, [r0, #0x10]
-/*0x8560*/      str r1, [r0, #0x18]
-/*0x8562*/      ldr r1, [pc, #0x1c] /* data_8580 */
-/*0x8564*/      str r1, [r0, #0x1c]
-/*0x8566*/      movs r1, #0
-/*0x8568*/      str r1, [r0, #0x20]
-/*0x856a*/      ldr r1, [pc, #0x18] /* data_8584 */
-/*0x856c*/      str r1, [r0, #0x24]
-/*0x856e*/      movs r1, #2
-/*0x8570*/      str r1, [r0, #0x28]
+/*0x8544*/      movw r1, #0x171d        ; r1 = 0x171d
+/*0x8548*/      str r1, [r0]            ; *arg1 = 0x171d
+/*0x854a*/      ldr r1, [pc, #0x28]     /* r1 = 0x80010008 */
+/*0x854c*/      str r1, [r0, #4]        ; *(arg1+4) = 0x80010008
+/*0x854e*/      movw r1, #0x212         ; r1 = 0x212
+/*0x8552*/      str r1, [r0, #8]        ; *(arg1+8) = 0x212
+/*0x8554*/      ldr r1, [pc, #0x20]     /* r1 = 0x91002088 */
+/*0x8556*/      str r1, [r0, #0xc]      ; *(arg1+12) = 0x91002088
+/*0x8558*/      ldr r2, [pc, #0x20]     /* r2 = 0x92010090 */
+/*0x855a*/      movs r1, #0x10          ; r1 = 0x10
+/*0x855c*/      strd r1, r2, [r0, #0x10] ; *(arg1+16)=0x10; *(arg1+20)=0x92010090
+/*0x8560*/      str r1, [r0, #0x18]     ; *(arg1+24) = 0x10
+/*0x8562*/      ldr r1, [pc, #0x1c]     /* r1 = 0x930100d0 */
+/*0x8564*/      str r1, [r0, #0x1c]     ; *(arg1+28) = 0x930100d0
+/*0x8566*/      movs r1, #0             ; r1 = 0
+/*0x8568*/      str r1, [r0, #0x20]     ; *(arg1+32) = 0
+/*0x856a*/      ldr r1, [pc, #0x18]     /* r1 = 0x84010110 */
+/*0x856c*/      str r1, [r0, #0x24]     ; *(arg1+36) = 0x84010110
+/*0x856e*/      movs r1, #2             ; r1 = 2
+/*0x8570*/      str r1, [r0, #0x28]     ; *(arg1+40) = 2
 /*0x8572*/      bx lr
 
             data_8574:
@@ -11366,7 +11394,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             usb_intr:
 /*0x85bc*/      ldr r0, [pc, #4] /* data_85c4 */
-/*0x85be*/      b.w jump_7fc2
+/*0x85be*/      b.w loc_7fc2
 
 /*0x85c2*/  .byte 0x00
 /*0x85c3*/  .byte 0x00
@@ -11376,7 +11404,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
 
             .thumb_func
-            loc_85c8:
+            do_nothing_2:
 /*0x85c8*/      bx lr
 
             .thumb_func
@@ -11396,7 +11424,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x85e0*/      movs r2, #0x40
 /*0x85e2*/      mov r1, sp
 /*0x85e4*/      movs r0, #3
-/*0x85e6*/      bl call_8420
+/*0x85e6*/      bl usb_write_ep_in_buffer
 /*0x85ea*/      add sp, #0x44
 /*0x85ec*/      movs r0, #0x4f
 /*0x85ee*/      pop {pc}
@@ -13093,7 +13121,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x9200*/      push {r4, r5, r6, lr}
 /*0x9202*/      mov r4, r0
 /*0x9204*/      movs r0, #0
-/*0x9206*/      bl call_8318
+/*0x9206*/      bl usb_get_ep_len
 /*0x920a*/      mov r5, r0
 /*0x920c*/      ldr r0, [r4, #0x20]
 /*0x920e*/      adds r1, r0, #1
@@ -13116,7 +13144,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x9230*/      mov r2, r5
 /*0x9232*/      movs r0, #0
 /*0x9234*/      ldr r1, [r4, #0x1c]
-/*0x9236*/      bl call_8420
+/*0x9236*/      bl usb_write_ep_in_buffer
 /*0x923a*/      ldr r0, [r4, #0x1c]
 /*0x923c*/      add r0, r5
 /*0x923e*/      str r0, [r4, #0x1c]
@@ -13134,7 +13162,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x9252*/      bne jump_9276
 /*0x9254*/      ldrb r0, [r4, #4]
 /*0x9256*/      and r0, r0, #0xf
-/*0x925a*/      bl call_8326
+/*0x925a*/      bl usb_get_ep_stall_status
 /*0x925e*/      b jump_9264
             jump_9260:
 /*0x9260*/      ldrb.w r0, [r4, #0x34]
@@ -13305,7 +13333,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x93a6*/      beq jump_93b0
 /*0x93a8*/      cbz r2, jump_93cc
 /*0x93aa*/      mov r0, r5
-/*0x93ac*/      bl call_840c
+/*0x93ac*/      bl usb_set_ep_stall_status
             jump_93b0:
 /*0x93b0*/      strb.w r6, [r4, #0x24]
             jump_93b4:
@@ -13324,41 +13352,41 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x93ce*/      cmp r0, #0
 /*0x93d0*/      bne jump_93b0
 /*0x93d2*/      mov r0, r5
-/*0x93d4*/      bl call_82c0
+/*0x93d4*/      bl usb_clear_ep_stall_status
 /*0x93d8*/      mov r0, r5
-/*0x93da*/      bl call_82b0
+/*0x93da*/      bl usb_clear_ep_data_toggle_status
 /*0x93de*/      b jump_93b0
 
             .thumb_func
-            call_93e0:
-/*0x93e0*/      .short 0x1e52 /* subs r2, r2, #1 */
-/*0x93e2*/      bmi jump_93ee
-/*0x93e4*/      ldr.w r3, [r0, r2, lsl #2]
-/*0x93e8*/      str.w r3, [r1, r2, lsl #2]
-/*0x93ec*/      b call_93e0
+            copy_words_1:
+/*0x93e0*/      .short 0x1e52 /* subs r2, r2, #1 */ ; r2 = arg3 - 1
+/*0x93e2*/      bmi jump_93ee               ; r2 < 0 ? jump_93ee : continue
+/*0x93e4*/      ldr.w r3, [r0, r2, lsl #2]  ; r3 = *(arg1 + (r2*4))
+/*0x93e8*/      str.w r3, [r1, r2, lsl #2]  ; *(arg2 + (r2*4)) = r3
+/*0x93ec*/      b copy_words_1
             jump_93ee:
 /*0x93ee*/      bx lr
 
             .thumb_func
-            call_93f0:
-/*0x93f0*/      ldr r1, [pc, #8] /* USB.USBEP0CSR_93fc */
-/*0x93f2*/      add.w r0, r0, r0, lsl #2
-/*0x93f6*/      add.w r0, r1, r0, lsl #2
+            usb_compute_epcsr_addr:
+/*0x93f0*/      ldr r1, [pc, #8] /* r1 = USB.USBEP0CSR_93fc */
+/*0x93f2*/      add.w r0, r0, r0, lsl #2    ; r0 = arg1*5
+/*0x93f6*/      add.w r0, r1, r0, lsl #2    ; r0 = arg2 + arg1*20
 /*0x93fa*/      bx lr
 
             USB.USBEP0CSR_93fc:
 /*0x93fc*/  .word 0x400a8014
 
             .thumb_func
-            loc_9400:
+            copy_words_2:
 /*0x9400*/      b jump_9408
             jump_9402:
-/*0x9402*/      ldm r0!, {r3}
-/*0x9404*/      .short 0x1f12 /* subs r2, r2, #4 */
-/*0x9406*/      stm r1!, {r3}
+/*0x9402*/      ldm r0!, {r3}   ; r3 = *(r0); r0 += 4
+/*0x9404*/      .short 0x1f12 /* subs r2, r2, #4 */ ; r2 = r2 - 4
+/*0x9406*/      stm r1!, {r3}   ; *(r1) = r3; r1 += 4
             jump_9408:
 /*0x9408*/      cmp r2, #0
-/*0x940a*/      bne jump_9402
+/*0x940a*/      bne jump_9402   ; r2 != 0 ? jump_9402 : continue
 /*0x940c*/      bx lr
 
             .thumb_func
@@ -13366,15 +13394,15 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x940e*/      bx lr
 
             .thumb_func
-            loc_9410:
-/*0x9410*/      movs r0, #0
+            clear_words:
+/*0x9410*/      movs r0, #0     ; r0 = 0
 /*0x9412*/      b jump_9418
             jump_9414:
-/*0x9414*/      stm r1!, {r0}
-/*0x9416*/      .short 0x1f12 /* subs r2, r2, #4 */
+/*0x9414*/      stm r1!, {r0}   ; *(r1) = 0; r1 += 4
+/*0x9416*/      .short 0x1f12 /* subs r2, r2, #4 */ ; r2 = r2 - 4
             jump_9418:
 /*0x9418*/      cmp r2, #0
-/*0x941a*/      bne jump_9414
+/*0x941a*/      bne jump_9414   ; r2 != 0 ? jump_9414 : continue
 /*0x941c*/      bx lr
 
 /*0x941e*/  .byte 0x00
@@ -16430,38 +16458,24 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0xa191*/  .byte 0x00
 /*0xa192*/  .byte 0x00
 /*0xa193*/  .byte 0x00
-/*0xa194*/  .byte 0xb4
-/*0xa195*/  .byte 0xa1
-/*0xa196*/  .byte 0x00
-/*0xa197*/  .byte 0x00
-/*0xa198*/  .byte 0x00
-/*0xa199*/  .byte 0x00
-/*0xa19a*/  .byte 0x00
-/*0xa19b*/  .byte 0x20
-/*0xa19c*/  .byte 0x94
-/*0xa19d*/  .byte 0x00
-/*0xa19e*/  .byte 0x00
-/*0xa19f*/  .byte 0x00
-/*0xa1a0*/  .byte 0x00
-/*0xa1a1*/  .byte 0x94
-/*0xa1a2*/  .byte 0x00
-/*0xa1a3*/  .byte 0x00
-/*0xa1a4*/  .byte 0x48
-/*0xa1a5*/  .byte 0xa2
-/*0xa1a6*/  .byte 0x00
-/*0xa1a7*/  .byte 0x00
-/*0xa1a8*/  .byte 0x94
-/*0xa1a9*/  .byte 0x00
-/*0xa1aa*/  .byte 0x00
-/*0xa1ab*/  .byte 0x20
-/*0xa1ac*/  .byte 0xb4
-/*0xa1ad*/  .byte 0x26
-/*0xa1ae*/  .byte 0x00
-/*0xa1af*/  .byte 0x00
-/*0xa1b0*/  .byte 0x10
-/*0xa1b1*/  .byte 0x94
-/*0xa1b2*/  .byte 0x00
-/*0xa1b3*/  .byte 0x00
+
+            sram_init_1.copy_words_2.src:
+/*0xa194*/  .word 0x0000a1b4 /* possible pointer */
+            sram_init_1.copy_words_2.dst:
+/*0xa198*/  .word 0x20000000
+            sram_init_1.copy_words_2.len:
+/*0xa19c*/  .word 0x00000094
+            sram_init_1.copy_words_2:
+/*0xa1a0*/  .word 0x00009400 /* possible pointer */
+            sram_init_2.clear_words.unused_src:
+/*0xa1a4*/  .word 0x0000a248
+            sram_init_2.clear_words.dst:
+/*0xa1a8*/  .word 0x20000094
+            sram_init_2.clear_words.len:
+/*0xa1ac*/  .word 0x000026b4
+            sram_init_2.clear_words:
+/*0xa1b0*/  .word 0x00009410 /* possible pointer */
+
 /*0xa1b4*/  .byte 0x00
 /*0xa1b5*/  .byte 0x00
 /*0xa1b6*/  .byte 0x00

@@ -80,6 +80,8 @@
 
 3572: generic_intr
 
+# void entry(void)
+3580: entry
 # void start_main(void)
 3588: start_main
 3594: rand
@@ -92,6 +94,10 @@
 35ea: _memzero
 # void * memset(void *ptr, uint8_t value, size_t len)
 35ee: memset
+# void sram_init(void)
+#   calls copy_words(src=0xa1b4, dst=0x20000000, len=0x94)
+#   calls clear_words(irrelevant, dst=0x20000094, len=0x26b4)
+3600: sram_init
 # void afio_set_exti_pin_mux(int EXTIn, uint8_t port)
 367c: afio_set_exti_pin_mux
 36a8
@@ -243,8 +249,8 @@
 # void sram_write_1(void)
 #   writes 1 to 0x20000040 if it was 0 previously.
 4584: sram_write_1
-# void do_nothing(void)
-4598: do_nothing
+# void do_nothing_1(void)
+4598: do_nothing_1
 # void bftm0_clk_enable(void)
 4ba8: bftm0_clk_enable
 58d0
@@ -314,6 +320,8 @@
 6764
 # void handle_frame(void)
 67a0: handle_frame
+# void reset_peripherals(uint32_t ahbprstr, uint32_t apbprstr0, uint32_t apbprstr1, uint32_t reset)
+69d4: reset_peripherals
 # void gpio_config_key_groups(void)
 6b1c: gpio_config_key_groups
 # void gpio_set_reset_key_groups(int reset)
@@ -351,6 +359,9 @@
 #    2 : set WEL (with 1) and return 1
 70f6: spi_flash_check_set_wel
 7154
+# void ckcu_config_sys_clk(void)
+# CK_SYS = CK_PLL = 8MHz xtal * 18 = 144 MHz
+7200: ckcu_config_sys_clk
 7c3c
 7d04
 7d10
@@ -371,6 +382,7 @@
 7e40
 7f44
 7f54
+7fc2
 # void usb_init_desc(USBDCore_Desc_TypeDef *dst)
 # typedef struct {
 #   uint8_t *pDeviceDesc;
@@ -379,10 +391,55 @@
 #   uint32_t uStringDescNumber;
 # } USBDCore_Desc_TypeDef;
 81ec: usb_init_desc
+# void usb_clear_intr_flags(uint32_t value)
+8204: usb_clear_intr_flags
 # void usb_init(void)
 8210: usb_init
+# void usb_set_dp_wake_up(int enable)
+826c: usb_set_dp_wake_up
 # void usb_set_dp_pull_up(int enable)
 8288: usb_set_dp_pull_up
+# void usb_reset(void)
+82a4: usb_reset
+# void usb_clear_ep_data_toggle_status(uint32_t ep_num)
+82b0: usb_clear_ep_data_toggle_status
+# void usb_clear_ep_stall_status(uint32_t ep_num)
+82c0: usb_clear_ep_stall_status
+# void usb_clear_ep_intr_flags(uint32_t ep_num, uint32_t value)
+82d0: usb_clear_ep_intr_flags
+# uint32_t usb_get_ep_in_buffer_addr(uint32_t ep_num)
+82dc: usb_get_ep_in_buffer_addr
+# uint32_t usb_get_ep_out_buffer_addr(uint32_t ep_num)
+82f4: usb_get_ep_out_buffer_addr
+# uint32_t usb_get_ep_len(uint32_t ep_num)
+8318: usb_get_ep_len
+# uint32_t usb_get_ep_stall_status(uint32_t ep_num)
+8326: usb_get_ep_stall_status
+# uint32_t usb_get_ep_intr_flags(uint32_t ep_num)
+8340: usb_get_ep_intr_flags
+# uint32_t usb_get_ep_xfer_byte_count(uint32_t ep_num, int shift_amount)
+#   shift_amount:
+#       0 : TXCNT
+#       16 : RXCNT
+834e: usb_get_ep_xfer_byte_count
+# void usb_clear_ep_nakrx_data_toggle_status(uint32_t ep_num)
+83f0: usb_clear_ep_nakrx_data_toggle_status
+# void usb_toggle_ep_stltx_status(uint32_t ep_num)
+8400: usb_toggle_ep_stltx_status
+# void usb_set_ep_stall_status(uint32_t ep_num)
+840c: usb_set_ep_stall_status
+# int usb_write_ep_in_buffer(uint32_t ep_num, uint8_t *src, size_t len)
+#   len cannot exceed endpoint buffer length (writes nothing if len is greater).
+#   Returns byte length written to buffer.
+8420: usb_write_ep_in_buffer
+# void usb_set_intr_enable(uint32_t value)
+8468: usb_set_intr_enable
+# void usb_get_intr_flags(void)
+8498: usb_get_intr_flags
+# void usb_power_down(void)
+84ac: usb_power_down
+# void do_nothing_2(void)
+85c8: do_nothing_2
 85ca
 85ce
 860c
@@ -397,9 +454,16 @@
 90d0: mbia_send_instruction
 # void mbia_shift_data(uint16_t value, uint32_t bit_len)
 9100: mbia_shift_data
-9400
-940e
-9410
+# void copy_words_1(uint32_t *src, uint32_t *dst, uint32_t w_len)
+93e0: copy_words_1
+# uint32_t usb_compute_epcsr_addr(uint32_t ep_num)
+93f0: usb_compute_epcsr_addr
+# void copy_words_2(uint32_t *src, uint32_t *dst, uint32_t w_len)
+9400: copy_words_2
+# void do_nothing_3(void)
+940e: do_nothing_3
+# void clear_words(uint32_t *unused, uint32_t *dst, uint32_t w_len)
+9410: clear_words
 # void main(void)
 9420: main
 
@@ -449,6 +513,8 @@
 66f4: CKCU.APBCCR1.BKPREN_66f4
 66f8: PWRCU.BAKSR.BAKPORF_66f8
 66fc: NVIC.SCR_66fc
+6740: CKCU.APBCCR1.BKPREN_6740
+6744: PWRCU.BAKSR.BAKPORF_6744
 6748: NVIC.SCR_6748
 6760: NVIC.SCR_6760
 679c: FMC_BASE_679c
@@ -459,6 +525,7 @@
 698c: GPIOA_BASE_698c
 6990: NVIC.AIRCR_6990
 6a00: CKCU_RSTCU_BASE_6a00
+6a24: RTC_PWRCU_ALIAS_BASE_6a24
 6a28: CKCU_RSTCU_BASE_6a28
 6c7c: GPIOC_BASE_6c7c
 6c80: GPIOA_BASE_6c80
@@ -481,6 +548,7 @@
 7044: GPIOA_BASE_7044
 * 7080
 7254: CKCU_RSTCU_BASE_7254
+7258: CKCU_RSTCU_ALIAS_BASE_7258
 725c: FMC_BASE_725c
 730c: NVIC.ICTR_730c
 * 8200
@@ -526,6 +594,16 @@
 9c34: usb_str0_desc
 9c38: usb_str2_desc
 9c78: usb_str1_desc
+a194: sram_init_1.copy_words.src .word
+  +4: sram_init_1.copy_words.dst .word
+  +4: sram_init_1.copy_words.len .word
+  +4: sram_init_1.copy_words .word
+  +4: sram_init_2.clear_words.unused_src .word
+  +4: sram_init_2.clear_words.dst .word
+  +4: sram_init_2.clear_words.len .word
+  +4: sram_init_2.clear_words .word
+
+*a194: sram_init_1.src_data
 
 [annote]
 
