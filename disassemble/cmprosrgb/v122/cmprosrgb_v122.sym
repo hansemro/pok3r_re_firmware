@@ -102,7 +102,8 @@
 367c: afio_set_exti_pin_mux
 36a8
 36d4
-37d4
+# void reset_to_IAP(void)
+37d4: reset_to_IAP
 # void bftm_clear_compare_match_interrupt(uint32_t bftm_base)
 38f0: bftm_clear_compare_match_interrupt
 # void bftm_enable_counter(uint32_t bftm_base, int enable)
@@ -312,14 +313,32 @@
 667c: _mbia_gclk_enable
 # void _mbia_gclk_disable(void)
 669c: _mbia_gclk_disable
-# void mcu_enter_deep_sleep1(int wfe_wfi)
+# void PWRCU_DeepSleep1(int wfe_wfi)
 #   wfe_wfi:
 #       0 : wait for event
 #       1 : wait for interrupt
-66bc: mcu_enter_deep_sleep1
+66bc: PWRCU_DeepSleep1
+# void PWRCU_PowerDown(void)
+6700: PWRCU_PowerDown
+# void PWRCU_Sleep(int wfe_wfi)
+#   wfe_wfi:
+#       0 : wait for event
+#       1 : wait for interrupt
+674c: PWRCU_Sleep
 6764
 # void handle_frame(void)
 67a0: handle_frame
+# void clear_read_ver(uint32_t *dst, uint32_t FWVER_addr_offset, uint32_t w_len)
+#   FWVER_addr = 0x3000
+#
+#   reads 0 if FWVER_addr_offset >= 0x3400 (AP firmware section)
+68e4: clear_read_ver
+# void sys_reset(uint32_t mode)
+#   arg:
+#       0 - reset to IAP
+#       1 - reset to AP
+#       2 - power down
+691c: sys_reset
 # void reset_peripherals(uint32_t ahbprstr, uint32_t apbprstr0, uint32_t apbprstr1, uint32_t reset)
 69d4: reset_peripherals
 # void gpio_config_key_groups(void)
@@ -328,6 +347,15 @@
 6cbc: gpio_set_reset_key_groups
 # void mbia_init(void)
 6cf8: mbia_init
+# void mbia_shift_RGB_from_ram(void)
+#   0x20000016 : power_on_delay ? (initializes to 0xff on reset then
+#                decrements by this function)
+#   0x20000017 : Qn for n in [0..7]
+#   0x20000248:0x200002A6 : RGB data array for Q0
+#   0x200002A8:0x20000306 : RGB data array for Q1
+#   ...
+#   (0x60*Qn+0x20000248):(0x60*Qn+0x20000248+0x5e) : RGB data array for Qn
+6f50: mbia_shift_RGB_from_ram
 # int gpio_get_key_A_data(void)
 6fe8: gpio_get_key_A_data
 # void gpio_config_led_groups(void)
@@ -484,6 +512,8 @@
 3620!
 
 36a4: AFIO_BASE_36a4
+36cc: EP_SRAM.EP4_buffer_1_off_4_36cc
+36d0: USB_BASE_36d0
 3864: BFTM0_BASE_3864
 * 38e0
 38e8: BFTM1_BASE_38e8
@@ -529,10 +559,12 @@
 679c: FMC_BASE_679c
 68d4: USB_BASE_68d4
 68dc: FMC_BASE_68dc
-68e0: EP_SRAM.off_0d0_68e0
+68e0: EP_SRAM.EP4_buffer_1_off_4_68e0
 6984: FMC_BASE_6984
+6988: BOOT_MODE_IAP_6988
 698c: GPIOA_BASE_698c
 6990: NVIC.AIRCR_6990
+6994: VECTKEY_SYSRESETREQ_6994
 6a00: CKCU_RSTCU_BASE_6a00
 6a24: RTC_PWRCU_ALIAS_BASE_6a24
 6a28: CKCU_RSTCU_BASE_6a28
@@ -858,3 +890,7 @@ a194: sram_init_1.copy_words.src .word
 9c78: bLength (0x3c)
   +1: bDescriptorType 0x03 (STRING)
   +1: bString Cooler Master Technology Inc.
+
+a1b4: SRAM.0x20000000
+a1ca: SRAM.0x20000016
+a247: SRAM.0x20000093
