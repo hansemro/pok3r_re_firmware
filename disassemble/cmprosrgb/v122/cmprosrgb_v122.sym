@@ -325,7 +325,18 @@
 #       0 : wait for event
 #       1 : wait for interrupt
 674c: PWRCU_Sleep
-6764
+# void cpu_get_info(cpu_info_t *dst)
+# typedef struct {
+#   uint16_t cpu_id; // retrieved from FMC_BASE+0x180:0x1564
+#   uint16_t unk1; // 0x1100
+#   uint16_t app_base; // 0x3400
+#   uint16_t page_size_KB; // retrieved from FMC_BASE+0x188:0x0400
+#   uint16_t flash_size_KB_1; // flash_size - 0xc = 0x33,
+#   uint16_t flash_size_KB_2; // where flash_size is retrieved
+#                             // from FMC_BASE+0x184
+#   uint32_t ver_base; // 0x00003400
+# } cpu_info_t;
+6764: cpu_get_info
 # void handle_frame(void)
 67a0: handle_frame
 # void clear_read_ver(uint32_t *dst, uint32_t FWVER_addr_offset, uint32_t w_len)
@@ -347,6 +358,11 @@
 6cbc: gpio_set_reset_key_groups
 # void mbia_init(void)
 6cf8: mbia_init
+# void mbia_reset_disable(int mode)
+#   mode:
+#       0 : reset
+#       1 : disable
+6dd4: mbia_reset_disable
 # void mbia_shift_RGB_from_ram(void)
 #   0x20000016 : power_on_delay ? (initializes to 0xff on reset then
 #                decrements by this function)
@@ -527,6 +543,7 @@
 3b08: CKCU_RSTCU_BASE_3b08
 3b1c: CKCU_RSTCU_BASE_3b1c
 3b30: CKCU_RSTCU_BASE_3b30
+3eb4: SRAM_RGB_ARRAY_START_3eb4
 400c: GPIOB_BASE_400c
 407c: SPI1_BASE_407c
 4080: GPIOB_BASE_4080
@@ -581,13 +598,17 @@
 6ee8: GPIOC_BASE_6ee8
 6eec: GPIOA_BASE_6eec
 6ef0: GPTM1_BASE_6ef0
+6ef4: SRAM_RGB_ARRAY_START_6ef4
 6f48: GPIOA_BASE_6f48
 6f4c: GPIOC_BASE_6f4c
+6fdc: SRAM_RGB_ARRAY_START_6fdc
 6fe0: GPIOC_BASE_6fe0
 6fe4: GPIOA_BASE_6fe4
 7040: GPIOC_BASE_7040
 7044: GPIOA_BASE_7044
 * 7080
+71f4: EXTI_BASE_71f4
+71f8: USB_BASE_71f8
 7254: CKCU_RSTCU_BASE_7254
 7258: CKCU_RSTCU_ALIAS_BASE_7258
 725c: FMC_BASE_725c
