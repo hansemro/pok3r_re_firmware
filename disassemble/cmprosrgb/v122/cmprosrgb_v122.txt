@@ -3301,19 +3301,20 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x4a94*/      push.w {r4, r5, r6, r7, r8, sb, lr}
 /*0x4a98*/      movs r3, #0xf           ; r3 = 0xf
 /*0x4a9a*/      movs r4, #0             ; r4 = 0
-/*0x4a9c*/      ldr.w sb, [pc, #0x4c]   /* sb = 0x20000094 */
+/*0x4a9c*/      ldr.w sb, [pc, #0x4c]   /* sb = SRAM_A_KEY_ARRAY_START_4aec */
 /*0x4aa0*/      mov.w ip, #1            ; ip = 1
 /*0x4aa4*/      ldr.w r8, [pc, #0x48]   /* r8 = 0x000099ea */
 /*0x4aa8*/      b jump_4ada
             jump_4aaa:
-/*0x4aaa*/      ldrb.w r5, [sb, r3]     ; r5 = *(uint8_t*)(sb+r3)
+                ; get previous key_A_data from array
+/*0x4aaa*/      ldrb.w r5, [sb, r3]     ; r5 = *(uint8_t*)(0x20000094+r3)
 /*0x4aae*/      cmp r5, #0xff
-/*0x4ab0*/      beq jump_4ada           ; r5 == 0xff ? jump_4ada : continue
+/*0x4ab0*/      beq jump_4ada           ; r5 == 0xff ? jump_4ada (no key pressed) : continue
 /*0x4ab2*/      movs r2, #8             ; r2 = 8
 /*0x4ab4*/      add.w r7, r8, r3, lsl #3 ; r7 = r8 + (r3*8)
 /*0x4ab8*/      b jump_4ad4
             jump_4aba:
-/*0x4aba*/      lsl.w r6, ip, r2        ; r6 = ip << r2
+/*0x4aba*/      lsl.w r6, ip, r2        ; r6 = 1 << r2
 /*0x4abe*/      uxtb r6, r6
 /*0x4ac0*/      tst r5, r6
 /*0x4ac2*/      bne jump_4ad4           ; r5 & r6 != 0 ? jump_4ad4 : continue
@@ -3342,7 +3343,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x4aea*/  .byte 0x00
 /*0x4aeb*/  .byte 0x00
 
-            data_4aec:
+            SRAM_A_KEY_ARRAY_START_4aec:
 /*0x4aec*/  .word 0x20000094
             data_4af0:
 /*0x4af0*/  .word 0x000099ea /* possible pointer */
@@ -3428,6 +3429,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             jump_4b8e:
 /*0x4b8e*/      movs r0, #0     ; r0 = 0
             jump_4b90:
+                ; fail/invalid/mismatch
 /*0x4b90*/      pop {r4, pc}    ; return 0
             jump_4b92:
 /*0x4b92*/      ldrb r4, [r0]       ; r4 = *(uint8_t*)r0
@@ -8002,35 +8004,45 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 
             .thumb_func
             call_6c8c:
-/*0x6c8c*/      ldr r1, [pc, #0x28] /* r1 = 0x20000094 */
+/*0x6c8c*/      ldr r1, [pc, #0x28] /* r1 = SRAM_A_KEY_ARRAY_START_6cb8 */
 /*0x6c8e*/      push {r4, lr}
-/*0x6c90*/      add.w r0, r1, #0x1e ; r0 = 0x200000b2
+/*0x6c90*/      add.w r0, r1, #0x1e ; r0 = SRAM_A_KEY_STRUCT_ARRAY_START
 /*0x6c94*/      movs r2, #0xf       ; r2 = 0xf
 /*0x6c96*/      b jump_6cac
             jump_6c98:
+                ; get keypress state
+                ;   state 0:idle
+                ;   state 1:long_hold
+                ;   state 2:hold
+                ;   state 3:press
 /*0x6c98*/      ldrb r3, [r0]       ; r3 = *(uint8_t*)r0
 /*0x6c9a*/      cbnz r3, jump_6ca4  ; r3 != 0 ? jump_6ca4 : continue
+                ; get previous (long-held key) from struct and array
 /*0x6c9c*/      ldrb r3, [r0, #2]   ; r3 = *(uint8_t*)(r0+2)
 /*0x6c9e*/      ldrb r4, [r1]       ; r4 = *(uint8_t*)(r1)
 /*0x6ca0*/      cmp r3, r4
 /*0x6ca2*/      beq jump_6ca8       ; r3 == r4 ? jump_6ca8 : continue
             jump_6ca4:
+                ; fail/mismatch
 /*0x6ca4*/      movs r0, #0         ; r0 = 0
 /*0x6ca6*/      pop {r4, pc}        ; return 0
             jump_6ca8:
+                ; move to next struct entry
 /*0x6ca8*/      .short 0x1cc0 /* adds r0, r0, #3 */
+                ; move to next data entry
 /*0x6caa*/      .short 0x1c49 /* adds r1, r1, #1 */
             jump_6cac:
 /*0x6cac*/      .short 0x1e52 /* subs r2, r2, #1 */
 /*0x6cae*/      uxtb r2, r2         ; r2 = r2
 /*0x6cb0*/      bhs jump_6c98       ; r2 >= 0 ? jump_6c98 : continue
+                ; success/match
 /*0x6cb2*/      movs r0, #1         ; r0 = 1
 /*0x6cb4*/      pop {r4, pc}        ; return 1
 
 /*0x6cb6*/  .byte 0x00
 /*0x6cb7*/  .byte 0x00
 
-            data_6cb8:
+            SRAM_A_KEY_ARRAY_START_6cb8:
 /*0x6cb8*/  .word 0x20000094
 
 
@@ -8456,50 +8468,50 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x6fea*/      movs r0, #0         ; r0 = 0
 /*0x6fec*/      ldr r2, [r1, #0x1c] ; r2 = *(GPIOC.PCDINR)
 /*0x6fee*/      lsls r2, r2, #0x16  ; r2 = r2 << 0x16
-                ; continue if PC9/KEY_A1 == 1; jump otherwise
+                ; continue if PC9/KEY_A1 == 1 (unpressed); jump otherwise
 /*0x6ff0*/      bpl jump_6ff4       ; r2 >= 0 ? jump_6ff4 : continue
 /*0x6ff2*/      movs r0, #1         ; r0 = 1
             jump_6ff4:
 /*0x6ff4*/      ldr r2, [pc, #0x4c] /* r2 = GPIOA_BASE_7044 */
 /*0x6ff6*/      ldr r3, [r2, #0x1c] ; r3 = *(GPIOA.PADINR)
 /*0x6ff8*/      lsls r3, r3, #0x1a  ; r3 = r3 << 0x1a
-                ; continue if PA5/KEY_A2 == 1; jump otherwise
+                ; continue if PA5/KEY_A2 == 1 (unpressed); jump otherwise
 /*0x6ffa*/      bpl jump_7000       ; r3 >= 0 ? jump_7000 : continue
 /*0x6ffc*/      orr r0, r0, #2      ; r0 = r0 | 2
             jump_7000:
 /*0x7000*/      ldr r3, [r2, #0x1c] ; r3 = *(GPIOA.PADINR)
 /*0x7002*/      lsls r3, r3, #0x19  ; r3 = r3 << 0x19
-                ; continue if PA6/KEY_A3 == 1; jump otherwise
+                ; continue if PA6/KEY_A3 == 1 (unpressed); jump otherwise
 /*0x7004*/      bpl jump_700a       ; r3 >= 0 ? jump_700a : continue
 /*0x7006*/      orr r0, r0, #4      ; r0 = r0 | 4
             jump_700a:
 /*0x700a*/      ldr r2, [r2, #0x1c] ; r2 = *(GPIOA.PADINR)
 /*0x700c*/      lsls r2, r2, #0x18  ; r2 = r2 << 0x18
-                ; continue if PA7/KEY_A4 == 1; jump otherwise
+                ; continue if PA7/KEY_A4 == 1 (unpressed); jump otherwise
 /*0x700e*/      bpl jump_7014       ; r2 >= 0 ? jump_7014 : continue
 /*0x7010*/      orr r0, r0, #8      ; r0 = r0 | 8
             jump_7014:
 /*0x7014*/      ldr r2, [r1, #0x1c] ; r2 = *(GPIOC.PCDINR)
 /*0x7016*/      lsls r2, r2, #0x14  ; r2 = r2 << 0x14
-                ; continue if PC11/KEY_A5 == 1; jump otherwise
+                ; continue if PC11/KEY_A5 == 1 (unpressed); jump otherwise
 /*0x7018*/      bpl jump_701e       ; r2 >= 0 ? jump_701e : continue
 /*0x701a*/      orr r0, r0, #0x10   ; r0 = r0 | 0x10
             jump_701e:
 /*0x701e*/      ldr r2, [r1, #0x1c] ; r2 = *(GPIOC.PCDINR)
 /*0x7020*/      lsls r2, r2, #0x12  ; r2 = r2 << 0x12
-                ; continue if PC13/KEY_A6 == 1; jump otherwise
+                ; continue if PC13/KEY_A6 == 1 (unpressed); jump otherwise
 /*0x7022*/      bpl jump_7028       ; r2 >= 0 ? jump_7028 : continue
 /*0x7024*/      orr r0, r0, #0x20   ; r0 = r0 | 0x20
             jump_7028:
 /*0x7028*/      ldr r2, [r1, #0x1c] ; r2 = *(GPIOC.PCDINR)
 /*0x702a*/      lsls r2, r2, #0x11  ; r2 = r2 << 0x11
-                ; continue if PC14/KEY_A7 == 1; jump otherwise
+                ; continue if PC14/KEY_A7 == 1 (unpressed); jump otherwise
 /*0x702c*/      bpl jump_7032       ; r2 >= 0 ? jump_7032 : continue
 /*0x702e*/      orr r0, r0, #0x40   ; r0 = r0 | 0x40
             jump_7032:
 /*0x7032*/      ldr r1, [r1, #0x1c] ; r1 = *(GPIOC.PCDINR)
 /*0x7034*/      lsls r1, r1, #0x10  ; r1 = r1 << 0x10
-                ; continue if PC15/KEY_A8 == 1; jump otherwise
+                ; continue if PC15/KEY_A8 == 1 (unpressed); jump otherwise
 /*0x7036*/      bpl jump_703c       ; r1 >= 0 ? jump_703c : continue
 /*0x7038*/      orr r0, r0, #0x80   ; r0 = r0 | 0x80
             jump_703c:
@@ -12904,7 +12916,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             call_9020:
 /*0x9020*/      push {r4, r5, r6, lr}
 /*0x9022*/      ldr r4, [pc, #0x4c] /* r4 = 0x200000df */
-/*0x9024*/      ldr r5, [pc, #0x4c] /* r5 = key_gpio_map.KEY_B3_9074 */
+/*0x9024*/      ldr r5, [pc, #0x4c] /* r5 = key_gpio_map.last_9074 */
 /*0x9026*/      movs r6, #0xf       ; r6 = 0xf
             jump_9028:
 /*0x9028*/      ldr r1, [r5]        ; (gpio_base) r1 = *r5
@@ -12923,29 +12935,41 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x9040*/      ldr r1, [r5, #4]    ; (pin) r1 = *(r5+4)
                 ; set B key
 /*0x9042*/      str r1, [r2, #0x24] ; *(gpio_base.PxSRR) = r1
+                ; get previous raw_key_A_data
 /*0x9044*/      ldrb r1, [r4, #1]   ; r1 = *(uint8_t*)(r4+1)
 /*0x9046*/      cmp r1, r0
-/*0x9048*/      beq jump_9050       ; r1 == r0 ? jump_9050 : continue
+/*0x9048*/      beq jump_9050       ; r1 == A_data ? jump_9050 (same A_data) : continue (start of keypress)
+                ; set curr raw_key_A_data
 /*0x904a*/      strb r0, [r4, #1]   ; *(uint8_t*)(r4+1) = r0
 /*0x904c*/      movs r0, #3         ; r0 = 3
+                ; set initial keypress state (3)
 /*0x904e*/      b jump_905c
             jump_9050:
+                ; key debouncing...
+                ; get keypress state
+                ;   state 0:idle
+                ;   state 1:long_hold
+                ;   state 2:hold
+                ;   state 3:press
 /*0x9050*/      ldrb r0, [r4]       ; r0 = *(uint8_t*)r4
-/*0x9052*/      cbz r0, jump_905e   ; r0 == 0 ? jump_905e : continue
+/*0x9052*/      cbz r0, jump_905e   ; r0 == 0 ? jump_905e (idle) : continue
 /*0x9054*/      cmp r0, #1
-/*0x9056*/      bne jump_905a       ; r0 == 1 ? jump_905a : continue
+/*0x9056*/      bne jump_905a       ; r0 > 1 ? jump_905a (debounce) : continue
+                ; set key_A_data
 /*0x9058*/      strb r1, [r4, #2]   ; *(uint8_t*)(r4+2) = r1
+                ; set idle state...
             jump_905a:
 /*0x905a*/      .short 0x1e40 /* subs r0, r0, #1 */ ; r0 = r0 - 1
             jump_905c:
+                ; set keypress state
 /*0x905c*/      strb r0, [r4]       ; *(uint8_t*)r4 = r0
             jump_905e:
 /*0x905e*/      cmp r6, #0
-                ; reached B5 key ? return
+                ; reached B5 key ? return : continue
 /*0x9060*/      beq jump_906c       ; r6 == 0 ? jump_906c : continue
 /*0x9062*/      movs r0, #5         ; r0 = 5
 /*0x9064*/      bl sleep
-                ; move to next key...
+                ; move to next B key in key gpio map...
 /*0x9068*/      subs r5, #8         ; r5 = 8
 /*0x906a*/      b jump_9028
             jump_906c:
@@ -12954,9 +12978,9 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x906e*/  .byte 0x00
 /*0x906f*/  .byte 0x00
 
-            data_9070:
+            SRAM_A_KEY_STRUCT_ARRAY_END:
 /*0x9070*/  .word 0x200000df
-            key_gpio_map.KEY_B3_9074:
+            key_gpio_map.last_9074:
 /*0x9074*/  .word 0x000099e2 /* possible pointer */
 
             jump_9078:
