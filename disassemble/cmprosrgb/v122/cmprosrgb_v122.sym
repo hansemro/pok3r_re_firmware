@@ -170,8 +170,9 @@
 4084: spi_flash_read_wip
 # int spi_flash_gpio_config(void)
 4090: spi_flash_gpio_config
-# void _spi_flash_disable(int disable)
-40e0: _spi_flash_disable
+# void _spi_flash_enable_disable(int disable)
+#   enable if disable=0, and disable otherwise
+40e0: _spi_flash_enable_disable
 # void spi_flash_afio_config(void)
 40ec: spi_flash_afio_config
 # void spi_flash_deep_power_down(void)
@@ -252,6 +253,14 @@
 4584: sram_write_1
 # void do_nothing_1(void)
 4598: do_nothing_1
+# uint8_t get_keycode_arr(uint8_t *keycodes_dst, uint8_t len)
+#   Returns 0xff (-1) when len entries were captured.
+#   Returns number of entries captured when sweep completes
+#   before there are len entries.
+4a94: get_keycode_arr
+# void bftm0_enable_disable(int disable)
+#   enable if disable=0, and disable otherwise
+4af4: bftm0_enable_disable
 # void bftm0_clk_enable(void)
 4ba8: bftm0_clk_enable
 58d0
@@ -300,15 +309,17 @@
 62cc: spi_flash_init
 # int spi_flash_init_gpio(void)
 62fc: spi_flash_init_gpio
-# void spi_flash_disable(int disable)
-6314: spi_flash_disable
+# void spi_flash_enable_disable(int disable)
+#   enable if disable=0, and disable otherwise
+6314: spi_flash_enable_disable
 65c8
 # int mbia_init_gclk(void)
 65e0: mbia_init_gclk
 # void mbia_enable_gpio_port_c_clk(void)
 6654: mbia_enable_gpio_port_c_clk
-# void mbia_gclk_disable(int disable)
-6670: mbia_gclk_disable
+# void mbia_gclk_enable_disable(int disable)
+#   enable if disable=0, and disable otherwise
+6670: mbia_gclk_enable_disable
 # void _mbia_gclk_enable(void)
 667c: _mbia_gclk_enable
 # void _mbia_gclk_disable(void)
@@ -352,6 +363,8 @@
 691c: sys_reset
 # void reset_peripherals(uint32_t ahbprstr, uint32_t apbprstr0, uint32_t apbprstr1, uint32_t reset)
 69d4: reset_peripherals
+# void update_A_key_array_from_struct(void)
+6aac: update_A_key_array_from_struct
 # void gpio_config_key_groups(void)
 6b1c: gpio_config_key_groups
 # void gpio_set_reset_key_groups(int reset)
@@ -405,11 +418,13 @@
 7154
 # void ckcu_config_sys_clk(void)
 # CK_SYS = CK_PLL = 8MHz xtal * 18 = 144 MHz
+# CK_AHB = CK_SYS / 2 = 72 MHz
 7200: ckcu_config_sys_clk
 7c3c
 7d04
 7d10
-7d1c
+# void usb_ep4_callback(void)
+7d1c: usb_ep4_callback
 # void usb_init_class(USBDCore_Class_TypeDef *dst)
 #   typedef struct {
 #       TODO
@@ -465,8 +480,10 @@
 834e: usb_get_ep_xfer_byte_count
 # void USBD_EPTInit(uint32_t ep_num, uint32_t *pDriver)
 8360: USBD_EPTInit
+# uint32_t _usb_read_ep_out_buffer(uint32_t ep_num, uint8_t *dst, size_t len)
+8386: _usb_read_ep_out_buffer
 # uint32_t usb_read_ep_out_buffer(uint32_t ep_num, uint8_t *dst, size_t len)
-8386: usb_read_ep_out_buffer
+83c0: usb_read_ep_out_buffer
 # void USBD_EPTReset(uint32_t ep_num)
 83f0: USBD_EPTReset
 # void usb_toggle_ep_stltx_status(uint32_t ep_num)
@@ -497,6 +514,8 @@
 85ce
 860c
 8628
+# void scan_key_presses(void)
+9020: scan_key_presses
 # void mbia_send_instruction(uint32_t instr)
 #
 # instr is the number of DCLK rising edges while LE is asserted.
@@ -531,6 +550,7 @@
 36cc: EP_SRAM.EP4_buffer_1_off_4_36cc
 36d0: USB_BASE_36d0
 3864: BFTM0_BASE_3864
+38e0: led_gpio_map_38e0
 * 38e0
 38e8: BFTM1_BASE_38e8
 38ec: GPIOA_BASE_38ec
@@ -586,10 +606,14 @@
 6a00: CKCU_RSTCU_BASE_6a00
 6a24: RTC_PWRCU_ALIAS_BASE_6a24
 6a28: CKCU_RSTCU_BASE_6a28
+6ac8: SRAM_A_KEY_ARRAY_START_6ac8
 6c7c: GPIOC_BASE_6c7c
 6c80: GPIOA_BASE_6c80
+6c84: key_gpio_map_6c84
+6c88: SRAM_A_KEY_ARRAY_START_6c88
 * 6c84
 6cb8: SRAM_A_KEY_ARRAY_START_6cb8
+6cf4: key_gpio_map_6cf4
 * 6cf4
 6dc4: BFTM1_BASE_6dc4
 6dc8: GPIOC_BASE_6dc8
@@ -608,6 +632,7 @@
 6fe4: GPIOA_BASE_6fe4
 7040: GPIOC_BASE_7040
 7044: GPIOA_BASE_7044
+7080: led_gpio_map_7080
 * 7080
 71f4: EXTI_BASE_71f4
 71f8: USB_BASE_71f8
@@ -615,6 +640,9 @@
 7258: CKCU_RSTCU_ALIAS_BASE_7258
 725c: FMC_BASE_725c
 730c: NVIC.ICTR_730c
+7fb4: usb_report0_desc_7fb4
+* 7fb4
+8200: usb_device_desc_8200
 * 8200
 820c: USB_BASE_820c
 8268: NVIC.ICTR_8268
