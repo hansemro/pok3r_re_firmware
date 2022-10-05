@@ -3106,41 +3106,41 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
             .thumb_func
             call_4914:
 /*0x4914*/      push.w {r4, r5, r6, r7, r8, lr}
-/*0x4918*/      ldr r4, [pc, #0x134] 	/* r4 = 0x20000058 */
-/*0x491a*/      ldr r2, [pc, #0x138] 	/* r2 = keycode_map */
-/*0x491c*/      and r7, r0, #7			; r7 = arg1 & 7
-/*0x4920*/      strb r0, [r4, #3]		; *(uint8_t*)0x2000005b = arg1
-/*0x4922*/      ldrb r3, [r2, r0]		; r3 = *(uint8_t*)(r2+arg1)
-/*0x4924*/      lsrs r6, r0, #3			; r6 = arg1 >> 3
-/*0x4926*/      strb r3, [r4, #2]		; *(uint8_t*)0x2000005a = r3
-/*0x4928*/      ldrb r0, [r4, #1]		; r0 = *(uint8_t*)0x20000059
-/*0x492a*/      movs r5, #1				; r5 = 1
-/*0x492c*/      bic r2, r0, #1			; r2 = r0 & ~1
-/*0x4930*/      bfi r2, r1, #1, #1		; r2[0] = r1[1]
-/*0x4934*/      mov r0, r4				; r0 = 0x20000058
-/*0x4936*/      strb r2, [r4, #1]		; *(0x20000059) = r2
-/*0x4938*/      ldrb r0, [r0]			; r0 = *(uint8_t*)0x20000058
+/*0x4918*/      ldr r4, [pc, #0x134]    /* r4 = 0x20000058 */
+/*0x491a*/      ldr r2, [pc, #0x138]    /* r2 = keycode_map */
+/*0x491c*/      and r7, r0, #7          ; r7 = arg1 & 7
+/*0x4920*/      strb r0, [r4, #3]       ; *(uint8_t*)0x2000005b = arg1
+/*0x4922*/      ldrb r3, [r2, r0]       ; r3 = *(uint8_t*)(r2+arg1)
+/*0x4924*/      lsrs r6, r0, #3         ; r6 = arg1 >> 3
+/*0x4926*/      strb r3, [r4, #2]       ; *(uint8_t*)0x2000005a = r3
+/*0x4928*/      ldrb r0, [r4, #1]       ; r0 = *(uint8_t*)0x20000059
+/*0x492a*/      movs r5, #1             ; r5 = 1
+/*0x492c*/      bic r2, r0, #1          ; r2 = r0 & ~1
+/*0x4930*/      bfi r2, r1, #1, #1      ; r2[0] = r1[1]
+/*0x4934*/      mov r0, r4              ; r0 = 0x20000058
+/*0x4936*/      strb r2, [r4, #1]       ; *(0x20000059) = r2
+/*0x4938*/      ldrb r0, [r0]           ; r0 = *(uint8_t*)0x20000058
 /*0x493a*/      cmp r3, #0xe8
-/*0x493c*/      beq jump_4968			; r3 == 0xe8 ? jump_4968 : continue
-/*0x493e*/      lsl.w r7, r5, r7		; r7 = r5 << r7
-/*0x4942*/      mov.w ip, #0x1c			; ip = 0x1c
+/*0x493c*/      beq jump_4968           ; r3 == 0xe8 ? jump_4968 : continue
+/*0x493e*/      lsl.w r7, r5, r7        ; r7 = r5 << r7
+/*0x4942*/      mov.w ip, #0x1c         ; ip = 0x1c
 /*0x4946*/      uxtb r7, r7
 /*0x4948*/      cmp.w ip, r3, lsr #3
-/*0x494c*/      bne jump_498e			; ip != (r3>>3) ? jump_498e : continue
-/*0x494e*/      ands ip, r3, #3			; ip = r3 & 3
-/*0x4952*/      beq jump_4976			; ip == 0 ? jump_4976 : continue
+/*0x494c*/      bne jump_498e           ; ip != (r3>>3) ? jump_498e : continue
+/*0x494e*/      ands ip, r3, #3         ; ip = r3 & 3
+/*0x4952*/      beq jump_4976           ; ip == 0 ? jump_4976 : continue
 /*0x4954*/      cmp.w ip, #1
-/*0x4958*/      beq jump_497c			; ip == 1 ? jump_497c : continue
+/*0x4958*/      beq jump_497c           ; ip == 1 ? jump_497c : continue
 /*0x495a*/      cmp.w ip, #2
-/*0x495e*/      beq jump_4982			; ip == 2 ? jump_4982 : continue
+/*0x495e*/      beq jump_4982           ; ip == 2 ? jump_4982 : continue
 /*0x4960*/      cmp.w ip, #3
-/*0x4964*/      bne jump_4998			; ip != 3 ? jump_4998 : continue
+/*0x4964*/      bne jump_4998           ; ip != 3 ? jump_4998 : continue
 /*0x4966*/      b jump_4988
             jump_4968:
-/*0x4968*/      bfi r0, r1, #4, #1		; r0 = r1[4]
-/*0x496c*/      strb r0, [r4]			; *(uint8_t*)r4 = r0
-/*0x496e*/      bic r0, r2, #4			; r0 = r2 & ~4
-/*0x4972*/      strb r0, [r4, #1]		; *(uint8_t*)(r4+1) = r0
+/*0x4968*/      bfi r0, r1, #4, #1      ; r0 = r1[4]
+/*0x496c*/      strb r0, [r4]           ; *(uint8_t*)r4 = r0
+/*0x496e*/      bic r0, r2, #4          ; r0 = r2 & ~4
+/*0x4972*/      strb r0, [r4, #1]       ; *(uint8_t*)(r4+1) = r0
 /*0x4974*/      b jump_49b0
             jump_4976:
 /*0x4976*/      bfi r0, r1, #0, #1
@@ -10975,7 +10975,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
                 ;   0x20000a10:usb_str_count
 /*0x823a*/      bl usb_get_desc
 /*0x823e*/      ldr r0, [pc, #0x20]     /* r0 = 0x20000a8c */
-/*0x8240*/      subs r0, #0x54		    ; (dst) r0 = 0x20000a38
+/*0x8240*/      subs r0, #0x54          ; (dst) r0 = 0x20000a38
                 ; set callbacks at 0x20000a38
                 ;   0x20000a38:0x00007dfd
                 ;   0x20000a40:0x00007ef5
@@ -10986,7 +10986,7 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
                 ;   0x20000a70:usb_ep4_callback+1
 /*0x8242*/      bl usb_init_class
 /*0x8246*/      ldr r0, [pc, #0x18]     /* r0 = 0x20000a8c */
-/*0x8248*/      subs r0, #0x90		    ; r0 = 0x200009fc
+/*0x8248*/      subs r0, #0x90          ; r0 = 0x200009fc
 /*0x824a*/      bl call_8174
 /*0x824e*/      ldr r1, [pc, #0x18]     /* r1 = NVIC.ICTR_8268 */
 /*0x8250*/      mov.w r0, #0x200000     ; r0 = 0x200000
