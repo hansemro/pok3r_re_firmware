@@ -674,21 +674,21 @@ a194: sram_init_1.copy_words.src .word
 
 [annote]
 
-9972: GPIO C, pin 4 - KEY_B5
-  +8: GPIO B, pin 6 - KEY_B6
-  +8: GPIO D, pin 0 - KEY_B7
-  +8: GPIO B, pin 11 - KEY_B8
-  +8: GPIO A, pin 11 - KEY_B9
-  +8: GPIO A, pin 0 - KEY_B10
-  +8: GPIO A, pin 1 - KEY_B11
-  +8: GPIO A, pin 2 - KEY_B12
-  +8: GPIO A, pin 3 - KEY_B4
+9972: GPIO C, pin 4 - KEY_B1
+  +8: GPIO B, pin 6 - KEY_B2
+  +8: GPIO D, pin 0 - KEY_B3
+  +8: GPIO B, pin 11 - KEY_B4
+  +8: GPIO A, pin 11 - KEY_B5
+  +8: GPIO A, pin 0 - KEY_B6
+  +8: GPIO A, pin 1 - KEY_B7
+  +8: GPIO A, pin 2 - KEY_B8
+  +8: GPIO A, pin 3 - KEY_B9
   +8: GPIO A, pin 4 - unk1
   +8: GPIO C, pin 10 - unk2
-  +8: GPIO C, pin 12 - KEY_B13
-  +8: GPIO C, pin 3 - KEY_B1
-  +8: GPIO A, pin 10 - KEY_B2
-  +8: GPIO B, pin 1 - KEY_B3
+  +8: GPIO C, pin 12 - KEY_B12
+  +8: GPIO C, pin 3 - KEY_B13
+  +8: GPIO A, pin 10 - KEY_B14
+  +8: GPIO B, pin 1 - KEY_B15
 
 # group 1
 99ea: KC_GRV

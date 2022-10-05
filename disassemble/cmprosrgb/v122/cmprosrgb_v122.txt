@@ -14597,35 +14597,35 @@ h*0x404a*/      str r0, [sp, #0x28] ; *(sp+40) = 4 (Prescaler)
 /*0x9971*/  .byte 0xff
 
             key_gpio_map:
-/*0x9972*/  .word 0x400b4000 /* GPIO C, pin 4 - KEY_B5 */
+/*0x9972*/  .word 0x400b4000 /* GPIO C, pin 4 - KEY_B1 */
 /*0x9976*/  .word 0x00000010
-/*0x997a*/  .word 0x400b2000 /* GPIO B, pin 6 - KEY_B6 */
+/*0x997a*/  .word 0x400b2000 /* GPIO B, pin 6 - KEY_B2 */
 /*0x997e*/  .word 0x00000040
-/*0x9982*/  .word 0x400b6000 /* GPIO D, pin 0 - KEY_B7 */
+/*0x9982*/  .word 0x400b6000 /* GPIO D, pin 0 - KEY_B3 */
 /*0x9986*/  .word 0x00000001
-/*0x998a*/  .word 0x400b2000 /* GPIO B, pin 11 - KEY_B8 */
+/*0x998a*/  .word 0x400b2000 /* GPIO B, pin 11 - KEY_B4 */
 /*0x998e*/  .word 0x00000800
-/*0x9992*/  .word 0x400b0000 /* GPIO A, pin 11 - KEY_B9 */
+/*0x9992*/  .word 0x400b0000 /* GPIO A, pin 11 - KEY_B5 */
 /*0x9996*/  .word 0x00000800
-/*0x999a*/  .word 0x400b0000 /* GPIO A, pin 0 - KEY_B10 */
+/*0x999a*/  .word 0x400b0000 /* GPIO A, pin 0 - KEY_B6 */
 /*0x999e*/  .word 0x00000001
-/*0x99a2*/  .word 0x400b0000 /* GPIO A, pin 1 - KEY_B11 */
+/*0x99a2*/  .word 0x400b0000 /* GPIO A, pin 1 - KEY_B7 */
 /*0x99a6*/  .word 0x00000002
-/*0x99aa*/  .word 0x400b0000 /* GPIO A, pin 2 - KEY_B12 */
+/*0x99aa*/  .word 0x400b0000 /* GPIO A, pin 2 - KEY_B8 */
 /*0x99ae*/  .word 0x00000004
-/*0x99b2*/  .word 0x400b0000 /* GPIO A, pin 3 - KEY_B4 */
+/*0x99b2*/  .word 0x400b0000 /* GPIO A, pin 3 - KEY_B9 */
 /*0x99b6*/  .word 0x00000008
 /*0x99ba*/  .word 0x400b0000 /* GPIO A, pin 4 - unk1 */
 /*0x99be*/  .word 0x00000010
 /*0x99c2*/  .word 0x400b4000 /* GPIO C, pin 10 - unk2 */
 /*0x99c6*/  .word 0x00000400
-/*0x99ca*/  .word 0x400b4000 /* GPIO C, pin 12 - KEY_B13 */
+/*0x99ca*/  .word 0x400b4000 /* GPIO C, pin 12 - KEY_B12 */
 /*0x99ce*/  .word 0x00001000
-/*0x99d2*/  .word 0x400b4000 /* GPIO C, pin 3 - KEY_B1 */
+/*0x99d2*/  .word 0x400b4000 /* GPIO C, pin 3 - KEY_B13 */
 /*0x99d6*/  .word 0x00000008
-/*0x99da*/  .word 0x400b0000 /* GPIO A, pin 10 - KEY_B2 */
+/*0x99da*/  .word 0x400b0000 /* GPIO A, pin 10 - KEY_B14 */
 /*0x99de*/  .word 0x00000400
-/*0x99e2*/  .word 0x400b2000 /* GPIO B, pin 1 - KEY_B3 */
+/*0x99e2*/  .word 0x400b2000 /* GPIO B, pin 1 - KEY_B15 */
 /*0x99e6*/  .word 0x00000002
 
             keycode_map:
