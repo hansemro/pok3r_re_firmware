@@ -228,7 +228,7 @@
 #   uint8_t Reserved1;
 #   uint16_t OutputMode;
 #   uint8_t Control;
-#   uint8_t ControlN;
+#   uint8_t Polarity;
 #   uint16_t Compare;
 #   uint16_t AsymmetricCompare;
 # } TM_OutputInitTypeDef;
@@ -524,6 +524,8 @@
 #             __    __       __
 # DCLK  _____/01\__/02\...../NN\______
 90d0: mbia_send_instruction
+# void mbia_start_gptm1(void)
+9078: mbia_start_gptm1
 # void mbia_shift_data(uint16_t value, uint32_t bit_len)
 9100: mbia_shift_data
 # void copy_words_1(uint32_t *src, uint32_t *dst, uint32_t w_len)
@@ -699,6 +701,7 @@ a194: sram_init_1.copy_words.src .word
   +4: sram_init_2.clear_words .word
 
 *a194: sram_init_1.src_data
+a1b8: sram_init_1.gptm1_frequency .word
 
 [annote]
 
@@ -1081,5 +1084,6 @@ a194: sram_init_1.copy_words.src .word
   +1: bString Cooler Master Technology Inc.
 
 a1b4: SRAM.0x20000000
+a1b8: SRAM.GPTM1_FREQ
 a1ca: SRAM.0x20000016
 a247: SRAM.0x20000093
