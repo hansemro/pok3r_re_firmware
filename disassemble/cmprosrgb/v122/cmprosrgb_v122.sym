@@ -86,7 +86,7 @@
 3588: start_main
 3594: rand
 35a8: srand
-# void memcpy(void *src, void *dst, size_t len)
+# void memcpy(void *dst, void *src, size_t len)
 35b8: memcpy
 # void _memset(void *ptr, size_t len, uint8_t value)
 35dc: _memset
