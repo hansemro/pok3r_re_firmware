@@ -414,9 +414,9 @@
 8f14: USB.USBEP0CSR_8f14
 8fbc: EXTI.EXTICR_8fbc
 8fc4: USB_BASE_8fc4
-940d: gpio_map_1 .word 16
-945d: gpio_map_2 .word 32
-94e8: gpio_map_3 .word 16
+940d: KEY_ROW_GPIO_MAP .word 16
+945d: KEY_COL_GPIO_MAP .word 32
+94e8: LED_ROW_GPIO_MAP .word 16
 97a8: usb_report1_desc
 97cc: usb_report2_desc
 9854: usb_report0_desc
@@ -463,7 +463,7 @@
   +8: GPIO A, pin 4
   +8: GPIO C, pin 5
   +8: GPIO C, pin 9
-  +8: GPIO C, pin 14
+  +8: GPIO C, pin 13
   +8: GPIO A, pin 10
   +8: GPIO B, pin 1
   +8: GPIO A, pin 3
