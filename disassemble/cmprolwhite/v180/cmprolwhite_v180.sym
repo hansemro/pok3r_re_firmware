@@ -307,6 +307,7 @@
 3bac: SPI1_BASE_3bac
 3bb0: GPIOB_BASE_3bb0
 3bec: GPIOB_BASE_3bec
+3bf8: bootloader_crc_magic
 3c3c: SRAM.INIT_STAGE_3c3c
 3c40: GPIOB_BASE_3c40
 3c80: GPIOB_BASE_3c80
