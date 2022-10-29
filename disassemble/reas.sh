@@ -44,4 +44,6 @@ reas md200/v112                 md200_v112.bin              md200_v112_ref.s    
 
 reas md600/v148                 md600_v148.bin              md600_v148_ref.s            0x3400  md600_v148.sym
 
+reas cmpromwhite/v160           cmpromwhite_v160.bin        cmpromwhite_v160_ref.s      0x3200  cmpromwhite_v160.sym
+
 popd > /dev/null

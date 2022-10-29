@@ -69,5 +69,8 @@ echo
 reas md600/v148/md600_v148_ref.s                        vma34   md600/v148/md600_v148.bin
 echo
 
+reas cmpromwhite/v160/cmpromwhite_v160_ref.s            vma32   cmpromwhite/v160/cmpromwhite_v160.bin
+echo
+
 popd > /dev/null
 
