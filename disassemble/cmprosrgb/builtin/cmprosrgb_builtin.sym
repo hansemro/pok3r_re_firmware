@@ -13,7 +13,13 @@
 *   +4
 *   +4
 
+*e4: bftm0_intr
+*e8: bftm1_intr
+*ec
+*f0
+
 124: generic_intr
+126: generic_intr2
 
 # void entry(void)
 20: entry
@@ -23,9 +29,8 @@
 34: IAP_GoCMD
 76
 e0
-e4
-134
-164
+# void bftm_clear_compare_match_irq_flag(uint32_t bftm_base)
+f4: bftm_clear_compare_match_irq_flag
 2de
 2f2
 31a
@@ -57,6 +62,10 @@ e3c
 1fbc
 1fc2
 2090
+# void mbia043_send_instruction(int instr)
+21a8: mbia043_send_instruction
+# void mbia043_shift_data(uint16_t data)
+21d8: mbia043_shift_data
 220c
 240c
 241a
@@ -75,6 +84,8 @@ a8!
 *a8
 d4: AFIO_BASE_d4
 160: BFTM0_BASE_160
+1b8: gpio_map_1b8
+*1b8
 1c0: BFTM1_BASE_1c0
 1c4: GPIOA_BASE_1c4
 214: AFIO.GPACFGR0_214
@@ -133,6 +144,8 @@ e90: CKCU_RSTCU_BASE_e90
 13d0: GPIOA_BASE_13d0
 142c: GPIOC_BASE_142c
 1430: GPIOA_BASE_1430
+146c: gpio_map_146c
+*146c
 1534: EXTI_BASE_1534
 1538: USB_BASE_1538
 1598: CKCU_RSTCU_BASE_1598
