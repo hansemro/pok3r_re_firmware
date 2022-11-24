@@ -73,6 +73,7 @@ reas cmprosrgb/bootrom/cmprosrgb_bootrom_ref.s          vma1f   cmprosrgb/bootro
 reas cmprosrgb/builtin/cmprosrgb_builtin_ref.s          vma0    cmprosrgb/builtin/cmprosrgb_builtin.bin
 reas cmprosrgb/v122/cmprosrgb_v122_ref.s                vma34   cmprosrgb/v122/cmprosrgb_v122.bin
 reas cmprosrgb/v121/cmprosrgb_v121_ref.s                vma34   cmprosrgb/v121/cmprosrgb_v121.bin
+reas cmprosrgb/v115/cmprosrgb_v115_ref.s                vma34   cmprosrgb/v121/cmprosrgb_v115.bin
 echo
 
 popd > /dev/null
