@@ -1,0 +1,101 @@
+# Cooler Master MasterKeys Pro L RGB FW 1.2.2
+
+[data]
+
+3400 : vectors .word
+
+[code]
+
+*   +4 : reset
+*   +4 : nmi
+*   +4 : hard_fault
+*   +4 : mpu_fault
+*   +4 : bus_fault
+*   +4 : usage_fault
+*  +14 : svccall_intr
+*   +4 : debug_intr
+*   +8 : pendsv_intr
+*   +4 : systick_intr
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +8
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*  +14 : bftm0_intr
+*   +4 : bftm1_intr
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4 : usb_intr
+*   +8
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*   +4
+*  +18
+*  +24
+*   +4
+*   +4
+
+3572: generic_intr
+
+# void mbia_send_instruction(uint32_t instr)
+#
+# instr is the number of DCLK rising edges while LE is asserted.
+#           ___________.....____
+# LE    ___/                    \____
+#             __    __       __
+# DCLK  _____/01\__/02\...../NN\______
+9040: mbia_send_instruction
+# void mbia_shift_data(uint16_t value, uint32_t bit_len)
+9070: mbia_shift_data
+# void main(void)
+9390: main
+
+[data]
+
+# Force data on "code" that isn't code
+
+361c!
+3620!
