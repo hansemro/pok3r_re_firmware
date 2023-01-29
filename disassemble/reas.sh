@@ -45,5 +45,6 @@ reas md200/v112                 md200_v112.bin              md200_v112_ref.s    
 reas md600/v148                 md600_v148.bin              md600_v148_ref.s            0x3400  md600_v148.sym
 
 reas cmprolrgb/v122             cmprolrgb_v122.bin          cmprolrgb_v122_ref.s        0x3400  cmprolrgb_v122.sym
+reas cmprolrgb/builtin          cmprolrgb_builtin.bin       cmprolrgb_builtin_ref.s     0x0     cmprolrgb_builtin.sym
 
 popd > /dev/null

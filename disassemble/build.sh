@@ -70,6 +70,7 @@ reas md600/v148/md600_v148_ref.s                        vma34   md600/v148/md600
 echo
 
 reas cmprolrgb/v122/cmprolrgb_v122_ref.s                vma34   cmprolrgb/v122/cmprolrgb_v122.bin
+reas cmprolrgb/builtin/cmprolrgb_builtin_ref.s          vma0    cmprolrgb/builtin/cmprolrgb_builtin.bin
 echo
 
 popd > /dev/null

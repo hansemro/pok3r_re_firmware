@@ -1,0 +1,21 @@
+# Cooler Master MasterKeys Pro L RGB Bootloader @ 0x0
+
+[data]
+
+0 : vectors .word
+
+[code]
+
+*   +4: reset
+*   +4: nmi
+*   +4
+*   +4
+*   +4
+*   +4
+
+[data]
+
+# Force data on "code" that isn't code
+
+80!
+84!
